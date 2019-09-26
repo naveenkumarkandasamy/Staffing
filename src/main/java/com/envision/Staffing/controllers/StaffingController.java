@@ -23,9 +23,9 @@ public class StaffingController {
         return "Greetings from Spring Boot!";
     }
 
-    @RequestMapping(value="/shiftPlan", method=RequestMethod.POST)
-    public HourlyDetail[] getShiftPlan(@RequestBody Payload p1 ) throws IOException {
-    	return shiftPlanningService.getShiftPlan(p1);
+    @RequestMapping(value="/shiftPlan", method=RequestMethod.GET)
+    public HourlyDetail[] getShiftPlan() throws IOException {
+    	return shiftPlanningService.getShiftPlan();
     }
 
 }

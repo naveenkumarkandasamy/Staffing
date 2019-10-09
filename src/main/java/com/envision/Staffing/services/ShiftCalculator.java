@@ -90,7 +90,7 @@ public class ShiftCalculator {
 
 				// Checks if adding a physician is needed
 				if ((j - start) % wl.dayDuration == (numberOfHours - 1)
-						&& ((capacityOfCurrentDoctor * 1.2 / (numberOfHours)) < factor)) {
+						&& ((capacityOfCurrentDoctor * wl.docEfficency / (numberOfHours)) < factor)) {
 					flag = 0;
 					hourShiftMap.remove(newShift);
 					break;
@@ -134,7 +134,7 @@ public class ShiftCalculator {
 
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
-		while (start < wl.sizeOfArray) {
+		while (start < wl.sizeOfArray - sizeOfSlot) {
 			flag = false;
 			int j = start;
 			if (wl.physicianCountperhour[j] != 0 && (round(wl.fixedworkloadArray[j] - wl.capacityArray[j], 2))

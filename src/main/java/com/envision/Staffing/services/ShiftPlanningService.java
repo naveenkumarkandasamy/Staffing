@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import com.envision.Staffing.model.HourlyDetail;
+import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
@@ -19,7 +20,7 @@ public class ShiftPlanningService {
 	public String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 			"Saturday" };
 
-	public HourlyDetail[] getShiftPlan() throws IOException {
+	public HourlyDetail[] getShiftPlan(Input[] input) throws IOException {
 
 		String path = "DCM_OUTPUT/Shifts.txt";
 		String costpath = "DCM_OUTPUT/Cost_Summary.txt";
@@ -28,13 +29,15 @@ public class ShiftPlanningService {
 
 		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
 		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
-
+	
 		Workload work = new Workload();
+		if(input[0]!=null && input[0].getPatientsCoveredPerHr()!=null)
+			work.docEfficency =input[0].getPatientsCoveredPerHr(); 
 		int k = 0;
 		for (int i = 1; i < 8; i++) {
 			for (int j = 8; j < 32; j++) {
-				work.fixedworkloadArray[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue() / 1.2;
-				work.workloadArray[k] = work.fixedworkloadArray[k] / 1.2;
+				work.fixedworkloadArray[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue() / work.docEfficency;
+				work.workloadArray[k] = work.fixedworkloadArray[k] /work.docEfficency;
 				k++;
 			}
 		}

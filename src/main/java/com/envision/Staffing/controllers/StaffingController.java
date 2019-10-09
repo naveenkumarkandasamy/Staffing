@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.envision.Staffing.model.HourlyDetail;
-import com.envision.Staffing.model.Payload;
+import com.envision.Staffing.model.Input;
 import com.envision.Staffing.services.ShiftPlanningService;
 
 @RestController
@@ -23,9 +23,9 @@ public class StaffingController {
         return "Greetings from Spring Boot!";
     }
 
-    @RequestMapping(value="/shiftPlan", method=RequestMethod.GET)
-    public HourlyDetail[] getShiftPlan() throws IOException {
-    	return shiftPlanningService.getShiftPlan();
+    @RequestMapping(value="/shiftPlan", method=RequestMethod.POST)
+    public HourlyDetail[] getShiftPlan(@RequestBody Input[] input) throws IOException {
+     	return shiftPlanningService.getShiftPlan(input);
     }
 
 }

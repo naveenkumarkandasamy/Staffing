@@ -14,6 +14,8 @@ public class Workload {
     public int[] physicianCountperhour = new int[180];
     
     public int[] physicianStretchingPerHour = new int[168];
+    
+    public Double docEfficency = new Double(1.2);
 
     //Stores shift slots for whole week 
     public List<Shift> result = new ArrayList<Shift>();

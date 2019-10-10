@@ -42,11 +42,7 @@ public class ShiftPlanningService {
 			}
 		}
 		myExcelBook.close();
-		
-		int[] noOfTwelve = { 0, 0, 0, 0, 0, 0, 0 };
-		int[] noOfTen = { 0, 0, 0, 0, 0, 0, 0 };
-		int[] noOfEight = { 0, 0, 0, 0, 0, 0, 0 };
-		int[] noOfFour = { 0, 0, 0, 0, 0, 0, 0 };
+
 		int[] totalHours = { 0, 0, 0, 0, 0, 0, 0 };
 		int[] cost = { 0, 0, 0, 0, 0, 0, 0 };
 
@@ -72,20 +68,19 @@ public class ShiftPlanningService {
 			sw.flush();
 			sw.write("------------------------------------------------------------------------");
 			sw.write("\n");
+			int totalPhysicianHours =0, totalAPPHours =0;
+			
 			for (Shift s : dayToshiftsmapping.get(i)) {
-				sw.write(days[i] + " | " + "Physician" + " | " + s.start_time + " | " + s.end_time + " | "
+				sw.write(days[i] + " | " + s.physicianType + " | " + s.start_time + " | " + s.end_time + " | "
 						+ s.no_of_hours + "\n");
-				if (s.no_of_hours == 12)
-					noOfTwelve[i]++;
-				else if (s.no_of_hours == 8)
-					noOfEight[i]++;
-				else if (s.no_of_hours == 10)
-					noOfTen[i]++;
-				else if (s.no_of_hours == 4)
-					noOfFour[i]++;
+				if(s.physicianType.equals("Physician")) 
+					totalPhysicianHours+=s.no_of_hours;
+				else
+					totalAPPHours+=s.no_of_hours;
+		
 			}
-			totalHours[i] += (12 * noOfTwelve[i]) + (8 * noOfEight[i]) + (10 * noOfTen[i]) + (4 * noOfFour[i]);
-			cost[i] = 320 * totalHours[i];
+			totalHours[i] = totalPhysicianHours+totalAPPHours;
+			cost[i] = 320 * totalPhysicianHours+ 200*totalAPPHours;
 		}
 		sw.close();
 

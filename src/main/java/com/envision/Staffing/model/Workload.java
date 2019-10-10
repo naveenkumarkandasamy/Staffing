@@ -13,6 +13,8 @@ public class Workload {
 
     public int[] physicianCountperhour = new int[180];
     
+    public int[] AppCountperhour = new int[180];
+    
     public int[] physicianStretchingPerHour = new int[168];
     
     public Double docEfficency = new Double(1.2);
@@ -20,7 +22,10 @@ public class Workload {
     //Stores shift slots for whole week 
     public List<Shift> result = new ArrayList<Shift>();
 
-    public double firstHourCapacity = 1.0, midHourCapacity = 0.83, lastHourCapacity = 0.67;
+    public double firstHourCapacity = 1.0, midHourCapacity = 0.8, lastHourCapacity = 0.6;
+    public double physicianCapacity[] = {1.0,0.8, 0.6};
+   
+    public double appCapacity[]= {0.6, 0.5,0.4 };
 
     public double[] utilizationArray = new double[168];
 

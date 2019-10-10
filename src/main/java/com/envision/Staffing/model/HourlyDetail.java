@@ -6,6 +6,8 @@ public class HourlyDetail {
 	
 	private Integer numberOfPhysicians;
 	
+	private Integer numberOfAPPs;
+	
 	private Integer numberOfShiftBeginning;
 	
 	private Integer numberOfShiftEnding;
@@ -88,6 +90,12 @@ public class HourlyDetail {
 			numberOfShiftEnding=1;
 		else
 		this.numberOfShiftEnding++;
+	}
+	public Integer getNumberOfAPPs() {
+		return numberOfAPPs;
+	}
+	public void setNumberOfAPPs(Integer numberOfAPPs) {
+		this.numberOfAPPs = numberOfAPPs;
 	}
 	
 

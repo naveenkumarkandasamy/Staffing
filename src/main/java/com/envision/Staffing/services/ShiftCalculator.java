@@ -30,27 +30,11 @@ public class ShiftCalculator {
 			flag = 1;
 			utilization = new double[numberOfHours];
 			Shift newShift = getNewShift(numberOfHours, start, utilization, "physician");
-			flag = checkIfPhysicianToBeAdded(numberOfHours, start, flag, factor, utilization, newShift,
-					wl.physicianCapacity);
+			flag = checkIfPhysicianToBeAdded(numberOfHours, start, factor, utilization, newShift, wl.physicianCapacity);
 			if (flag == 1) {
-				// A 12 hour slot can be added
-				calculateNewWorkloads(start, start + numberOfHours, wl.physicianCapacity);
-				calculateCapacities(start, start + numberOfHours, wl.physicianCapacity);
-				for (int x = start; x < start + numberOfHours; x++) {
-					// Increase the count of the number of physicians used each hour for the 12-hour
-					// slot
-					Map<Shift, Double> shiftUtilization = wl.hourToShiftMap.get(x);
-					if (shiftUtilization == null)
-						shiftUtilization = new HashMap<>();
-					shiftUtilization.put(newShift, newShift.utilization[x - start]);
-					wl.hourToShiftMap.put(x, shiftUtilization);
-					wl.physicianCountperhour[x]++;
-				}
-				wl.hourlyDetailList[start].incrementNumberOfShiftBeginning();
-				wl.hourlyDetailList[start + numberOfHours - 1].getNumberOfShiftEnding();
-				wl.result.add(newShift);
+				addNewShift(start, numberOfHours, newShift, wl.physicianCapacity, wl.physicianCountperhour);
 				for (int i = 0; i < 2; i++)
-					this.addAPPs(start, numberOfHours, factor);
+					this.addClinician(start, numberOfHours, factor, "APP", wl.appCapacity, wl.AppCountperhour);
 			} else {
 				// Check the next 12- hour slot
 				start = start + 1;
@@ -58,29 +42,32 @@ public class ShiftCalculator {
 		}
 	}
 
-	private void addAPPs(int start, int numberOfHours, double factor) {
-		int flag = 1;
-		double[] utilization = new double[numberOfHours];
-		Shift newShift = getNewShift(numberOfHours, start, utilization, "APP");
-		flag = checkIfPhysicianToBeAdded(numberOfHours, start, flag, factor, utilization, newShift, wl.appCapacity);
+	private void addClinician(int start, int shiftLength, double factor, String clinicianType, double[] capacity, int[] clinicianCounter) {
+		double[] utilization = new double[shiftLength];
+		Shift newShift = getNewShift(shiftLength, start, utilization, clinicianType);
+		int flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, utilization, newShift,capacity);
 		if (flag == 1) {
-			// A 12 hour slot can be added
-			calculateNewWorkloads(start, start + numberOfHours, wl.appCapacity);
-			calculateCapacities(start, start + numberOfHours, wl.appCapacity);
-			for (int x = start; x < start + numberOfHours; x++) {
-				// Increase the count of the number of physicians used each hour for the 12-hour
-				// slot
-				Map<Shift, Double> shiftUtilization = wl.hourToShiftMap.get(x);
-				if (shiftUtilization == null)
-					shiftUtilization = new HashMap<>();
-				shiftUtilization.put(newShift, newShift.utilization[x - start]);
-				wl.hourToShiftMap.put(x, shiftUtilization);
-				wl.AppCountperhour[x]++;
-			}
-			wl.hourlyDetailList[start].incrementNumberOfShiftBeginning();
-			wl.hourlyDetailList[start + numberOfHours - 1].getNumberOfShiftEnding();
-			wl.result.add(newShift);
+			addNewShift(start, shiftLength, newShift, capacity, clinicianCounter);
 		}
+	}
+
+	private void addNewShift(int start, int shiftLength, Shift newShift, double[] capacity, int[] clinicianCounter) {
+		// A 12 hour slot can be added
+		calculateNewWorkloads(start, start + shiftLength, capacity);
+		calculateCapacities(start, start + shiftLength, capacity);
+		for (int x = start; x < start + shiftLength; x++) {
+			// Increase the count of the number of physicians used each hour for the 12-hour
+			// slot
+			Map<Shift, Double> shiftUtilization = wl.hourToShiftMap.get(x);
+			if (shiftUtilization == null)
+				shiftUtilization = new HashMap<>();
+			shiftUtilization.put(newShift, newShift.utilization[x - start]);
+			wl.hourToShiftMap.put(x, shiftUtilization);
+			clinicianCounter[x]++;
+		}
+		wl.hourlyDetailList[start].incrementNumberOfShiftBeginning();
+		wl.hourlyDetailList[start + shiftLength - 1].getNumberOfShiftEnding();
+		wl.result.add(newShift);
 	}
 
 	private Shift getNewShift(int numberOfHours, int start, double[] utilization, String physicianType) {
@@ -94,8 +81,9 @@ public class ShiftCalculator {
 		return newShift;
 	}
 
-	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, int flag, double factor, double[] utilization,
+	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, double[] utilization,
 			Shift newShift, double[] physicianCapacity) {
+		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
 			Map<Shift, Double> hourShiftMap = wl.hourToShiftMap.get(j);
@@ -105,26 +93,12 @@ public class ShiftCalculator {
 			// slot
 			if (wl.physicianCountperhour[j] != 0 && ((wl.physicianCountperhour[j] - wl.physicianStretchingPerHour[j])
 					* 0.1 >= round(wl.fixedworkloadArray[j] - wl.capacityArray[j], 2))) {
-				while( round(wl.fixedworkloadArray[j] - wl.capacityArray[j], 2)>0.1) {
+				while (round(wl.fixedworkloadArray[j] - wl.capacityArray[j], 2) > 0.1) {
 					double minimumUtilization = min(round(wl.fixedworkloadArray[j] - wl.capacityArray[j], 2), 0.1);
 					wl.capacityArray[j] += minimumUtilization;
 					wl.physicianStretchingPerHour[j]++;
 				}
-				
-				
-				/*Map<Shift, Double> previousHourMap = wl.hourToShiftMap.get(j - 1);
-				for (Map.Entry<Shift, Double> entry : hourShiftMap.entrySet()) {
-					double minimumUtilization = min(round(wl.fixedworkloadArray[j] - wl.capacityArray[j], 2), 0.1);
-					Shift shift = entry.getKey();
-					if ((j == 0 || (previousHourMap.get(shift) == null)
-							|| (previousHourMap.get(shift) <= 1.0 && entry.getValue() <= 1.0))
-							&& minimumUtilization > 0) {
-						entry.setValue(entry.getValue() + minimumUtilization);
-						wl.capacityArray[j] += minimumUtilization;
-						wl.physicianStretchingPerHour[j]++;
-						shift.utilization[j - (shift.day * 24 + shift.start_time)] += minimumUtilization;
-					}
-				}*/
+
 			} else {
 				if ((j - start) % wl.dayDuration == 0) {
 					capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + physicianCapacity[0], 2);
@@ -162,7 +136,6 @@ public class ShiftCalculator {
 		int start = 0;
 		boolean flag = false;
 		int sizeOfSlot = 4;
-
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
 		while (start <= wl.sizeOfArray - sizeOfSlot) {
@@ -175,7 +148,8 @@ public class ShiftCalculator {
 			if (flag) {
 				start = start + 1;
 			} else {
-				if ((start + sizeOfSlot) > wl.sizeOfArray - 1) {
+				if ((start + sizeOfSlot-1) > wl.sizeOfArray - 1) {
+					//dont do anything
 					calculateNewWorkloads(start, wl.sizeOfArray, wl.physicianCapacity);
 					calculateCapacities(start, wl.sizeOfArray, wl.physicianCapacity);
 				} else {
@@ -190,6 +164,7 @@ public class ShiftCalculator {
 				wl.hourlyDetailList[start].incrementNumberOfShiftBeginning();
 				wl.hourlyDetailList[start + sizeOfSlot - 1].getNumberOfShiftEnding();
 				wl.result.add(shift); // Add shift in the list
+				
 			}
 		}
 	}
@@ -199,8 +174,7 @@ public class ShiftCalculator {
 		for (int i = start; i < end; i++) {
 			if (i == start) {
 				wl.workloadArray[i] = round(wl.workloadArray[i] - capacity[0], 2);
-			}
-			else if (i == end - 1) {
+			} else if (i == end - 1) {
 				wl.workloadArray[i] = round(wl.workloadArray[i] - capacity[2], 2);
 
 			} else {
@@ -215,16 +189,12 @@ public class ShiftCalculator {
 			if (i == start) {
 				wl.capacityArray[i] = round(wl.capacityArray[i] + capacity[0], 2);
 			}
-
 			else if (i == end - 1) {
 				wl.capacityArray[i] = round(wl.capacityArray[i] + capacity[2], 2);
-
-			}
-			else {
+			} else {
 				wl.capacityArray[i] = round(wl.capacityArray[i] + capacity[1], 2);
 			}
 		}
-
 	}
 
 	public double round(double value, int places) {
@@ -256,11 +226,6 @@ public class ShiftCalculator {
 		return dayToShiftMapping;
 	}
 
-	public void printWorkloadArray() {
-		for (int i = 0; i < wl.sizeOfArray; i++) {
-			System.out.println("WorkloadIndex: " + i + " Value :" + wl.workloadArray[i]);
-		}
-	}
 
 	public double[] calculateUtilization() {
 		for (int i = 0; i < wl.sizeOfArray; i++) {

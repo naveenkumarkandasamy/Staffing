@@ -26,6 +26,8 @@ public class ShiftPlanningService {
 		String costpath = "DCM_OUTPUT/Cost_Summary.txt";
 		String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
 		String finalCorrectedHours = "DCM_OUTPUT/table.txt";
+		
+		int[] Shift_Preferences = new int[]{12, 10, 8, 4};  //shift preference array 
 
 		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
 		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
@@ -34,8 +36,11 @@ public class ShiftPlanningService {
 		if(input[0]!=null && input[0].getPatientsCoveredPerHr()!=null)
 			work.docEfficency =input[0].getPatientsCoveredPerHr(); 
 		int k = 0;
+		
+		
 		for (int i = 1; i < 8; i++) {
 			for (int j = 8; j < 32; j++) {
+				//Reading workload from the excel file
 				work.fixedworkloadArray[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue() / work.docEfficency;
 				work.workloadArray[k] = work.fixedworkloadArray[k] /work.docEfficency;
 				k++;
@@ -48,10 +53,14 @@ public class ShiftPlanningService {
 
 		ShiftCalculator shiftCalculator = new ShiftCalculator();
 		shiftCalculator.setWorkloads(work);
-		shiftCalculator.calculatePhysicianSlots(12);
-		shiftCalculator.calculatePhysicianSlots(10);
-		shiftCalculator.calculatePhysicianSlots(8);
-		shiftCalculator.calculate4hourslots();
+		
+		
+		for(int i: Shift_Preferences) {
+			shiftCalculator.calculatePhysicianSlots(i);
+			if(i==4)
+				shiftCalculator.calculate4hourslots();
+		}
+		
 
 		double[] utilizationArray = shiftCalculator.calculateUtilization();
 		List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
@@ -59,15 +68,14 @@ public class ShiftPlanningService {
 
 		FileWriter sw = new FileWriter(path, false);
 
+
 		sw.write("Shifts");
-		sw.write("\n");
-		sw.write("------------------------------------------------------------------------\n");
+		sw.write("\n------------------------------------------------------------------------\n");
 		sw.write("Day | Clinician | Shift Start Time | Shift End Time | Shift Hour Length\n");
 
 		for (int i = 0; i < 7; i++) {
 			sw.flush();
-			sw.write("------------------------------------------------------------------------");
-			sw.write("\n");
+			sw.write("------------------------------------------------------------------------\n");
 			int totalPhysicianHours =0, totalAPPHours =0;
 			
 			for (Shift s : dayToshiftsmapping.get(i)) {
@@ -87,12 +95,12 @@ public class ShiftPlanningService {
 		// Calculation of Costs
 		FileWriter sw1 = new FileWriter(costpath, false);
 		sw1.flush();
+		
 		sw1.write("Cost Summary");
-		sw1.write("\n");
-		sw1.write("-------------------------------------------------\n");
+		sw1.write("\n-------------------------------------------------\n");
 		sw1.write("Day | Clinician | Total Hours | Total Cost (in $)\n");
-		sw1.write("-------------------------------------------------");
-		sw1.write("\n");
+		sw1.write("-------------------------------------------------\n");
+		
 		for (int x = 0; x < 7; x++) {
 			sw1.write(days[x] + " | Physician | " + totalHours[x] + " | " + cost[x] + "\n");
 		}
@@ -102,17 +110,14 @@ public class ShiftPlanningService {
 		FileWriter sw2 = new FileWriter(utilPath);
 		sw2.flush();
 		sw2.write("Utilization Summary");
-		sw2.write("\n");
-		sw2.write("-------------------------------------------------\n");
+		sw2.write("\n-------------------------------------------------\n");
 		sw2.write("Acceptable utilization level -> 75% <= Utilization <= 110%\n");
-		sw2.write("\n");
-		sw2.write("----------------------------------------\n");
+		sw2.write("\n----------------------------------------\n");
 		sw2.write("Day | Hour | Utilization per Hour (in %)\n");
 		int start = 0;
 		int z;
 		for (int x = 0; x < 7; x++) {
-			sw2.write("----------------------------------------");
-			sw2.write("\n");
+			sw2.write("----------------------------------------\n");
 			for (z = start; z < start + 24; z++) {
 				int end = z + 1;
 				double util = shiftCalculator.round(utilizationArray[z] * 100, 2);

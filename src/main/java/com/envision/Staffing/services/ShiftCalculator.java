@@ -1,23 +1,57 @@
 package com.envision.Staffing.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
+import com.envision.Staffing.services.MinCostClinicianCalculator;
+
 public class ShiftCalculator {
 
 	Workload wl;
+	MinCostClinicianCalculator minCostClinicianCalculator;
 
 	public void setWorkloads(Workload w) {
 		// Initialize workload array
 		wl = w;
 	}
-
+   
+	public void addClinician(int numberOfHours, Clinician[] clinician) { 
+		
+		int start = 0;
+		int flag = 1;
+		double factor = 0.85; 
+		double[] utilization;
+		int clinicianTypes = 3; //denoting physician,app and scribe
+		// Check every 12 hour slot Eg : 0-12 , 1-13, 2-14 ..... (Assuming numberOfHours
+		// = 12) ie., checks every slot
+		
+		
+		
+		while(start + numberOfHours < wl.sizeOfArray) {
+			flag = 1;
+			utilization = new double[numberOfHours];
+			Clinician minCostClinician;
+			
+			for(int i=1;i<=clinicianTypes;i++) { //check for physician, app and scribe
+			
+			minCostClinician = minCostClinicianCalculator.getMinCostClinician(clinician,i);
+			//Shift newShift = getNewShift(numberOfHours, start, utilization, minCostClinician);
+			//flag = checkIfPhysicianToBeAdded(numberOfHours, start, flag, factor, utilization, newShift,
+			//		wl.physicianCapacity);
+			
+			}
+			
+		}
+		
+	}
 	public void calculatePhysicianSlots(int numberOfHours) {
 		int start = 0;
 		int flag = 1;

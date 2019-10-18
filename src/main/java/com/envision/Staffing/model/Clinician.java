@@ -32,8 +32,8 @@ public class Clinician implements Comparable<Clinician> {
 		
 		int compareCost = ((Clinician) cli).getCost(); 
 		
-		//descending order
-		return compareCost - this.Cost  ;
+		//ascending order
+		return this.Cost - compareCost;
 		
 		
 	}	

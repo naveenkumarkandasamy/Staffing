@@ -9,6 +9,26 @@ public class Clinician {
 	private int[] clinicianCountPerHour;
 	
 	private double salaryPerHour;
+	
+	private Double patientsCoveredPerHr;
+	
+	private String[] expressions ; 
+
+	public String[] getExpressions() {
+		return expressions;
+	}
+
+	public void setExpressions(String[] expressions) {
+		this.expressions = expressions;
+	}
+
+	public Double getPatientsCoveredPerHr() {
+		return patientsCoveredPerHr;
+	}
+
+	public void setPatientsCoveredPerHr(Double patientsCoveredPerHr) {
+		this.patientsCoveredPerHr = patientsCoveredPerHr;
+	}
 
 	public double[] getClinicianCapacity() {
 		return clinicianCapacity;

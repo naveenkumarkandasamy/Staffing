@@ -9,8 +9,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
-import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
@@ -20,23 +20,22 @@ public class ShiftPlanningService {
 	public String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 			"Saturday" };
 
-	public HourlyDetail[] getShiftPlan(Input[] input) throws IOException {
+	public HourlyDetail[] getShiftPlan(Clinician[] clinicians) throws IOException {
 
 		String path = "DCM_OUTPUT/Shifts.txt";
 		String costpath = "DCM_OUTPUT/Cost_Summary.txt";
 		String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
 		String finalCorrectedHours = "DCM_OUTPUT/table.txt";
 		
-		int[] Shift_Preferences = new int[]{12, 10, 8, 4};  //shift preference array 
+		int[] shiftPreferences = new int[]{12, 10, 8, 4};  //shift preference array 
 
 		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
 		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
 	
 		Workload work = new Workload();
-		if(input[0]!=null && input[0].getPatientsCoveredPerHr()!=null)
-			work.docEfficency =input[0].getPatientsCoveredPerHr(); 
+		if(clinicians[0]!=null && clinicians[0].getPatientsCoveredPerHr()!=null)
+			work.docEfficency =clinicians[0].getPatientsCoveredPerHr(); 
 		int k = 0;
-		
 		
 		for (int i = 1; i < 8; i++) {
 			for (int j = 8; j < 32; j++) {
@@ -50,24 +49,27 @@ public class ShiftPlanningService {
 
 		int[] totalHours = { 0, 0, 0, 0, 0, 0, 0 };
 		int[] cost = { 0, 0, 0, 0, 0, 0, 0 };
+		
+		for(int i=0;i<clinicians.length;i++) {
+			clinicians[i].setClinicianCountPerHour(new int[168]);
+		}
 
 		ShiftCalculator shiftCalculator = new ShiftCalculator();
 		shiftCalculator.setWorkloads(work);
-		
-		
-		for(int i: Shift_Preferences) {
-			shiftCalculator.calculatePhysicianSlots(i);
-			if(i==4)
-				shiftCalculator.calculate4hourslots();
+			
+		for(int i: shiftPreferences) {
+		if(i!=4)
+				shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians);
+			else
+				shiftCalculator.calculate4hourslots(clinicians);
 		}
+		//shiftCalculator.calculate4hourslots(clinicians);
 		
-
 		double[] utilizationArray = shiftCalculator.calculateUtilization();
 		List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
-		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail();
+		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians);
 
 		FileWriter sw = new FileWriter(path, false);
-
 
 		sw.write("Shifts");
 		sw.write("\n------------------------------------------------------------------------\n");
@@ -95,7 +97,6 @@ public class ShiftPlanningService {
 		// Calculation of Costs
 		FileWriter sw1 = new FileWriter(costpath, false);
 		sw1.flush();
-		
 		sw1.write("Cost Summary");
 		sw1.write("\n-------------------------------------------------\n");
 		sw1.write("Day | Clinician | Total Hours | Total Cost (in $)\n");

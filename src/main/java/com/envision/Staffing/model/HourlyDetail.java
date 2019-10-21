@@ -8,6 +8,8 @@ public class HourlyDetail {
 	
 	private Integer numberOfAPPs;
 	
+	private Integer numberOfScribes ;
+	
 	private Integer numberOfShiftBeginning;
 	
 	private Integer numberOfShiftEnding;
@@ -96,6 +98,12 @@ public class HourlyDetail {
 	}
 	public void setNumberOfAPPs(Integer numberOfAPPs) {
 		this.numberOfAPPs = numberOfAPPs;
+	}
+	public Integer getNumberOfScribes() {
+		return numberOfScribes;
+	}
+	public void setNumberOfScribes(Integer numberOfScribes) {
+		this.numberOfScribes = numberOfScribes;
 	}
 	
 

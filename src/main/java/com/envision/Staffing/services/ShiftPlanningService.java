@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
-import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
@@ -22,266 +21,142 @@ public class ShiftPlanningService {
 	public String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 			"Saturday" };
 
-//	public HourlyDetail[] getShiftPlan(Input[] input) throws IOException {
-//
-//		String path = "DCM_OUTPUT/Shifts.txt";
-//		String costpath = "DCM_OUTPUT/Cost_Summary.txt";
-//		String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
-//		String finalCorrectedHours = "DCM_OUTPUT/table.txt";
-//		
-//		int[] Shift_Preferences = new int[]{12, 10, 8, 4};  //shift preference array 
-//
-//		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
-//		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
-//	
-//		Workload work = new Workload();
-//		if(input[0]!=null && input[0].getPatientsCoveredPerHr()!=null)
-//			work.docEfficency =input[0].getPatientsCoveredPerHr(); 
-//		int k = 0;
-//		
-//		
-//		for (int i = 1; i < 8; i++) {
-//			for (int j = 8; j < 32; j++) {
-//				//Reading workload from the excel file
-//				work.fixedworkloadArray[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue() / work.docEfficency;
-//				work.workloadArray[k] = work.fixedworkloadArray[k] /work.docEfficency;
-//				k++;
-//			}
-//		}
-//		myExcelBook.close();
-//
-//		int[] totalHours = { 0, 0, 0, 0, 0, 0, 0 };
-//		int[] cost = { 0, 0, 0, 0, 0, 0, 0 };
-//
-//		ShiftCalculator shiftCalculator = new ShiftCalculator();
-//		shiftCalculator.setWorkloads(work);
-//		
-//		
-//		for(int i: Shift_Preferences) {
-//			shiftCalculator.calculatePhysicianSlots(i);
-//			if(i==4)
-//				shiftCalculator.calculate4hourslots();
-//		}
-//		
-//
-//		double[] utilizationArray = shiftCalculator.calculateUtilization();
-//		List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
-//		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail();
-//
-//		FileWriter sw = new FileWriter(path, false);
-//
-//
-//		sw.write("Shifts");
-//		sw.write("\n------------------------------------------------------------------------\n");
-//		sw.write("Day | Clinician | Shift Start Time | Shift End Time | Shift Hour Length\n");
-//
-//		for (int i = 0; i < 7; i++) {
-//			sw.flush();
-//			sw.write("------------------------------------------------------------------------\n");
-//			int totalPhysicianHours =0, totalAPPHours =0;
-//			
-//			for (Shift s : dayToshiftsmapping.get(i)) {
-//				sw.write(days[i] + " | " + s.physicianType + " | " + s.start_time + " | " + s.end_time + " | "
-//						+ s.no_of_hours + "\n");
-//				if(s.physicianType.equals("Physician")) 
-//					totalPhysicianHours+=s.no_of_hours;
-//				else
-//					totalAPPHours+=s.no_of_hours;
-//		
-//			}
-//			totalHours[i] = totalPhysicianHours+totalAPPHours;
-//			cost[i] = 320 * totalPhysicianHours+ 200*totalAPPHours;
-//		}
-//		sw.close();
-//
-//		// Calculation of Costs
-//		FileWriter sw1 = new FileWriter(costpath, false);
-//		sw1.flush();
-//		
-//		sw1.write("Cost Summary");
-//		sw1.write("\n-------------------------------------------------\n");
-//		sw1.write("Day | Clinician | Total Hours | Total Cost (in $)\n");
-//		sw1.write("-------------------------------------------------\n");
-//		
-//		for (int x = 0; x < 7; x++) {
-//			sw1.write(days[x] + " | Physician | " + totalHours[x] + " | " + cost[x] + "\n");
-//		}
-//		sw1.close();
-//
-//		// Calculation of utilization
-//		FileWriter sw2 = new FileWriter(utilPath);
-//		sw2.flush();
-//		sw2.write("Utilization Summary");
-//		sw2.write("\n-------------------------------------------------\n");
-//		sw2.write("Acceptable utilization level -> 75% <= Utilization <= 110%\n");
-//		sw2.write("\n----------------------------------------\n");
-//		sw2.write("Day | Hour | Utilization per Hour (in %)\n");
-//		int start = 0;
-//		int z;
-//		for (int x = 0; x < 7; x++) {
-//			sw2.write("----------------------------------------\n");
-//			for (z = start; z < start + 24; z++) {
-//				int end = z + 1;
-//				double util = shiftCalculator.round(utilizationArray[z] * 100, 2);
-//				sw2.write(days[x] + " | " + (z % 24) + ".00 - " + (end % 24) + ".00 | " + util + "\n");
-//			}
-//			start = start + 24;
-//		}
-//		sw2.close();
-//
-//		Workload wlCalculated = shiftCalculator.wl;
-//		FileWriter sw3 = new FileWriter(finalCorrectedHours);
-//		sw3.flush();
-//		sw3.write("\n");
-//		sw3.write("-------------------------------------------------\n");
-//		sw3.write("\n");
-//		start = 0;
-//		for (int x = 0; x < 7; x++) {
-//			sw3.write(days[x] + "\n");
-//			sw3.write("----------------------------------------\n");
-//			for (int j = start, i = 0; i < 24 && j < start + 24; j++, i++) {
-//				sw3.write(i + ":00  " + wlCalculated.physicianCountperhour[j] + " " + wlCalculated.fixedworkloadArray[j]
-//						+ " " + wlCalculated.capacityArray[j] + " \n");
-//			}
-//			start = start + 24;
-//		}
-//		sw3.close();
-//		return hourlyDetailList;
-//	}
-//	
-	
-	
-	
-	public HourlyDetail[] getShiftPlan(Clinician[] clinician) throws IOException {
+	public HourlyDetail[] getShiftPlan(Clinician[] clinicians) throws IOException {
 
-	//Output Files
-	String path = "DCM_OUTPUT/Shifts.txt";
-	String costpath = "DCM_OUTPUT/Cost_Summary.txt";
-	String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
-	String finalCorrectedHours = "DCM_OUTPUT/table.txt";
-	
-	int[] Shift_Preferences = new int[]{12, 10, 8, 4};  //shift preference array 
+		// Output Files
+		String path = "DCM_OUTPUT/Shifts.txt";
+		String costpath = "DCM_OUTPUT/Cost_Summary.txt";
+		String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
+		String finalCorrectedHours = "DCM_OUTPUT/table.txt";
 
-	//reading workload from the excel file
-	XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
-	XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
+		int[] shiftPreferences = new int[] { 12, 10, 8, 4 }; // shift preference array
 
-	Workload work = new Workload();
-	//Checking if atleast one clinician is sent and the PatientsPerHour is not empty, mostly physicians
-	//ensure the first cllinician is physician
-	if(clinician[0]!=null && clinician[0].getPatientsPerHour()!=null)//try to check for physician
-		work.docEfficency =clinician[0].getPatientsPerHour(); 
-	
-	int k = 0;
-	
-	
-	for (int i = 1; i < 8; i++) {
-		for (int j = 8; j < 32; j++) {
-			//Reading workload from the excel file
-			work.fixedworkloadArray[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue() / work.docEfficency;
-			work.workloadArray[k] = work.fixedworkloadArray[k] /work.docEfficency;
-			k++;
+		// reading workload from the excel file
+		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
+		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
+
+		Workload work = new Workload();
+		// Checking if atleast one clinician is sent and the PatientsPerHour is not
+		// empty, mostly physicians
+		// ensure the first cllinician is physician
+		if (clinicians[0] != null && clinicians[0].getPatientsPerHour() != null)// try to check for physician
+			work.docEfficency = clinicians[0].getPatientsPerHour();
+
+		int k = 0;
+		for (int i = 1; i < 8; i++) {
+			for (int j = 8; j < 32; j++) {
+				// Reading workload from the excel file
+				work.fixedworkloadArray[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue()
+						/ work.docEfficency;
+				work.workloadArray[k] = work.fixedworkloadArray[k] / work.docEfficency;
+				k++;
+			}
 		}
-	}
-	myExcelBook.close();
+		myExcelBook.close();
 
-	int[] totalHours = { 0, 0, 0, 0, 0, 0, 0 };
-	int[] cost = { 0, 0, 0, 0, 0, 0, 0 };
+		int[] totalHours = { 0, 0, 0, 0, 0, 0, 0 };
+		int[] cost = { 0, 0, 0, 0, 0, 0, 0 };
 
-	ShiftCalculator shiftCalculator = new ShiftCalculator();
-	shiftCalculator.setWorkloads(work);
-	
-	
-	Arrays.sort(clinician);	
-	for(int i: Shift_Preferences) {
-		shiftCalculator.addClinician(i, clinician);
-	}
-	
-	
-
-	double[] utilizationArray = shiftCalculator.calculateUtilization();
-	List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
-	HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail();
-
-	FileWriter sw = new FileWriter(path, false);
-
-
-	sw.write("Shifts");
-	sw.write("\n------------------------------------------------------------------------\n");
-	sw.write("Day | Clinician | Shift Start Time | Shift End Time | Shift Hour Length\n");
-
-	for (int i = 0; i < 7; i++) {
-		sw.flush();
-		sw.write("------------------------------------------------------------------------\n");
-		int totalPhysicianHours =0, totalAPPHours =0;
+		for(int i=0;i<clinicians.length;i++) {
+			clinicians[i].setClinicianCountPerHour(new int[168]);
+		}
 		
-		for (Shift s : dayToshiftsmapping.get(i)) {
-			sw.write(days[i] + " | " + s.physicianType + " | " + s.start_time + " | " + s.end_time + " | "
-					+ s.no_of_hours + "\n");
-			if(s.physicianType.equals("Physician")) 
-				totalPhysicianHours+=s.no_of_hours;
+		ShiftCalculator shiftCalculator = new ShiftCalculator();
+		shiftCalculator.setWorkloads(work);
+
+		Arrays.sort(clinicians);
+		/*for (int i : shiftPreferences) {
+			shiftCalculator.addClinician(i, clinicians);
+		}*/
+		for(int i: shiftPreferences) {
+		if(i!=4)
+				shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians);
 			else
-				totalAPPHours+=s.no_of_hours;
-	
+				shiftCalculator.calculate4hourslots(clinicians);
 		}
-		totalHours[i] = totalPhysicianHours+totalAPPHours;
-		cost[i] = 320 * totalPhysicianHours+ 200*totalAPPHours;
-	}
-	sw.close();
 
-	// Calculation of Costs
-	FileWriter sw1 = new FileWriter(costpath, false);
-	sw1.flush();
-	
-	sw1.write("Cost Summary");
-	sw1.write("\n-------------------------------------------------\n");
-	sw1.write("Day | Clinician | Total Hours | Total Cost (in $)\n");
-	sw1.write("-------------------------------------------------\n");
-	
-	for (int x = 0; x < 7; x++) {
-		sw1.write(days[x] + " | Physician | " + totalHours[x] + " | " + cost[x] + "\n");
-	}
-	sw1.close();
+		double[] utilizationArray = shiftCalculator.calculateUtilization();
+		List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
+		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail();
 
-	// Calculation of utilization
-	FileWriter sw2 = new FileWriter(utilPath);
-	sw2.flush();
-	sw2.write("Utilization Summary");
-	sw2.write("\n-------------------------------------------------\n");
-	sw2.write("Acceptable utilization level -> 75% <= Utilization <= 110%\n");
-	sw2.write("\n----------------------------------------\n");
-	sw2.write("Day | Hour | Utilization per Hour (in %)\n");
-	int start = 0;
-	int z;
-	for (int x = 0; x < 7; x++) {
-		sw2.write("----------------------------------------\n");
-		for (z = start; z < start + 24; z++) {
-			int end = z + 1;
-			double util = shiftCalculator.round(utilizationArray[z] * 100, 2);
-			sw2.write(days[x] + " | " + (z % 24) + ".00 - " + (end % 24) + ".00 | " + util + "\n");
+		FileWriter sw = new FileWriter(path, false);
+
+		sw.write("Shifts");
+		sw.write("\n------------------------------------------------------------------------\n");
+		sw.write("Day | Clinician | Shift Start Time | Shift End Time | Shift Hour Length\n");
+
+		for (int i = 0; i < 7; i++) {
+			sw.flush();
+			sw.write("------------------------------------------------------------------------\n");
+			int totalPhysicianHours = 0, totalAPPHours = 0;
+
+			for (Shift s : dayToshiftsmapping.get(i)) {
+				sw.write(days[i] + " | " + s.physicianType + " | " + s.start_time + " | " + s.end_time + " | "
+						+ s.no_of_hours + "\n");
+				if (s.physicianType.equals("Physician"))
+					totalPhysicianHours += s.no_of_hours;
+				else
+					totalAPPHours += s.no_of_hours;
+
+			}
+			totalHours[i] = totalPhysicianHours + totalAPPHours;
+			cost[i] = 320 * totalPhysicianHours + 200 * totalAPPHours;
 		}
-		start = start + 24;
-	}
-	sw2.close();
+		sw.close();
 
-	Workload wlCalculated = shiftCalculator.wl;
-	FileWriter sw3 = new FileWriter(finalCorrectedHours);
-	sw3.flush();
-	sw3.write("\n");
-	sw3.write("-------------------------------------------------\n");
-	sw3.write("\n");
-	start = 0;
-	for (int x = 0; x < 7; x++) {
-		sw3.write(days[x] + "\n");
-		sw3.write("----------------------------------------\n");
-		for (int j = start, i = 0; i < 24 && j < start + 24; j++, i++) {
-			sw3.write(i + ":00  " + wlCalculated.physicianCountperhour[j] + " " + wlCalculated.fixedworkloadArray[j]
-					+ " " + wlCalculated.capacityArray[j] + " \n");
+		// Calculation of Costs
+		FileWriter sw1 = new FileWriter(costpath, false);
+		sw1.flush();
+
+		sw1.write("Cost Summary");
+		sw1.write("\n-------------------------------------------------\n");
+		sw1.write("Day | Clinician | Total Hours | Total Cost (in $)\n");
+		sw1.write("-------------------------------------------------\n");
+
+		for (int x = 0; x < 7; x++) {
+			sw1.write(days[x] + " | Physician | " + totalHours[x] + " | " + cost[x] + "\n");
 		}
-		start = start + 24;
+		sw1.close();
+
+		// Calculation of utilization
+		FileWriter sw2 = new FileWriter(utilPath);
+		sw2.flush();
+		sw2.write("Utilization Summary");
+		sw2.write("\n-------------------------------------------------\n");
+		sw2.write("Acceptable utilization level -> 75% <= Utilization <= 110%\n");
+		sw2.write("\n----------------------------------------\n");
+		sw2.write("Day | Hour | Utilization per Hour (in %)\n");
+		int start = 0;
+		int z;
+		for (int x = 0; x < 7; x++) {
+			sw2.write("----------------------------------------\n");
+			for (z = start; z < start + 24; z++) {
+				int end = z + 1;
+				double util = shiftCalculator.round(utilizationArray[z] * 100, 2);
+				sw2.write(days[x] + " | " + (z % 24) + ".00 - " + (end % 24) + ".00 | " + util + "\n");
+			}
+			start = start + 24;
+		}
+		sw2.close();
+
+		Workload wlCalculated = shiftCalculator.wl;
+		FileWriter sw3 = new FileWriter(finalCorrectedHours);
+		sw3.flush();
+		sw3.write("\n");
+		sw3.write("-------------------------------------------------\n");
+		sw3.write("\n");
+		start = 0;
+		for (int x = 0; x < 7; x++) {
+			sw3.write(days[x] + "\n");
+			sw3.write("----------------------------------------\n");
+			for (int j = start, i = 0; i < 24 && j < start + 24; j++, i++) {
+				sw3.write(i + ":00  " + wlCalculated.physicianCountperhour[j] + " " + wlCalculated.fixedworkloadArray[j]
+						+ " " + wlCalculated.capacityArray[j] + " \n");
+			}
+			start = start + 24;
+		}
+		sw3.close();
+		return hourlyDetailList;
 	}
-	sw3.close();
-	return hourlyDetailList;
-}
 
 }

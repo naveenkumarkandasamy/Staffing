@@ -15,6 +15,8 @@ public class Workload {
     
     public int[] AppCountperhour = new int[180];
     
+    public int[] scribeCountperhour = new int[180];
+    
     public int[] physicianStretchingPerHour = new int[168];
     
     public Double docEfficency = new Double(1.2);

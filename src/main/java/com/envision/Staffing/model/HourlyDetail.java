@@ -7,6 +7,8 @@ public class HourlyDetail {
 	private Integer numberOfPhysicians;
 
 	private Integer numberOfAPPs;
+	
+	private Integer numberOfScribes;
 
 	private Integer numberOfShiftBeginning;
 
@@ -17,8 +19,6 @@ public class HourlyDetail {
 	private Double capacityWorkLoad;
 
 	private Double utilization;
-
-	private Integer numberOfScribes;
 
 	public HourlyDetail() {
 		this.numberOfShiftBeginning = 0;

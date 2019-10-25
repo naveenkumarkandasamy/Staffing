@@ -7,8 +7,8 @@ public class Clinician implements Comparable<Clinician> {
 	public Double patientsPerHour;
 	public double coefficient;
 	public int cost;
-	public double[] capacity;
-	private int[] clinicianCountPerHour;// for first hour, mid hour and last hour
+	public double[] capacity; // for first hour, mid hour and last hour
+	private int[] clinicianCountPerHour;
 	private String[] expressions;
 
 	public Clinician(int id, String name, Double patientsPerHour, double coefficient, int cost, double[] capacity) {

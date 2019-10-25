@@ -122,6 +122,35 @@ public class ShiftPlanningService {
 			sw1.write(days[x] + " | Physician | " + totalHours[x] + " | " + cost[x] + "\n");
 		}
 		sw1.close();
+		
+		//Calculating costs for each hour
+		int hourly_Cost[] = new int[168];
+		int dayCost[] = new int[7];
+		int weeklyCost=0;
+		int dayCostCounter = -1;
+		for(int i=0;i<168;i++) {
+		
+			if(i%24 == 0) {
+				if(dayCostCounter!=-1)
+					System.out.println("Day Cost "+dayCost[dayCostCounter]);
+				dayCostCounter+=1;
+				System.out.println("Day "+ dayCostCounter);
+				
+			}
+			hourly_Cost[i] = (clinicians[0].getClinicianCountPerHour()[i]* clinicians[0].getCost()) + 
+					         (clinicians[1].getClinicianCountPerHour()[i]* clinicians[1].getCost()) +
+					         (clinicians[2].getClinicianCountPerHour()[i]* clinicians[2].getCost());
+			System.out.println("Hour "+i + " Cost "+hourly_Cost[i]);
+			dayCost[dayCostCounter]+=hourly_Cost[i];
+			
+		    weeklyCost+=hourly_Cost[i];
+		}
+		
+		System.out.println("Weekly cost " + weeklyCost);
+		
+		
+		
+		
 
 		// Calculation of utilization
 		FileWriter sw2 = new FileWriter(utilPath);
@@ -225,52 +254,26 @@ public class ShiftPlanningService {
 					   
 					   
 					   }
-//				   if(((s.start_time+(i*24))+(s.no_of_hours)) <168) {
-//					   
-//					   Map<Integer, Map<String, Integer>> map = clinicianStartEndCount.get((s.start_time+(i*24))+(s.no_of_hours));
-//					   System.out.println("Map" + map);
-//					   Map<String , Integer> innerMap = map.get(s.no_of_hours);
-//					   if(clinicianStartEndCount.get((s.start_time+(i*24))+(s.no_of_hours)).get(s.no_of_hours).get(s.physicianType+"End")== null){
-//				        System.out.println("Exception null  value"+(s.start_time+(i*24))+(s.no_of_hours) +s.no_of_hours+ s.physicianType+"End");
-//					   }
-//						   clinicianMapTempEnd.put(s.physicianType+"End",(clinicianStartEndCount.get((s.start_time+(i*24))+(s.no_of_hours)).get(s.no_of_hours).get(s.physicianType+"End")) + 1);
-//            	   
-//				   }
-//            	  // clinicianStartEndCount.get
-//            	   slotMapTemp.put(s.no_of_hours,clinicianMapTempStart);
-//            	   clinicianStartEndCount.set(s.start_time,slotMapTemp);
-////            	   
-//            	   slotMapTemp.put(s.no_of_hours,clinicianMapTempEnd);
-//            	   clinicianStartEndCount.set(s.end_time,slotMapTemp);
-////            	   
-//            	  
+       	  
 			
 			}
 		}
 		
-		
-		
-		
-//		System.out.println(clinicianStartEndCount);
-	//	for(Map<Integer,Map<String,Integer>> listIterator : clinicianStartEndCount) {
-		//	System.out.println("Hour "+ listIterator);
-					
-	//	}
-		
-		for(int i=0;i<168;i++) {
-			System.out.println("Hour "+ i);
-			Map<Integer,Map<String,Integer>> slotInfo = clinicianStartEndCount.get(i);
-			 for (Map.Entry<Integer,Map<String, Integer>> entry : slotInfo.entrySet()) {
-			        System.out.println("Slot "+entry.getKey());
-			        Map<String,Integer> value = entry.getValue();
-			        
-			        for(Map.Entry<String,Integer> countIter : value.entrySet()) {
-			        	System.out.println(countIter.getKey()+" "+countIter.getValue());
-			        }
-			    }
-			
-		}
-		
+				
+//		for(int i=0;i<168;i++) {
+//			System.out.println("Hour "+ i);
+//			Map<Integer,Map<String,Integer>> slotInfo = clinicianStartEndCount.get(i);
+//			 for (Map.Entry<Integer,Map<String, Integer>> entry : slotInfo.entrySet()) {
+//			        System.out.println("Slot "+entry.getKey());
+//			        Map<String,Integer> value = entry.getValue();
+//			        
+//			        for(Map.Entry<String,Integer> countIter : value.entrySet()) {
+//			        	System.out.println(countIter.getKey()+" "+countIter.getValue());
+//			        }
+//			    }
+//			
+//		}
+//		
 		
 		return hourlyDetailList;
 	}

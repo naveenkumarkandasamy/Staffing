@@ -544,6 +544,12 @@ public class ShiftCalculator {
 			hourlyDetailList[i].setCapacityWorkLoad(wl.capacityArray[i]);
 			hourlyDetailList[i].setHour(i);
 			hourlyDetailList[i].setUtilization(wl.fixedworkloadArray[i] / wl.capacityArray[i]);
+			
+			hourlyDetailList[i].setCostPerHour((clinicians[0].getClinicianCountPerHour()[i]* clinicians[0].getCost()) + 
+			                                   (clinicians[1].getClinicianCountPerHour()[i]* clinicians[1].getCost()) +
+			                                   (clinicians[2].getClinicianCountPerHour()[i]* clinicians[2].getCost()));
+			
+			
 		}
 		return hourlyDetailList;
 	}

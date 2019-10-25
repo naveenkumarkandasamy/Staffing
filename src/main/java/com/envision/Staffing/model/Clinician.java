@@ -53,7 +53,7 @@ public class Clinician implements Comparable<Clinician> {
 	}
 
 	public int getCost() {
-		return cost;
+		return this.cost;
 	}
 
 	public void setCost(int cost) {

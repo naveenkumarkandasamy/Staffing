@@ -19,10 +19,13 @@ public class HourlyDetail {
 	private Double capacityWorkLoad;
 
 	private Double utilization;
+	
+	private Integer costPerHour;//cost for each hour considering all the clinicians 
 
 	public HourlyDetail() {
 		this.numberOfShiftBeginning = 0;
 		this.numberOfShiftEnding = 0;
+		this.costPerHour = 0;
 	}
 
 	public Integer getHour() {
@@ -109,6 +112,15 @@ public class HourlyDetail {
 
 	public void setNumberOfScribes(Integer numberOfScribes) {
 		this.numberOfScribes = numberOfScribes;
+	}
+	
+	
+	public Integer getCostPerHour() {
+		return this.costPerHour;
+	}
+
+	public void setCostPerHour(Integer costPerHour) {
+		this.costPerHour = costPerHour;
 	}
 
 }

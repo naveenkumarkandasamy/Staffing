@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
+import com.envision.Staffing.model.Output;
 import com.envision.Staffing.services.ShiftPlanningService;
 
 @RestController
@@ -25,7 +26,7 @@ public class StaffingController {
 
     
     @RequestMapping(value="/shiftPlan", method=RequestMethod.POST)
-    public HourlyDetail[] getShiftPlan(@RequestBody Clinician[] clinicians) throws IOException {
+    public Output getShiftPlan(@RequestBody Clinician[] clinicians) throws IOException {
     	return shiftPlanningService.getShiftPlan(clinicians);   	    	
     }
 

@@ -1,8 +1,12 @@
 package com.envision.Staffing.model;
 
+//model to map between each day and its workload
 public class Day {
 	  public String name;
       public double[] workload;
+      
+      
+    //getters and setters for each field  
 	public String getName() {
 		return name;
 	}
@@ -16,6 +20,7 @@ public class Day {
 		this.workload = workload;
 	}
 	
+	//constructors
 	public Day() {
 		
 	}

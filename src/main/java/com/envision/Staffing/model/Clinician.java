@@ -1,16 +1,19 @@
 package com.envision.Staffing.model;
 
+//Model to hold data about a clinician
 public class Clinician implements Comparable<Clinician> {
 
 	public int id;
-	public String name;
-	public Double patientsPerHour;
-	public double coefficient;
-	public int cost;
+	public String name; // clinician description
+	public Double patientsPerHour; //indicates the number of patients the clinician can handle in an hour
+	public double coefficient; //denotes the percentage with respect to physician 
+	public int cost; // cost of each clinician per hour
 	public double[] capacity; // for first hour, mid hour and last hour
-	private int[] clinicianCountPerHour;
-	private String[] expressions;
+	private int[] clinicianCountPerHour;  
+	private String[] expressions; //expressions to handle the relationships between clinicians 
 
+	
+	//constructor
 	public Clinician(int id, String name, Double patientsPerHour, double coefficient, int cost, double[] capacity) {
 		this.id = id;
 		this.name = name;
@@ -20,6 +23,8 @@ public class Clinician implements Comparable<Clinician> {
 		this.capacity = capacity;
 	}
 
+	
+	//getters and setters for each field
 	public int getId() {
 		return id;
 	}
@@ -88,6 +93,7 @@ public class Clinician implements Comparable<Clinician> {
 		super();
 	}
 
+	//overriding compare to function, to provide sort on clinician objects based on the clinician's cost in ascending order
 	public int compareTo(Clinician cli) {
 		int comparecost = cli.getCost();
 		// ascending order

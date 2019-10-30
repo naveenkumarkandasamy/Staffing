@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
+import com.envision.Staffing.model.Output;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
@@ -27,7 +28,7 @@ public class ShiftPlanningService {
 	public String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 			"Saturday" };
 
-	public HourlyDetail[] getShiftPlan(Clinician[] clinicians) throws IOException {
+	public Output getShiftPlan(Clinician[] clinicians) throws IOException {
 
 		// Output Files
 		String path = "DCM_OUTPUT/Shifts.txt";
@@ -191,8 +192,8 @@ public class ShiftPlanningService {
 		}
 		sw3.close();
 		
-		//check this
-		//ArrayList<Map<Integer,Map<String,Integer>>> arr=new ArrayList<Map<Integer,Map<String,Integer>>>(Collections.nCopies(168, Map<Integer,Map<String,Integer>>));
+		//calculating the count of clinicians starting and ending at each hour
+		
 		ArrayList<Map<Integer,Map<String,Integer>>> clinicianStartEndCount=new ArrayList<Map<Integer,Map<String,Integer>>>(168);
 		
 		String[] clincian_count_keys = {"physicianStart","physicianEnd","appStart","appEnd","scribeStart","scribeEnd"};
@@ -275,7 +276,11 @@ public class ShiftPlanningService {
 //		}
 //		
 		
-		return hourlyDetailList;
+		Output out = new Output();
+		out.setHourlyDetail(hourlyDetailList);
+		out.setClinicianHourCount(clinicianStartEndCount);
+		
+		return out;
 	}
 
 }

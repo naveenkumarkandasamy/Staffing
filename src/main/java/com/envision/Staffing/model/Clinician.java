@@ -3,12 +3,12 @@ package com.envision.Staffing.model;
 //Model to hold data about a clinician
 public class Clinician implements Comparable<Clinician> {
 
-	public int id;
-	public String name; // clinician description
-	public Double patientsPerHour; //indicates the number of patients the clinician can handle in an hour
-	public double coefficient; //denotes the percentage with respect to physician 
-	public int cost; // cost of each clinician per hour
-	public double[] capacity; // for first hour, mid hour and last hour
+	private int id;
+	private String name; // clinician description
+	private Double patientsPerHour; //indicates the number of patients the clinician can handle in an hour
+	private double coefficient; //denotes the percentage with respect to physician 
+	private int cost; // cost of each clinician per hour
+	private double[] capacity; // for first hour, mid hour and last hour
 	private int[] clinicianCountPerHour;  
 	private String[] expressions; //expressions to handle the relationships between clinicians 
 

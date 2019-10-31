@@ -2,44 +2,47 @@ package com.envision.Staffing.model;
 
 import java.util.Arrays;
 
+//model to hold shift details
 public class Shift {
-	public static int count = 0;
-	public String physicianType;
-	public Integer id;
-	public Integer start_time;
-	public Integer end_time;
-	public Integer no_of_hours;
-	public Integer day;
-
+	private static int count = 0; //count of clinicians in each shift
+	private String physicianType;
+	private Integer id;
+	private Integer startTime;
+	private Integer endTime;
+	private Integer noOfHours;//indicates the slot length
+	private Integer day;      //day of the shift
+	private double[] utilization;
+	
+	//constructor
 	public Shift() {
 		count++;
 		id = count;
 	}
 
-	public double[] utilization;
-
-	public Integer getStart_time() {
-		return start_time;
+	
+    //getters and setters for all the fields
+	public Integer getStartTime() {
+		return startTime;
 	}
 
-	public void setStart_time(Integer start_time) {
-		this.start_time = start_time;
+	public void setStartTime(Integer startTime) {
+		this.startTime = startTime;
 	}
 
-	public Integer getEnd_time() {
-		return end_time;
+	public Integer getEndTime() {
+		return endTime;
 	}
 
-	public void setEnd_time(Integer end_time) {
-		this.end_time = end_time;
+	public void setEndTime(Integer endTime) {
+		this.endTime = endTime;
 	}
 
-	public Integer getNo_of_hours() {
-		return no_of_hours;
+	public Integer getNoOfHours() {
+		return noOfHours;
 	}
 
-	public void setNo_of_hours(Integer no_of_hours) {
-		this.no_of_hours = no_of_hours;
+	public void setNoOfHours(Integer noOfHours) {
+		this.noOfHours = noOfHours;
 	}
 
 	public Integer getDay() {
@@ -66,6 +69,8 @@ public class Shift {
 		this.physicianType = physicianType;
 	}
 
+	
+	//overriding equals method to compare shift objects based on startTime, endTime and noOfHours
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -75,11 +80,11 @@ public class Shift {
 		Shift shift = (Shift) o;
 		if (id != shift.id)
 			return false;
-		if (start_time != shift.start_time)
+		if (startTime != shift.startTime)
 			return false;
-		if (end_time != shift.end_time)
+		if (endTime != shift.endTime)
 			return false;
-		if (no_of_hours != shift.no_of_hours)
+		if (noOfHours != shift.noOfHours)
 			return false;
 		return day == shift.day;
 	}
@@ -87,15 +92,16 @@ public class Shift {
 	@Override
 	public int hashCode() {
 		Integer result = (Integer) (id ^ (id >>> 32));
-		result = 31 * result + (start_time != null ? start_time.hashCode() : 0);
-		result = 31 * result + (end_time != null ? end_time.hashCode() : 0);
-		result = 31 * result + (no_of_hours != null ? no_of_hours.hashCode() : 0);
+		result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
+		result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
+		result = 31 * result + (noOfHours != null ? noOfHours.hashCode() : 0);
 		result = 31 * result + (day != null ? day.hashCode() : 0);
 		return result;
 	}
 
+	//overriding toString() method
 	public String toString() {
-		return this.id + " " + this.day + " " + this.start_time + " " + this.end_time + " "
+		return this.id + " " + this.day + " " + this.startTime + " " + this.endTime + " "
 				+ Arrays.toString(utilization);
 	}
 }

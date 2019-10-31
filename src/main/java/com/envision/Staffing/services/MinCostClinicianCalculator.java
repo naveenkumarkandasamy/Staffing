@@ -14,10 +14,10 @@ public class MinCostClinicianCalculator {
 	public  Clinician getMinCostClinician(Clinician[] clinician, int k) {
 				
 		
-		Clinician[] sorted_clinician = clinician;
-		Arrays.sort(sorted_clinician);
+		Clinician[] sortedClinician = clinician;
+		Arrays.sort(sortedClinician);
 		
-		return sorted_clinician[k-1];
+		return sortedClinician[k-1];
 		
 		
 	}

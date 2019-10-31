@@ -1,8 +1,10 @@
 package com.envision.Staffing.model;
 
+//model to hold the hourly details containing the hour and the count of clinicians
+//in each hour, count of clinicians starting their shifts and ending their shifts
 public class HourlyDetail {
 
-	private Integer hour;
+	private Integer hour; //denotes the hour [0-167]
 
 	private Integer numberOfPhysicians;
 
@@ -10,24 +12,29 @@ public class HourlyDetail {
 	
 	private Integer numberOfScribes;
 
-	private Integer numberOfShiftBeginning;
+	private Integer numberOfShiftBeginning; //number of clinicians beginning their shifts includes all physicians,
+	                                        //scribes and apps
 
-	private Integer numberOfShiftEnding;
+	private Integer numberOfShiftEnding;//number of clinicians ending their shifts includes all physicians,
+                                       //scribes and apps
 
 	private Double expectedWorkLoad;
 
-	private Double capacityWorkLoad;
+	private Double capacityWorkLoad;//workload that can be handled by the clincians allotted
 
-	private Double utilization;
+	private Double utilization; //utilization percentage of the clinicians
 	
 	private Integer costPerHour;//cost for each hour considering all the clinicians 
 
+	
+	//constructor
 	public HourlyDetail() {
 		this.numberOfShiftBeginning = 0;
 		this.numberOfShiftEnding = 0;
 		this.costPerHour = 0;
 	}
 
+	//getters and setters for all the fields
 	public Integer getHour() {
 		return hour;
 	}

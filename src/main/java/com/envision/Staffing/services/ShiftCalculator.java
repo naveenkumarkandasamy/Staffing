@@ -1,9 +1,8 @@
 package com.envision.Staffing.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
@@ -34,16 +33,15 @@ public class ShiftCalculator {
 			int index = clinicians.length - 1;
 			int flag = 1;
 			boolean conditionalValue = false;
-			boolean array[] = { true, true, true };
+			boolean [] array = { true, true, true };
 			boolean shiftNextHour = true;
 
 			for (; index >= 0; index--) {
 				Clinician clinician = getClinicianWithLeastCost(index, clinicians);
 				conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index); //check for expressions
-				flag = 1;
 				do {
 					Shift newShift = getNewShift(shiftLength, start, clinician.getName());
-					flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, newShift,
+					flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, 
 							clinician.getCapacity());//checks for utilization
 					if (flag == 1 && conditionalValue) { // add clinician and check with next
 						addNewShift(start, shiftLength, newShift, clinician.getCapacity(),
@@ -64,7 +62,7 @@ public class ShiftCalculator {
 					shiftNextHour = false;
 			}
 			
-			if(shiftNextHour == true) {
+			if(shiftNextHour) {
 				shiftNextHour = false;
 				start += 1;
 			}
@@ -92,7 +90,7 @@ public class ShiftCalculator {
 		if (index == 0)
 			return true;
 		else {
-			for (int hour = start; hour < start + shiftLength; hour++) {
+			for (int hour = start; hour < start + shiftLength && hour<168; hour++) {
 				double value = 0.0d;
 				for (int j = 0; j < index; j++) {
 					value += evaluate(clinicians[index].getExpressions()[j],
@@ -108,8 +106,7 @@ public class ShiftCalculator {
 
 	private boolean evaluateFunction(double lefthandValue, double rightHandValue, String operator) {
 		switch (operator) {
-		case "<":
-			return lefthandValue < rightHandValue;
+		
 		case ">":
 			return lefthandValue > rightHandValue;
 		case ">=":
@@ -120,11 +117,15 @@ public class ShiftCalculator {
 			return lefthandValue == rightHandValue;
 		case "!=":
 			return lefthandValue != rightHandValue;
+			
+			case "<":
+			default: 
+				return lefthandValue < rightHandValue;
+			
 		}
-		return false;
 	}
 	
-	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Shift newShift,
+	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, 
 			double[] physicianCapacity) {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
@@ -157,16 +158,14 @@ public class ShiftCalculator {
 	public void calculate4hourslots(Clinician[] clinicians) {
 		int start = 0;
 		int sizeOfSlot = 4;
-		boolean flag = false;
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
 	while (start < wl.getSizeOfArray()) {
 			
 			int j = start;
-			flag =false;	
+				
 			//checking for utilization < 1.1 to not add clinicians
 			if(wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1 ) {
-				flag = true;
 				start = start + 1;
 			} else {
 				boolean conditionalValue = true;
@@ -185,7 +184,6 @@ public class ShiftCalculator {
 
 					if(wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1) break;
 				}
-				flag =false;
 			}
 	
 		}
@@ -198,7 +196,6 @@ public class ShiftCalculator {
 	}
 
 	private void addNewShift(int start, int shiftLength, Shift newShift, double[] capacity, int[] clinicianCounter) {
-		int tempShiftLength = shiftLength;
 		// A 12 hour slot can be added
 		if(start+shiftLength > wl.getSizeOfArray()) {
 			shiftLength = wl.getSizeOfArray() - start;
@@ -211,12 +208,9 @@ public class ShiftCalculator {
 			// slot
 			clinicianCounter[x]++;
 		}
-		
-		
+
 		wl.getHourlyDetailList()[start].incrementNumberOfShiftBeginning();
 		wl.getHourlyDetailList()[start + shiftLength - 1].incrementNumberOfShiftEnding();//check for clinicians extending for next week
-		
-		shiftLength = tempShiftLength;
 		wl.getResult().add(newShift);
 	}
 

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.envision.Staffing.model.Clinician;
-import com.envision.Staffing.model.HourlyDetail;
 import com.envision.Staffing.model.Output;
 import com.envision.Staffing.services.ShiftPlanningService;
 

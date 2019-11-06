@@ -76,7 +76,7 @@ public class ShiftPlanningService {
 
 		double[] utilizationArray = shiftCalculator.calculateUtilization();
 		List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
-		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians);
+		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians , work.getDocEfficency());
 
 		printShifts(totalHours, cost, dayToshiftsmapping);
 

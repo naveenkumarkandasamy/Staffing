@@ -297,7 +297,7 @@ public class ShiftCalculator {
 		return wl.getUtilizationArray();
 	}
 
-	public HourlyDetail[] generateHourlyDetail(Clinician[] clinicians) {
+	public HourlyDetail[] generateHourlyDetail(Clinician[] clinicians , double docEfficiency) {
 		HourlyDetail[] hourlyDetailList = wl.getHourlyDetailList();
 		for (int i = 0; i < 168; i++) {
 			
@@ -306,8 +306,8 @@ public class ShiftCalculator {
 			hourlyDetailList[i].setNumberOfAPPs(clinicians[1].getClinicianCountPerHour()[i]);
 			hourlyDetailList[i].setNumberOfScribes(clinicians[2].getClinicianCountPerHour()[i]);
 			
-			hourlyDetailList[i].setExpectedWorkLoad(wl.getFixedworkloadArray()[i]);
-			hourlyDetailList[i].setCapacityWorkLoad(wl.getCapacityArray()[i]);
+			hourlyDetailList[i].setExpectedWorkLoad(wl.getFixedworkloadArray()[i] * docEfficiency);
+			hourlyDetailList[i].setCapacityWorkLoad(wl.getCapacityArray()[i] * docEfficiency);
 			hourlyDetailList[i].setHour(i);
 			hourlyDetailList[i].setUtilization(wl.getFixedworkloadArray()[i] / wl.getCapacityArray()[i]);
 			

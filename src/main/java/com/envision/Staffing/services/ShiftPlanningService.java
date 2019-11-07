@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
+import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.Output;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
@@ -28,11 +29,19 @@ public class ShiftPlanningService {
 	private	String costpath = "DCM_OUTPUT/Cost_Summary.txt";
 	private	String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
 	private	String finalCorrectedHours = "DCM_OUTPUT/table.txt";
-    private int[] shiftPreferences = new int[] { 12, 10, 8, 4 }; // shift preference array
 
-	public Output getShiftPlan(Clinician[] clinicians) throws IOException {
-
-
+	public Output getShiftPlan(Input input) throws IOException {
+        
+		Clinician[] clinicians = input.getClinician();
+		int[] shiftPreferences = input.getShiftLength();
+		//testing
+		
+		System.out.println(clinicians);
+		for(int s : shiftPreferences ){
+		System.out.println(s);
+		}
+		
+		
 		// reading workload from the excel file
 		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
 		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");

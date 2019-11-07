@@ -22,10 +22,10 @@ public class ShiftCalculator {
 	}
    
 	
-	public void calculatePhysicianSlotsForAll(int shiftLength, Clinician[] clinicians) {
+	public void calculatePhysicianSlotsForAll(int shiftLength, Clinician[] clinicians, double lowerLimitFactor) {
 		int start = 0;
-		double factor = 0.75;
-
+		//double factor = 0.75;
+        double factor = lowerLimitFactor;
 		// Check every 12 hour slot Eg : 0-12 , 1-13, 2-14 ..... (Assuming numberOfHours
 		// = 12)
 		while (start + shiftLength < wl.getSizeOfArray()) {

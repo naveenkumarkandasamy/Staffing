@@ -34,12 +34,8 @@ public class ShiftPlanningService {
         
 		Clinician[] clinicians = input.getClinician();
 		int[] shiftPreferences = input.getShiftLength();
-		//testing
+		double lowerLimitFactor = input.getLowerLimitFactor(); 
 		
-		System.out.println(clinicians);
-		for(int s : shiftPreferences ){
-		System.out.println(s);
-		}
 		
 		
 		// reading workload from the excel file
@@ -78,7 +74,7 @@ public class ShiftPlanningService {
 		
 		for(int i: shiftPreferences) {
 		if(i!=4)
-				shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians);
+				shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians, lowerLimitFactor);
 			else
 				shiftCalculator.calculate4hourslots(clinicians);
 		}

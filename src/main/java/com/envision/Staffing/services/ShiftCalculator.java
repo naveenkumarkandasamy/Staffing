@@ -69,24 +69,11 @@ public class ShiftCalculator {
 			
 		}
 	}
+//remove it if evaluate is working properly
 
-	private double evaluate(String expression, int value) {
-
-		String[] elements = expression.split(" ");
-		switch (elements[1]) {
-		case "+":
-			return Double.parseDouble(elements[0]) + value;
-		case "*":
-			return Double.parseDouble(elements[0]) * value;
-		default:
-			return 0;
-		}
-
-	}
-//	private double evaluate(String expression, Clinician[] clinicians, int hour) {
+//	private double evaluate(String expression, int value) {
 //
 //		String[] elements = expression.split(" ");
-//		int value = getClinicianCountByName(elements[2], clinicians , hour);
 //		switch (elements[1]) {
 //		case "+":
 //			return Double.parseDouble(elements[0]) + value;
@@ -97,6 +84,32 @@ public class ShiftCalculator {
 //		}
 //
 //	}
+	private double evaluate(String expression, Clinician[] clinicians, int hour) {
+
+		String[] elements = expression.split(" ");
+		int value = getClinicianCountByName(elements[2], clinicians , hour);
+		switch (elements[1]) {
+		case "+":
+			return Double.parseDouble(elements[0]) + value;
+		case "*":
+			return Double.parseDouble(elements[0]) * value;
+		default:
+			return 0;
+		}
+
+	}
+	
+	
+	//function to return the count per hour of the clinician specified by the name
+		public int getClinicianCountByName(String name, Clinician[] clinicians, int hour) {
+			for(Clinician cli : clinicians) {
+				if(name.equals(cli.getName())) {
+					return cli.getClinicianCountPerHour()[hour];
+				}
+			}
+			return 0;
+		}
+
 
 	private boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
 		//if physician, no need to check for any conditions
@@ -106,9 +119,9 @@ public class ShiftCalculator {
 			for (int hour = start; hour < start + shiftLength && hour<168; hour++) {
 				double value = 0.0d;
 				for (int j = 0; j < index; j++) {
-					value += evaluate(clinicians[index].getExpressions()[j],
-							clinicians[j].getClinicianCountPerHour()[hour]);
-//					value += evaluate(clinicians[index].getExpressions()[j],clinicians,hour);
+//					value += evaluate(clinicians[index].getExpressions()[j],
+//							clinicians[j].getClinicianCountPerHour()[hour]);
+					value += evaluate(clinicians[index].getExpressions()[j],clinicians,hour);
 					
 					
 					

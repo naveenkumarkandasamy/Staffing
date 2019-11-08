@@ -36,6 +36,7 @@ public class ShiftPlanningService {
 	    double lowerLimitFactor = 0.75;
 	    
 		Clinician[] clinicians = input.getClinician();
+		
 		if(input.getShiftLength()!= null) {
 		   shiftPreferences = input.getShiftLength();
 		}

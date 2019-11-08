@@ -52,6 +52,7 @@ public class ShiftCalculator {
 						array[index] = false;
 					}
 					conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index);
+
 				} while (conditionalValue && flag == 1 && index != 0);
 			}
 			
@@ -69,21 +70,7 @@ public class ShiftCalculator {
 			
 		}
 	}
-//remove it if evaluate is working properly
 
-//	private double evaluate(String expression, int value) {
-//
-//		String[] elements = expression.split(" ");
-//		switch (elements[1]) {
-//		case "+":
-//			return Double.parseDouble(elements[0]) + value;
-//		case "*":
-//			return Double.parseDouble(elements[0]) * value;
-//		default:
-//			return 0;
-//		}
-//
-//	}
 	private double evaluate(String expression, Clinician[] clinicians, int hour) {
 
 		String[] elements = expression.split(" ");
@@ -102,28 +89,30 @@ public class ShiftCalculator {
 	
 	//function to return the count per hour of the clinician specified by the name
 		public int getClinicianCountByName(String name, Clinician[] clinicians, int hour) {
+			if(name != null) {
 			for(Clinician cli : clinicians) {
 				if(name.equals(cli.getName())) {
 					return cli.getClinicianCountPerHour()[hour];
 				}
 			}
+			
+		}
+			//System.out.println("SHOULDN'T COME HERE");
 			return 0;
 		}
 
 
 	private boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
 		//if physician, no need to check for any conditions
-		if (index == 0)
+		if(clinicians[index].getName()!=null) {
+		if (clinicians[index].getName().contentEquals("physician"))
 			return true;
+		}
 		else {
 			for (int hour = start; hour < start + shiftLength && hour<168; hour++) {
 				double value = 0.0d;
-				for (int j = 0; j < index; j++) {
-//					value += evaluate(clinicians[index].getExpressions()[j],
-//							clinicians[j].getClinicianCountPerHour()[hour]);
+				for (int j = 0; j < clinicians[index].getExpressions().length; j++) {
 					value += evaluate(clinicians[index].getExpressions()[j],clinicians,hour);
-					
-					
 					
 				}
 				if (evaluateFunction(clinicians[index].getClinicianCountPerHour()[hour] + 1, value, ">"))

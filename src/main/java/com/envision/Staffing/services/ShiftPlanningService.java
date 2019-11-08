@@ -29,14 +29,26 @@ public class ShiftPlanningService {
 	private	String costpath = "DCM_OUTPUT/Cost_Summary.txt";
 	private	String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
 	private	String finalCorrectedHours = "DCM_OUTPUT/table.txt";
-	private int[] shiftPreferences = new int[]{12,10,8,4};
-
-//	public Output getShiftPlan(Input input) throws IOException {
-	public Output getShiftPlan(Clinician[] clinicians) throws IOException {
-//		Clinician[] clinicians = input.getClinician();
-//		int[] shiftPreferences = input.getShiftLength();
-//		double lowerLimitFactor = input.getLowerLimitFactor(); 
+    
+	public Output getShiftPlan(Input input) throws IOException {
 		
+		int[] shiftPreferences = new int[]{12,10,8,4};
+	    double lowerLimitFactor = 0.75;
+	    
+		Clinician[] clinicians = input.getClinician();
+		if(input.getShiftLength()!= null) {
+		   shiftPreferences = input.getShiftLength();
+		}
+		if(input.getLowerLimitFactor() !=  null) {
+		      lowerLimitFactor = input.getLowerLimitFactor(); 
+		}
+		
+		//testing
+		for(int a : shiftPreferences) {
+		System.out.println(a);
+		}
+		
+		System.out.println("lowerLimitFactor" + lowerLimitFactor);
 		
 		
 		// reading workload from the excel file
@@ -75,8 +87,7 @@ public class ShiftPlanningService {
 		
 		for(int i: shiftPreferences) {
 		if(i!=4)
-			shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians);
-//				shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians, lowerLimitFactor);
+        		shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians, lowerLimitFactor);
 			else
 				shiftCalculator.calculate4hourslots(clinicians);
 		}

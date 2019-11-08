@@ -100,5 +100,16 @@ public class Clinician implements Comparable<Clinician> {
 		return this.cost - comparecost;
 
 	}
+	
+	
+	//function to return the count per hour of the clinician specified by the name
+	public int getClinicianCountByName(String name, Clinician[] clinicians, int hour) {
+		for(Clinician cli : clinicians) {
+			if(name.equals(cli.getName())) {
+				return cli.getClinicianCountPerHour()[hour];
+			}
+		}
+		return 0;
+	}
 
 }

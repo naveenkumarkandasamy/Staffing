@@ -22,11 +22,9 @@ public class ShiftCalculator {
 	}
    
 	
-//	public void calculatePhysicianSlotsForAll(int shiftLength, Clinician[] clinicians, double lowerLimitFactor) {
-	public void calculatePhysicianSlotsForAll(int shiftLength, Clinician[] clinicians) {
+	public void calculatePhysicianSlotsForAll(int shiftLength, Clinician[] clinicians, double lowerLimitFactor) {
 		int start = 0;
-		double factor = 0.75;
-//        double factor = lowerLimitFactor;
+        double factor = lowerLimitFactor;
 		// Check every 12 hour slot Eg : 0-12 , 1-13, 2-14 ..... (Assuming numberOfHours
 		// = 12)
 		while (start + shiftLength < wl.getSizeOfArray()) {
@@ -85,10 +83,10 @@ public class ShiftCalculator {
 		}
 
 	}
-//	private double evaluate(String expression, Clinician[] clinicians) {
+//	private double evaluate(String expression, Clinician[] clinicians, int hour) {
 //
 //		String[] elements = expression.split(" ");
-//		int value;
+//		int value = getClinicianCountByName(elements[2], clinicians , hour);
 //		switch (elements[1]) {
 //		case "+":
 //			return Double.parseDouble(elements[0]) + value;
@@ -110,7 +108,7 @@ public class ShiftCalculator {
 				for (int j = 0; j < index; j++) {
 					value += evaluate(clinicians[index].getExpressions()[j],
 							clinicians[j].getClinicianCountPerHour()[hour]);
-//					value += evaluate(clinicians[index].getExpressions()[j],clinicians);
+//					value += evaluate(clinicians[index].getExpressions()[j],clinicians,hour);
 					
 					
 					

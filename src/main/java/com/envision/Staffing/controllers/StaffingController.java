@@ -26,12 +26,12 @@ public class StaffingController {
 
     
     @RequestMapping(value="/shiftPlan", method=RequestMethod.POST)
-    public Output getShiftPlan(@RequestBody Clinician[] clinician) throws IOException {
-    	return shiftPlanningService.getShiftPlan(clinician);   	    	
-    }
-
-//    public Output getShiftPlan(@RequestBody Input input) throws IOException {
-//    	return shiftPlanningService.getShiftPlan(input);   	    	
+//    public Output getShiftPlan(@RequestBody Clinician[] clinician) throws IOException {
+//    	return shiftPlanningService.getShiftPlan(clinician);   	    	
 //    }
+
+    public Output getShiftPlan(@RequestBody Input input) throws IOException {
+    	return shiftPlanningService.getShiftPlan(input);   	    	
+    }
 
 }

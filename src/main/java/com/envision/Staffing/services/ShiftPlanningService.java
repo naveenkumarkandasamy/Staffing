@@ -1,6 +1,7 @@
 package com.envision.Staffing.services;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import com.envision.Staffing.model.Clinician;
+import com.envision.Staffing.model.Day;
 import com.envision.Staffing.model.HourlyDetail;
 import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.Output;
@@ -44,18 +46,18 @@ public class ShiftPlanningService {
 		      lowerLimitFactor = input.getLowerLimitFactor(); 
 		}
 		
-		//testing
-		for(int a : shiftPreferences) {
-		System.out.println(a);
-		}
-		
-		System.out.println("lowerLimitFactor" + lowerLimitFactor);
-		
-		
-		// reading workload from the excel file
-		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
-		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
+			
+//		for(Day each : input.getDayWorkload()) {
+//			System.out.println(each.getName() + " ");
+//			for(Double d : each.getExpectedPatientsPerHour()) {
+//				System.out.println(d +  " ");
+//			}
+//		}
+//		
 
+
+		
+		
 		Workload work = new Workload();
 		// Checking if atleast one clinician is sent and the PatientsPerHour is not
 		// empty, mostly physicians
@@ -63,18 +65,17 @@ public class ShiftPlanningService {
 		if (clinicians[0] != null && clinicians[0].getPatientsPerHour() != null)// try to check for physician
 			work.setDocEfficency(clinicians[0].getPatientsPerHour());
 
-		int k = 0;
-		for (int i = 1; i < 8; i++) {
-			for (int j = 8; j < 32; j++) {
-				// Reading workload from the excel file
-				work.getFixedworkloadArray()[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue()
-						/ work.getDocEfficency();
-				work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k] / work.getDocEfficency();
-				k++;
-			}
+//		assignWorkloadFromFile(work);
+		
+		work = assignWorkloadFromUI(input, work);
+		
+		for(double w:work.getFixedworkloadArray()) {
+			System.out.println(w+" ");
 		}
-		myExcelBook.close();
-
+		
+		for(double we:work.getWorkloadArray()) {
+			System.out.println(we+" ");
+		}
 		int[] totalHours = { 0, 0, 0, 0, 0, 0, 0 };
 		int[] cost = { 0, 0, 0, 0, 0, 0, 0 };
 
@@ -180,6 +181,42 @@ public class ShiftPlanningService {
 		out.setClinicianHourCount(clinicianStartEndCount);
 		
 		return out;
+	}
+
+//	private void assignWorkloadFromFile(Workload work) throws FileNotFoundException, IOException {
+//		// reading workload from the excel file
+//		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
+//		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
+//		int k = 0;
+//		for (int i = 1; i < 8; i++) {
+//			for (int j = 8; j < 32; j++) {
+//				// Reading workload from the excel file
+//				work.getFixedworkloadArray()[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue()
+//						/ work.getDocEfficency();
+//				work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k] / work.getDocEfficency();
+//				k++;
+//			}
+//		}
+//		myExcelBook.close();
+//	}
+
+	private Workload assignWorkloadFromUI(Input input, Workload work) {
+		Day[] day;
+		int k=0;
+//		Day eachDay = new Day();
+		if(input.getDayWorkload() != null) {
+			day = input.getDayWorkload();
+			for(Day eachDay : day) {
+				for(Double patientsPerHour: eachDay.getExpectedPatientsPerHour()) {
+				work.getFixedworkloadArray()[k] = patientsPerHour / work.getDocEfficency();
+				work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k];
+				k++;
+				}
+			}
+			
+		}
+		
+		return work;
 	}
 
 	private void printUtilzationTable(ShiftCalculator shiftCalculator) throws IOException {

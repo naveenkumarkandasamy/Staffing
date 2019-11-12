@@ -98,12 +98,12 @@ public class ShiftPlanningService {
 		List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
 		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians , work.getDocEfficency());
 
-		printShifts(totalHours, cost, dayToshiftsmapping);
+		//printShifts(totalHours, cost, dayToshiftsmapping);
 
-		printCostSummary(totalHours, cost);
+	//	printCostSummary(totalHours, cost);
 		
 		//Calculating costs for each hour
-		calculateHourlyCost(clinicians);
+		//calculateHourlyCost(clinicians);
 		
 		
 		
@@ -111,9 +111,9 @@ public class ShiftPlanningService {
 
 		// Calculation of utilization
 		
-		printUtilizationSummary(shiftCalculator, utilizationArray);
+		//printUtilizationSummary(shiftCalculator, utilizationArray);
 
-		printUtilzationTable(shiftCalculator);
+		//printUtilzationTable(shiftCalculator);
 		
 		//calculating the count of clinicians starting and ending at each hour
 		

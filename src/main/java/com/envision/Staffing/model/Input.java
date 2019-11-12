@@ -5,6 +5,7 @@ public class Input {
 	private Clinician[] clinician; 
 	private int[] shiftLength;
 	private Double lowerLimitFactor;
+	private Day[] dayWorkload;
 	
 	public Clinician[] getClinician() {
 		return clinician;
@@ -24,5 +25,13 @@ public class Input {
 	public void setLowerLimitFactor(double lowerLimitFactor) {
 		this.lowerLimitFactor = lowerLimitFactor;
 	}
+	
+	public Day[] getDayWorkload() {
+		return dayWorkload;
+	}
+	public void setDayWorkload(Day[] dayWorkload) {
+		this.dayWorkload = dayWorkload;
+	}
+	
 	
 }

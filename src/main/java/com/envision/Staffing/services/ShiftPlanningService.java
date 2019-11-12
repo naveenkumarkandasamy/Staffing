@@ -46,18 +46,6 @@ public class ShiftPlanningService {
 		      lowerLimitFactor = input.getLowerLimitFactor(); 
 		}
 		
-			
-//		for(Day each : input.getDayWorkload()) {
-//			System.out.println(each.getName() + " ");
-//			for(Double d : each.getExpectedPatientsPerHour()) {
-//				System.out.println(d +  " ");
-//			}
-//		}
-//		
-
-
-		
-		
 		Workload work = new Workload();
 		// Checking if atleast one clinician is sent and the PatientsPerHour is not
 		// empty, mostly physicians
@@ -65,7 +53,7 @@ public class ShiftPlanningService {
 		if (clinicians[0] != null && clinicians[0].getPatientsPerHour() != null)// try to check for physician
 			work.setDocEfficency(clinicians[0].getPatientsPerHour());
 
-//		assignWorkloadFromFile(work);
+
 		
 		work = assignWorkloadFromUI(input, work);
 		
@@ -183,27 +171,27 @@ public class ShiftPlanningService {
 		return out;
 	}
 
-//	private void assignWorkloadFromFile(Workload work) throws FileNotFoundException, IOException {
-//		// reading workload from the excel file
-//		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
-//		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
-//		int k = 0;
-//		for (int i = 1; i < 8; i++) {
-//			for (int j = 8; j < 32; j++) {
-//				// Reading workload from the excel file
-//				work.getFixedworkloadArray()[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue()
-//						/ work.getDocEfficency();
-//				work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k] / work.getDocEfficency();
-//				k++;
-//			}
-//		}
-//		myExcelBook.close();
-//	}
+	private void assignWorkloadFromFile(Workload work) throws FileNotFoundException, IOException {
+		// reading workload from the excel file
+		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
+		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
+		int k = 0;
+		for (int i = 1; i < 8; i++) {
+			for (int j = 8; j < 32; j++) {
+				// Reading workload from the excel file
+				work.getFixedworkloadArray()[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue()
+						/ work.getDocEfficency();
+				work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k] / work.getDocEfficency();
+				k++;
+			}
+		}
+		myExcelBook.close();
+	}
 
 	private Workload assignWorkloadFromUI(Input input, Workload work) {
 		Day[] day;
 		int k=0;
-//		Day eachDay = new Day();
+
 		if(input.getDayWorkload() != null) {
 			day = input.getDayWorkload();
 			for(Day eachDay : day) {

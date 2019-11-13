@@ -1,16 +1,17 @@
 pipeline {
-   agent  {
-      docker {
-           image 'maven:3-alpine'
-           args '-v /root/.m2:/root/.m2'
-            }
-         }
+   agent  any;
+   tools {
+      maven 'maven 3'
+      jdk 'java 8'
+   }
    stages {
         stage('Build') {
            steps {
-              sh 'mvn -B -DskipTests clean package'
-                 }
-            }
+		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
+			sh "mvn -B -DskipTests clean package";
+		}
+	    }
+         }
 
         stage('Test') {
             steps {
@@ -18,7 +19,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    junit 'target/surefire-reports/*.xml';
                 }
             }
          

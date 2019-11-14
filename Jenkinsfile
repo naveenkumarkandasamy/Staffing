@@ -42,7 +42,9 @@ pipeline {
 	     stage('Building image') {
       steps{
         script {
+		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
           docker.build registry + ":$BUILD_NUMBER"
+		}
         }
       }
     }

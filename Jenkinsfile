@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
            steps {
 		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
-			sh "mvn -B -DskipTests clean package";
+			sh "mvn -B -DskipTests clean install";
 		}
 	    }
          }

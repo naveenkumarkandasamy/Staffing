@@ -63,7 +63,7 @@ pipeline {
 	   
         }
 	   
-	   stage('deploy'){
+	   stage('Deploy'){
 		   steps{
 		   	dir('/home/accoliteadmin/Desktop/Staffing/Staffing'){
 		   		sh deploy.sh

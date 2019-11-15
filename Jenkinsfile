@@ -51,7 +51,7 @@ pipeline {
 	   
 	
    stage('Docker Push') {
-      agent any
+  
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
           

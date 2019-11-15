@@ -49,6 +49,16 @@ pipeline {
       }
     }
 	   
+	
+   stage('Docker Push') {
+      agent any
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'payalmantri10', passwordVariable: 'Gul@221771', usernameVariable: 'payalmantri10')]) {
+          sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+          sh 'docker push payalmantri10/staffing:latest'
+        }
+      }
+	   
 	   
 	   
      } 

@@ -43,7 +43,7 @@ pipeline {
       steps{
         script {
 		
-          docker.build registry + "latest"
+          docker.build registry + ":latest"
 		}
         
       }

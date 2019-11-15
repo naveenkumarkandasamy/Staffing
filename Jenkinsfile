@@ -18,10 +18,10 @@ pipeline {
   
         stage('Build') {
            steps {
-		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
+		
 			sh "mvn -B -DskipTests clean install";
 		}
-	    }
+	    
          }
 
 	   
@@ -42,10 +42,10 @@ pipeline {
 	     stage('Building image') {
       steps{
         script {
-		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
+		
           docker.build registry + ":$BUILD_NUMBER"
 		}
-        }
+        
       }
     }
 	   

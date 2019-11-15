@@ -68,7 +68,7 @@ pipeline {
 		   		sh 'cd /home/accoliteadmin/Desktop/Staffing'
 		   		sh './deploy.sh'
 		   	}
-		   }
+		   
 	   }
      } 
 }  

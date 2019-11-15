@@ -61,7 +61,13 @@ pipeline {
       }
 	   
 	   
-        }	   
+        }
+	   
+	   stage('deploy'){
+		   dir('/home/accoliteadmin/Desktop/Staffing/Staffing'){
+		   	sh deploy.sh
+		   }
+	   }
      } 
 }  
 

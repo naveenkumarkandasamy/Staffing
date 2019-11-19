@@ -41,12 +41,11 @@ pipeline {
 	   
 	     stage('Building image') {
       steps{
-	      dir('/home/accoliteadmin/Desktop/Staffing/Staffing'){
         script {
 		
           docker.build registry + ":latest"
 		}
-	     }
+	     
         
       }
     }

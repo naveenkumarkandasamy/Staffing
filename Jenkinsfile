@@ -1,18 +1,32 @@
 pipeline {
+	
+   environment {
+    registry = "payalmantri10/staffing"
+    registryCredential = 'payalmantri10'
+  }
+	
+	
    agent  any;
    tools {
       maven 'maven 3'
       jdk 'java 8'
    }
+	
    stages {
+	   
+	   
+  
         stage('Build') {
            steps {
-		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
-			sh "mvn -B -DskipTests clean package";
+		
+			sh "mvn -B -DskipTests clean install";
 		}
-	    }
+	    
          }
 
+	   
+	   
+	   
         stage('Test') {
             steps {
                 sh 'mvn test'
@@ -24,8 +38,39 @@ pipeline {
             }
          
          }
+	   
+	     stage('Building image') {
+      steps{
+        script {
+		
+          docker.build registry + ":latest"
+		}
+	     
+        
+      }
+    }
+	   
+	
+   stage('Docker Push') {
+  
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+          
+	  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+          sh 'docker push payalmantri10/staffing:latest'
+        }
+      }
+	   
+	   
+        }
+	   
+	   stage('Deploy'){
+		   steps{
+			   dir('/home/accoliteadmin/Desktop/Staffing/Staffing'){
+		   		sh '/home/accoliteadmin/Desktop/Staffing/deploy.sh'
+			   }
+		   	}
+		   
+	   }
      } 
 }  
-
-
-

@@ -71,6 +71,10 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 				<finalName>Staffing</finalName>
+			         <buildArgs>
+                                 <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                                 </buildArgs>
+ 
 				</configuration>
 			</plugin>
 			

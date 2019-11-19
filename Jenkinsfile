@@ -18,10 +18,10 @@ pipeline {
   
         stage('Build') {
            steps {
-		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
-			sh "mvn -B -DskipTests clean package";
+		
+			sh "mvn -B -DskipTests clean install";
 		}
-	    }
+	    
          }
 
 	   
@@ -42,17 +42,34 @@ pipeline {
 	     stage('Building image') {
       steps{
         script {
-		dir('/home/accoliteadmin/Desktop/Staffing/Staffing') {
-          docker.build registry + ":$BUILD_NUMBER"
+		
+          docker.build registry + ":latest"
 		}
-        }
+        
       }
     }
 	   
+	
+   stage('Docker Push') {
+  
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+          
+	  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+          sh 'docker push payalmantri10/staffing:latest'
+        }
+      }
 	   
 	   
+        }
+	   
+	   stage('Deploy'){
+		   steps{
+			   dir('/home/accoliteadmin/Desktop/Staffing/Staffing'){
+		   		sh '/home/accoliteadmin/Desktop/Staffing/deploy.sh'
+			   }
+		   	}
+		   
+	   }
      } 
 }  
-
-
-

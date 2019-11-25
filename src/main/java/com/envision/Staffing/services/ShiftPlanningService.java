@@ -36,9 +36,9 @@ public class ShiftPlanningService {
 	
 	//function to process form-data containing json object and the workload as an .xlsx file
 	//return the input object
-	public Input processFileInput(MultipartFile excelFile , String jsonPart) throws IOException {
+	public Input processFileInput(MultipartFile excelFile , String inputData) throws IOException {
 	
-		    Input input = new ObjectMapper().readValue(jsonPart, Input.class);
+		    Input input = new ObjectMapper().readValue(inputData, Input.class);
 		 
 	        InputStream excelInput = excelFile.getInputStream();
 	        
@@ -53,13 +53,13 @@ public class ShiftPlanningService {
 				//setting days name as saturday or monday etc
 				
 				workload[i].setName(days[i]);
-				Double[] pph = new Double[24];
+				Double[] personPerHour = new Double[24];
 				for(int j=0;j<=23;j++) {
-					pph[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
+					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
 					
 				}
 				
-				workload[i].setExpectedPatientsPerHour(pph);
+				workload[i].setExpectedPatientsPerHour(personPerHour);
 			}
 			input.setDayWorkload(workload);
 	    	

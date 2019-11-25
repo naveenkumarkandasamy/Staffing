@@ -1,9 +1,8 @@
 package com.envision.Staffing.services;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.Map;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.Day;
@@ -21,6 +21,7 @@ import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.Output;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ShiftPlanningService {
@@ -32,6 +33,46 @@ public class ShiftPlanningService {
 	private	String utilPath = "DCM_OUTPUT/Utilization_Summary.txt";
 	private	String finalCorrectedHours = "DCM_OUTPUT/table.txt";
     
+	
+	//function to process form-data containing json object and the workload as an .xlsx file
+	//return the input object
+	public Input processFileInput(MultipartFile excelFile , String jsonPart) throws IOException {
+	
+		    Input input = new ObjectMapper().readValue(jsonPart, Input.class);
+		 
+	        InputStream excelInput = excelFile.getInputStream();
+	        
+	    	XSSFWorkbook myExcelBook = new XSSFWorkbook(excelInput);
+	    	XSSFSheet myExcelSheet = myExcelBook.getSheetAt(0);
+	    	Day[] workload = new Day[7];
+	    	
+			for(int i=0;i<=6;i++) {
+				
+				workload[i] = new Day();
+				
+				//setting days name as saturday or monday etc
+				
+				workload[i].setName(days[i]);
+				Double[] pph = new Double[24];
+				for(int j=0;j<=23;j++) {
+					pph[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
+					
+				}
+				
+				workload[i].setExpectedPatientsPerHour(pph);
+			}
+			input.setDayWorkload(workload);
+	    	
+	    	
+			myExcelBook.close();
+	    	
+	        
+	        
+		return input;
+	}
+	
+	
+	
 	public Output getShiftPlan(Input input) throws IOException {
 		
 		int[] shiftPreferences = new int[]{12,10,8,4};
@@ -46,28 +87,18 @@ public class ShiftPlanningService {
 		      lowerLimitFactor = input.getLowerLimitFactor(); 
 		}
 		
-			
-//		for(Day each : input.getDayWorkload()) {
-//			System.out.println(each.getName() + " ");
-//			for(Double d : each.getExpectedPatientsPerHour()) {
-//				System.out.println(d +  " ");
-//			}
-//		}
-//		
-
-
-		
 		
 		Workload work = new Workload();
-		// Checking if atleast one clinician is sent and the PatientsPerHour is not
+		// Checking if at least one clinician is sent and the PatientsPerHour is not
 		// empty, mostly physicians
 		// ensure the first clinician is physician
 		if (clinicians[0] != null && clinicians[0].getPatientsPerHour() != null)// try to check for physician
 			work.setDocEfficency(clinicians[0].getPatientsPerHour());
 
-//		assignWorkloadFromFile(work);
-		
-		work = assignWorkloadFromUI(input, work);
+		if(input.getDayWorkload() != null) {
+		work = assignWorkload(input, work);
+		}
+
 		
 		for(double w:work.getFixedworkloadArray()) {
 			System.out.println(w+" ");
@@ -183,27 +214,12 @@ public class ShiftPlanningService {
 		return out;
 	}
 
-//	private void assignWorkloadFromFile(Workload work) throws FileNotFoundException, IOException {
-//		// reading workload from the excel file
-//		XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream("Heapmap_export.xlsx"));
-//		XSSFSheet myExcelSheet = myExcelBook.getSheet("Workload");
-//		int k = 0;
-//		for (int i = 1; i < 8; i++) {
-//			for (int j = 8; j < 32; j++) {
-//				// Reading workload from the excel file
-//				work.getFixedworkloadArray()[k] = myExcelSheet.getRow(j).getCell(i).getNumericCellValue()
-//						/ work.getDocEfficency();
-//				work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k] / work.getDocEfficency();
-//				k++;
-//			}
-//		}
-//		myExcelBook.close();
-//	}
 
-	private Workload assignWorkloadFromUI(Input input, Workload work) {
+
+	private Workload assignWorkload(Input input, Workload work) {
 		Day[] day;
 		int k=0;
-//		Day eachDay = new Day();
+		
 		if(input.getDayWorkload() != null) {
 			day = input.getDayWorkload();
 			for(Day eachDay : day) {
@@ -215,6 +231,8 @@ public class ShiftPlanningService {
 			}
 			
 		}
+		
+	
 		
 		return work;
 	}

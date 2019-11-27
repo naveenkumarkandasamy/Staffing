@@ -3,7 +3,6 @@ package com.envision.Staffing.controllers;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,29 +21,26 @@ public class StaffingController {
 	@Autowired
 	ShiftPlanningService shiftPlanningService;
 
-    @RequestMapping("/")
-    public String index() {
-        return "Greetings from Spring Boot!";
-    }
+	@RequestMapping("/")
+	public String index() {
+		return "Greetings from Spring Boot!";
+	}
 
-    
-    @RequestMapping(value="/shiftPlan", method=RequestMethod.POST)
+	@RequestMapping(value = "/shiftPlan", method = RequestMethod.POST)
 
-    public Output getShiftPlan(@RequestBody Input input) throws IOException {
-    	return shiftPlanningService.getShiftPlan(input);   	    	
-    }
-      
-    
-    
-    @RequestMapping(value = "/shiftPlanFileUpload", method = RequestMethod.POST,  consumes = {"multipart/form-data"})
-    @ResponseBody
-    public Output getShiftPlanFromFile(@RequestPart("workloadExcel") MultipartFile excelFile , @RequestPart("inputData") String inputData ) throws IOException {
+	public Output getShiftPlan(@RequestBody Input input) throws IOException {
+		return shiftPlanningService.getShiftPlan(input);
+	}
 
-    	Input input = shiftPlanningService.processFileInput(excelFile , inputData);        
+	@RequestMapping(value = "/shiftPlanFileUpload", method = RequestMethod.POST, consumes = { "multipart/form-data" })
+	@ResponseBody
+	public Output getShiftPlanFromFile(@RequestPart("workloadExcel") MultipartFile excelFile,
+			@RequestPart("inputData") String inputData) throws IOException {
 
-        return shiftPlanningService.getShiftPlan(input); 
-       
-    
-   }
-    
+		Input input = shiftPlanningService.processFileInput(excelFile, inputData);
+
+		return shiftPlanningService.getShiftPlan(input);
+
+	}
+
 }

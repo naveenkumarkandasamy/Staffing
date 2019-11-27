@@ -92,7 +92,7 @@ public class ShiftCalculator {
 			}
 
 		}
-		// System.out.println("SHOULDN'T COME HERE");
+		
 		return 0;
 	}
 

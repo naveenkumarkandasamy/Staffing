@@ -92,7 +92,7 @@ public class ShiftCalculator {
 			}
 
 		}
-
+		
 		return 0;
 	}
 

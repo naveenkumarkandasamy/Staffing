@@ -1,22 +1,25 @@
 package com.envision.Staffing.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
+@Service
 public class ShiftCalculator {
 
 	Workload wl;
-	MinCostClinicianCalculator minCostClinicianCalculator;
 
 	public void setWorkloads(Workload w) {
 		// Initialize workload array
 		wl = w;
-		minCostClinicianCalculator = new MinCostClinicianCalculator();
 	}
 
 	public void calculatePhysicianSlotsForAll(int shiftLength, Clinician[] clinicians, double lowerLimitFactor) {
@@ -67,7 +70,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private double evaluate(String expression, Clinician[] clinicians, int hour) {
+	public double evaluate(String expression, Clinician[] clinicians, int hour) {
 
 		String[] elements = expression.split(" ");
 		int value = getClinicianCountByName(elements[2], clinicians, hour);
@@ -85,18 +88,18 @@ public class ShiftCalculator {
 	// function to return the count per hour of the clinician specified by the name
 	public int getClinicianCountByName(String name, Clinician[] clinicians, int hour) {
 		if (name != null) {
-			for (Clinician cli : clinicians) {
-				if (name.equalsIgnoreCase(cli.getName())) {
-					return cli.getClinicianCountPerHour()[hour];
-				}
+			Clinician clinician = Arrays.stream(clinicians).filter(p -> name.equalsIgnoreCase(p.getName())).findFirst()
+					.get();
+			if (clinician != null) {
+				return clinician.getClinicianCountPerHour()[hour];
 			}
 
 		}
-		// System.out.println("SHOULDN'T COME HERE");
+		
 		return 0;
 	}
 
-	private boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
+	public boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
 		// if physician, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
 			if (clinicians[index].getName().equalsIgnoreCase("physician"))
@@ -107,7 +110,6 @@ public class ShiftCalculator {
 					double value = 0.0d;
 					for (int j = 0; j < clinicians[index].getExpressions().length; j++) {
 						value += evaluate(clinicians[index].getExpressions()[j], clinicians, hour);
-
 					}
 					if (evaluateFunction(clinicians[index].getClinicianCountPerHour()[hour] + 1, value, ">"))
 						// TODO: handle different operators here instead of '<='
@@ -119,7 +121,7 @@ public class ShiftCalculator {
 		return false;
 	}
 
-	private boolean evaluateFunction(double lefthandValue, double rightHandValue, String operator) {
+	public boolean evaluateFunction(double lefthandValue, double rightHandValue, String operator) {
 		switch (operator) {
 
 		case ">":
@@ -144,19 +146,16 @@ public class ShiftCalculator {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
-
 			double value = wl.getFixedworkloadArray()[j] - wl.getCapacityArray()[j];
 			if (value < 0)
 				value = 0;
+
 			if ((j - start) % wl.getDayDuration() == 0) {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[0], value), 2);
-
 			} else if ((j - start) % wl.getDayDuration() == numberOfHours - 1) {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[2], value), 2);
-
 			} else {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[1], value), 2);
-
 			}
 
 			// Checks if adding a physician is needed
@@ -175,7 +174,6 @@ public class ShiftCalculator {
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
 		while (start < wl.getSizeOfArray()) {
-
 			int j = start;
 
 			// checking for utilization < 1.1 to not add clinicians
@@ -186,8 +184,8 @@ public class ShiftCalculator {
 				for (int i = clinicians.length - 1; i >= 0; i--) {
 					Clinician clinician = getClinicianWithLeastCost(i, clinicians);
 					int tempSlotSize = sizeOfSlot;
-
 					conditionalValue = isConditionStatisfied(clinicians, start, tempSlotSize, i);
+
 					while (conditionalValue) {
 						Shift newShift = getNewShift(sizeOfSlot, start, clinician.getName());
 						addNewShift(start, sizeOfSlot, newShift, clinician.getCapacity(),
@@ -201,14 +199,14 @@ public class ShiftCalculator {
 						break;
 				}
 			}
-
 		}
-
 	}
 
-	private Clinician getClinicianWithLeastCost(int index, Clinician[] clinicians) {
-		// TODO return clinician with ith least cost
-		return clinicians[index];
+	public Clinician getClinicianWithLeastCost(int index, Clinician[] clinicians) {
+		Clinician[] tempArray = Arrays.copyOf(clinicians, clinicians.length);
+		Comparator<Clinician> comparator = Comparator.comparing(Clinician::getCost);
+		Arrays.sort(tempArray, comparator);
+		return tempArray[clinicians.length - index - 1];
 	}
 
 	private void addNewShift(int start, int shiftLength, Shift newShift, double[] capacity, int[] clinicianCounter) {
@@ -269,7 +267,6 @@ public class ShiftCalculator {
 				wl.getCapacityArray()[i] = round(wl.getCapacityArray()[i] + capacity[1], 2);
 			}
 		}
-
 	}
 
 	public double round(double value, int places) {
@@ -301,32 +298,20 @@ public class ShiftCalculator {
 		return dayToShiftMapping;
 	}
 
-	public double[] calculateUtilization() {
-		for (int i = 0; i < wl.getSizeOfArray(); i++) {
-			wl.getUtilizationArray()[i] = (wl.getFixedworkloadArray()[i]) / (wl.getCapacityArray()[i]);
-			System.out.println("UtiLIndex: " + i + " Value :" + wl.getUtilizationArray()[i]);
-		}
-		return wl.getUtilizationArray();
-	}
-
 	public HourlyDetail[] generateHourlyDetail(Clinician[] clinicians, double docEfficiency) {
 		HourlyDetail[] hourlyDetailList = wl.getHourlyDetailList();
 		for (int i = 0; i < 168; i++) {
-
 			// Assuming the order of clinicians is physician, app and scribe
 			hourlyDetailList[i].setNumberOfPhysicians(clinicians[0].getClinicianCountPerHour()[i]);
 			hourlyDetailList[i].setNumberOfAPPs(clinicians[1].getClinicianCountPerHour()[i]);
 			hourlyDetailList[i].setNumberOfScribes(clinicians[2].getClinicianCountPerHour()[i]);
-
 			hourlyDetailList[i].setExpectedWorkLoad(wl.getFixedworkloadArray()[i] * docEfficiency);
 			hourlyDetailList[i].setCapacityWorkLoad(wl.getCapacityArray()[i] * docEfficiency);
 			hourlyDetailList[i].setHour(i);
 			hourlyDetailList[i].setUtilization(wl.getFixedworkloadArray()[i] / wl.getCapacityArray()[i]);
-
 			hourlyDetailList[i].setCostPerHour((clinicians[0].getClinicianCountPerHour()[i] * clinicians[0].getCost())
 					+ (clinicians[1].getClinicianCountPerHour()[i] * clinicians[1].getCost())
 					+ (clinicians[2].getClinicianCountPerHour()[i] * clinicians[2].getCost()));
-
 		}
 		return hourlyDetailList;
 	}

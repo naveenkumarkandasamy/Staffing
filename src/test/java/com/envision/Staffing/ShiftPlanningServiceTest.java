@@ -49,9 +49,9 @@ class ShiftPlanningServiceTest {
 		//Then
 //        assertEquals(43901760, );
 	}
-	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
+//	@Test
+//	void test() {
+//		fail("Not yet implemented");
+//	}
 
 }

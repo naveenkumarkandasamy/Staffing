@@ -92,7 +92,7 @@ public class ShiftCalculator {
 			}
 
 		}
-		
+
 		return 0;
 	}
 
@@ -199,7 +199,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private Clinician getClinicianWithLeastCost(int index, Clinician[] clinicians) {
+	public Clinician getClinicianWithLeastCost(int index, Clinician[] clinicians) {
 		Clinician[] tempArray = Arrays.copyOf(clinicians, clinicians.length);
 		Comparator<Clinician> comparator = Comparator.comparing(Clinician::getCost);
 		Arrays.sort(tempArray, comparator);

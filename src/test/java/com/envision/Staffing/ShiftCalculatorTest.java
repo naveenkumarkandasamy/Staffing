@@ -187,5 +187,45 @@ public class ShiftCalculatorTest{
 		//write assertEquals
 		assertEquals(false , result);
 	}
+	
+	
+	@Test
+	public void testGetClinicianWithLeastCost() throws Throwable {
+		// Given
+		ShiftCalculator testObject = new ShiftCalculator();
+
+		// when
+
+		Clinician[] clinicians = new Clinician[3];
+		for (int i = 0; i < 3; i++) {
+			clinicians[i] = new Clinician();
+		}
+
+		int[] countArray = new int[168];
+		for (int i = 0; i < 168; i++) {
+			countArray[i] = i;
+		}
+		
+		clinicians[0].setName("physician");
+		clinicians[0].setClinicianCountPerHour(countArray);
+		clinicians[0].setCost(100);
+
+		clinicians[1].setName("app");
+		clinicians[1].setClinicianCountPerHour(countArray);
+		clinicians[1].setCost(60);
+		
+		clinicians[2].setName("scribe");
+		clinicians[2].setClinicianCountPerHour(countArray);
+		clinicians[2].setCost(20);
+
+
+		Clinician result = testObject.getClinicianWithLeastCost(clinicians.length-1, clinicians);
+
+		// Then
+		assertEquals("scribe", result.getName());
+
+
+
+	}
 
 }

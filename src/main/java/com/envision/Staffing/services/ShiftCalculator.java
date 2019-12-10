@@ -5,11 +5,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
+@Service
 public class ShiftCalculator {
 
 	Workload wl;

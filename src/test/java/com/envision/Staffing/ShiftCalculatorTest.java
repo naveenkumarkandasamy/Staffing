@@ -1,14 +1,60 @@
 package com.envision.Staffing;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import org.junit.Assert;
+import org.junit.Before;
 //import org.junit.jupiter.api.Test;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.services.ShiftCalculator;
 
-public class ShiftCalculatorTest{
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ShiftCalculatorTest {
+
+	@Autowired
+	ShiftCalculator testObject;
+
+	Clinician[] clinicians;
+
+	@Before
+	public void initializeCliniciansArray() {
+		clinicians = new Clinician[3];
+		for (int i = 0; i < 3; i++) {
+			clinicians[i] = new Clinician();
+		}
+
+		int[] countArray = new int[168];
+		for (int i = 0; i < 168; i++) {
+			countArray[i] = i;
+		}
+
+		clinicians[0].setName("physician");
+		clinicians[0].setClinicianCountPerHour(countArray);
+		clinicians[0].setExpressions(null);
+		clinicians[0].setCost(200);
+
+		clinicians[1].setName("app");
+		clinicians[1].setClinicianCountPerHour(countArray);
+		clinicians[1].setCost(65);
+
+		String[] expressions = new String[1];
+		expressions[0] = "1 * physician";
+		clinicians[1].setExpressions(expressions);
+
+		String[] scribeExpressions = new String[2];
+		scribeExpressions[0] = "1 * physician";
+		scribeExpressions[1] = "1 * app";
+		clinicians[2].setName("scribe");
+		clinicians[2].setClinicianCountPerHour(countArray);
+		clinicians[2].setExpressions(scribeExpressions);
+		clinicians[2].setCost(20);
+		// return clinicians;
+	}
 
 	@Test
 	public void testGetClinicianCountByName() throws Throwable {
@@ -18,214 +64,121 @@ public class ShiftCalculatorTest{
 		// when
 		String name = "physician";
 
-		Clinician[] clinicians = new Clinician[3];
-		for (int i = 0; i < 3; i++) {
-			clinicians[i] = new Clinician();
-		}
-
-		int[] countArray = new int[168];
-		for (int i = 0; i < 168; i++) {
-			countArray[i] = i;
-		}
-		
-		clinicians[0].setName("physician");
-		clinicians[0].setClinicianCountPerHour(countArray);
-
-		clinicians[1].setName("app");
-		clinicians[1].setClinicianCountPerHour(countArray);
-
-		clinicians[2].setName("scribe");
-		clinicians[2].setClinicianCountPerHour(countArray);
+//		Clinician[] clinicians = initializeCliniciansArray();
 
 		int hour = 11;
 
 		int result = testObject.getClinicianCountByName(name, clinicians, hour);
 
 		// Then
-		assertEquals(11, result, 0);
+		Assert.assertEquals(11, result, 0);
 
 		result = testObject.getClinicianCountByName(name, clinicians, 145);
-		assertEquals(145, result, 0);
+		Assert.assertEquals(145, result, 0);
 
 		name = "app";
 
 		result = testObject.getClinicianCountByName(name, clinicians, 65);
-		assertEquals(65, result, 0);
+		Assert.assertEquals(65, result, 0);
 
 		result = testObject.getClinicianCountByName(name, clinicians, 167);
-		assertEquals(167, result, 0);
+		Assert.assertEquals(167, result, 0);
 
 		name = "Scribe";
 		result = testObject.getClinicianCountByName(name, clinicians, 0);
-		assertEquals(0, result, 0);
+		Assert.assertEquals(0, result, 0);
 
 		result = testObject.getClinicianCountByName(name, clinicians, 99);
-		assertEquals(99, result, 0);
+		Assert.assertEquals(99, result, 0);
 
 	}
 
 	@Test
 	public void testMin() throws Throwable {
 		// Given
-		ShiftCalculator testObject = new ShiftCalculator();
 
 		double a = 0.0;
 		double b = 1.2;
 
 		double result = testObject.min(a, b);
-		assertEquals(0.0, result);
+		Assert.assertEquals(0.0, result, 0.001);
 
 		result = testObject.min(2.2, 2.1);
-		assertEquals(2.1, result);
+		Assert.assertEquals(2.1, result, 0.01);
 
 		result = testObject.min(5, 5.1);
-		assertEquals(5.0, result);
+		Assert.assertEquals(5.0, result, 0.01);
 
 		result = testObject.min(10, 20);
-		assertEquals(10, result);
+		Assert.assertEquals(10, result, 0.01);
 
 	}
-	
+
 	@Test
-	public void testEvaluate() throws Throwable{
-		
+	public void testEvaluate() throws Throwable {
+
 		// Given
-		ShiftCalculator testObject = new ShiftCalculator();
-		
+//		ShiftCalculator testObject = new ShiftCalculator();
+
 		String expression = "1 * physician";
 		int hour = 2;
-		
-		Clinician[] clinicians = new Clinician[3];
-		for (int i = 0; i < 3; i++) {
-			clinicians[i] = new Clinician();
-		}
-		
-		int[] countArray = new int[168];
-		for (int i = 0; i < 168; i++) {
-			countArray[i] = i;
-		}
-		
-		clinicians[0].setName("physician");
-		clinicians[0].setClinicianCountPerHour(countArray);
 
-		clinicians[1].setName("app");
-		clinicians[1].setClinicianCountPerHour(countArray);
+		// Clinician[] clinicians = initializeCliniciansArray();
 
-		clinicians[2].setName("scribe");
-		clinicians[2].setClinicianCountPerHour(countArray);
-				
-		double result = testObject.evaluate(expression, clinicians , hour);
-		assertEquals(2, result);
-		
-		expression = "2 * physician" ; 
-		hour =  100;
-		result = testObject.evaluate(expression, clinicians , hour);
-		assertEquals(200, result);
-		
-		expression = "1 * app" ; 
-		hour =  67;
-		result = testObject.evaluate(expression, clinicians , hour);
-		assertEquals(67, result);
-		
-		expression = "2 * app" ; 
-		hour =  43;
-		result = testObject.evaluate(expression, clinicians , hour);
-		assertEquals(86, result);
-		
-		
+		double result = testObject.evaluate(expression, clinicians, hour);
+		Assert.assertEquals(2, result, 0.001);
+
+		expression = "2 * physician";
+		hour = 100;
+		result = testObject.evaluate(expression, clinicians, hour);
+		Assert.assertEquals(200, result, 0.001);
+
+		expression = "1 * app";
+		hour = 67;
+		result = testObject.evaluate(expression, clinicians, hour);
+		Assert.assertEquals(67, result, 0.001);
+
+		expression = "2 * app";
+		hour = 43;
+		result = testObject.evaluate(expression, clinicians, hour);
+		Assert.assertEquals(86, result, 0.001);
 	}
-	
-	
+
 	@Test
-	public void testEvaluateFunction() throws Throwable{
-		//Given
-		ShiftCalculator testObject = new ShiftCalculator();
-		
-		Boolean result = testObject.evaluateFunction(12,10,">");
-		assertEquals(true , result);
-	}
-	
-	
-	@Test
-	public void testIsConditionSatisfied() throws Throwable{
+	public void testEvaluateFunction() throws Throwable {
 		// Given
-		ShiftCalculator testObject = new ShiftCalculator();
-		
-		Clinician[] clinicians = new Clinician[3];
-		for (int i = 0; i < 3; i++) {
-			clinicians[i] = new Clinician();
-		}
-		
-		int[] countArray = new int[168];
-		for (int i = 0; i < 168; i++) {
-			countArray[i] = i;
-		}
-		
-		clinicians[0].setName("physician");
-		clinicians[0].setClinicianCountPerHour(countArray);
-		clinicians[0].setExpressions(null);
+		// ShiftCalculator testObject = new ShiftCalculator();
 
-		clinicians[1].setName("app");
-		clinicians[1].setClinicianCountPerHour(countArray);
-		
-		String[] expressions = new String[1];
-		expressions[0] = "1 * physician";
-		clinicians[1].setExpressions(expressions);
-		
-		String[] scribeExpressions = new String[2];
-		scribeExpressions[0] = "1 * physician";
-		scribeExpressions[1] = "1 * app";
-		clinicians[2].setName("scribe");
-		clinicians[2].setClinicianCountPerHour(countArray);
-		clinicians[2].setExpressions(scribeExpressions);
-		
+		Boolean result = testObject.evaluateFunction(12, 10, ">");
+		Assert.assertEquals(true, result);
+	}
+
+	@Test
+	public void testIsConditionSatisfied() throws Throwable {
+		// Given
+		// ShiftCalculator testObject = new ShiftCalculator();
+
+		// Clinician[] clinicians = initializeCliniciansArray();
+
 		int start = 0;
 		int shiftLength = 4;
 		int index = 1;
-		
 		boolean result = testObject.isConditionStatisfied(clinicians, start, shiftLength, index);
-		//write assertEquals
-		assertEquals(false , result);
+		// write Assert.assertEquals
+		Assert.assertEquals(false, result);
 	}
-	
-	
+
 	@Test
 	public void testGetClinicianWithLeastCost() throws Throwable {
 		// Given
-		ShiftCalculator testObject = new ShiftCalculator();
+//		ShiftCalculator testObject = new ShiftCalculator();
 
 		// when
-
-		Clinician[] clinicians = new Clinician[3];
-		for (int i = 0; i < 3; i++) {
-			clinicians[i] = new Clinician();
-		}
-
-		int[] countArray = new int[168];
-		for (int i = 0; i < 168; i++) {
-			countArray[i] = i;
-		}
-		
-		clinicians[0].setName("physician");
-		clinicians[0].setClinicianCountPerHour(countArray);
-		clinicians[0].setCost(100);
-
-		clinicians[1].setName("app");
-		clinicians[1].setClinicianCountPerHour(countArray);
-		clinicians[1].setCost(60);
-		
-		clinicians[2].setName("scribe");
-		clinicians[2].setClinicianCountPerHour(countArray);
-		clinicians[2].setCost(20);
-
-
-		Clinician result = testObject.getClinicianWithLeastCost(clinicians.length-1, clinicians);
+		// Clinician[] clinicians = initializeCliniciansArray();
+		Clinician result = testObject.getClinicianWithLeastCost(2, clinicians);
 
 		// Then
-		assertEquals("scribe", result.getName());
-
-
-
+		Assert.assertEquals("scribe", result.getName());
 	}
 
 }

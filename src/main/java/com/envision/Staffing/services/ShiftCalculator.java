@@ -67,7 +67,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private double evaluate(String expression, Clinician[] clinicians, int hour) {
+	public double evaluate(String expression, Clinician[] clinicians, int hour) {
 
 		String[] elements = expression.split(" ");
 		int value = getClinicianCountByName(elements[2], clinicians, hour);
@@ -92,11 +92,11 @@ public class ShiftCalculator {
 			}
 
 		}
-		// System.out.println("SHOULDN'T COME HERE");
+		
 		return 0;
 	}
 
-	private boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
+	public boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
 		// if physician, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
 			if (clinicians[index].getName().equalsIgnoreCase("physician"))
@@ -118,7 +118,7 @@ public class ShiftCalculator {
 		return false;
 	}
 
-	private boolean evaluateFunction(double lefthandValue, double rightHandValue, String operator) {
+	public boolean evaluateFunction(double lefthandValue, double rightHandValue, String operator) {
 		switch (operator) {
 
 		case ">":
@@ -199,7 +199,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private Clinician getClinicianWithLeastCost(int index, Clinician[] clinicians) {
+	public Clinician getClinicianWithLeastCost(int index, Clinician[] clinicians) {
 		Clinician[] tempArray = Arrays.copyOf(clinicians, clinicians.length);
 		Comparator<Clinician> comparator = Comparator.comparing(Clinician::getCost);
 		Arrays.sort(tempArray, comparator);

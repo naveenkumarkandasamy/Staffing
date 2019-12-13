@@ -116,8 +116,12 @@ public class ShiftPlanningService {
 
 		ArrayList<Map<Integer, Map<String, Integer>>> clinicianStartEndCount = new ArrayList<>(168);
 
-		String[] clincianCountKeys = { "physicianStart", "physicianEnd", "appStart", "appEnd", "scribeStart",
-				"scribeEnd" };
+		String[] clincianCountKeys = new String[2* clinicians.length];
+		for(int i=0;i<clinicians.length;i++) {
+			clincianCountKeys[2*i] = clinicians[i].getName()+"Start";
+			clincianCountKeys[2*i+1] = clinicians[i].getName()+"End";
+		}
+		
 		for (int i = 0; i < 168; i++) {
 			Map<Integer, Map<String, Integer>> slotMap = new HashMap<>();
 			for (int slot : shiftPreferences) {

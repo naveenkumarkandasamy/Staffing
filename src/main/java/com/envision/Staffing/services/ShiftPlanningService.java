@@ -101,11 +101,11 @@ public class ShiftPlanningService {
 		ShiftCalculator shiftCalculator = new ShiftCalculator();
 		shiftCalculator.setWorkloads(work);
 
-		for (int i : shiftPreferences) {
-			if (i != 4)
-				shiftCalculator.calculatePhysicianSlotsForAll(i, clinicians, lowerLimitFactor);
+		for (int i=0;i< shiftPreferences.length; i++) {
+			if (i != (shiftPreferences.length-1))
+				shiftCalculator.calculatePhysicianSlotsForAll(shiftPreferences[i], clinicians, lowerLimitFactor);
 			else
-				shiftCalculator.calculate4hourslots(clinicians);
+				shiftCalculator.calculate4hourslots(clinicians, shiftPreferences[i]);
 		}
 
 

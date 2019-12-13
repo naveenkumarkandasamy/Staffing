@@ -168,9 +168,8 @@ public class ShiftCalculator {
 		return flag;
 	}
 
-	public void calculate4hourslots(Clinician[] clinicians) {
+	public void calculate4hourslots(Clinician[] clinicians, int sizeOfSlot) {
 		int start = 0;
-		int sizeOfSlot = 4;
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
 		while (start < wl.getSizeOfArray()) {

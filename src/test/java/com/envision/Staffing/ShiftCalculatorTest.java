@@ -156,10 +156,6 @@ public class ShiftCalculatorTest {
 	@Test
 	public void testIsConditionSatisfied() throws Throwable {
 		// Given
-		// ShiftCalculator testObject = new ShiftCalculator();
-
-		// Clinician[] clinicians = initializeCliniciansArray();
-
 		int start = 0;
 		int shiftLength = 4;
 		int index = 1;
@@ -168,6 +164,16 @@ public class ShiftCalculatorTest {
 		Assert.assertEquals(false, result);
 	}
 
+	@Test
+	public void testIsConditionSatisfied_Phyiscian() throws Throwable {
+		// Given
+		int start = 0;
+		int shiftLength = 4;
+		int index = 0;
+		boolean result = testObject.isConditionStatisfied(clinicians, start, shiftLength, index);
+		// write Assert.assertEquals
+		Assert.assertEquals(true, result);
+	}
 	@Test
 	public void testGetClinicianWithLeastCost() throws Throwable {
 		// Given

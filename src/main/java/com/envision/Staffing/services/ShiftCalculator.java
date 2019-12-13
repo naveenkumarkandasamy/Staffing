@@ -102,7 +102,7 @@ public class ShiftCalculator {
 	public boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
 		// if physician, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
-			if (clinicians[index].getName().equalsIgnoreCase("physician"))
+			if (clinicians[index].getName().equalsIgnoreCase(clinicians[0].getName()))
 				return true;
 
 			else {

@@ -17,15 +17,35 @@ public class MultipleAuthProvidersSecurityConfig extends WebSecurityConfigurerAd
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-		auth.authenticationProvider(customAuthProvider);
-		auth.inMemoryAuthentication().withUser("osatadmin").password("{noop}osatadmin123").roles("ADMIN");
+		//auth.authenticationProvider(customAuthProvider);
+		auth.inMemoryAuthentication().withUser("osatadmin").password("{noop}osatadmin123").roles("ADMIN", "USER")
+		.and()
+		.withUser("osatuser").password("{noop}osatuser123").roles("USER");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		
+		http.csrf().disable()
+        .exceptionHandling()
+        .and()
+        .authorizeRequests()
+        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+        .antMatchers("/request").authenticated()
+        .and()
+    .formLogin()
+        .loginProcessingUrl("/login")
+        .permitAll()
+        .usernameParameter("username")
+        .passwordParameter("pass")
+        .successHandler(new MySimpleUrlAuthenticationSuccessHandler())
+       // .failureHandler(new MySimpleUrlAuthenticationSuccessHandler())
+        .and()
+        .httpBasic();
+//    .logout()
+//    .logoutUrl("/logout")
+//    .invalidateHttpSession(true);
 
-		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest()
-				.authenticated().and().httpBasic();
 	}
 
 //    @Bean

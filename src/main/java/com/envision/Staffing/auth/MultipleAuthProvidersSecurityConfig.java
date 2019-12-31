@@ -18,7 +18,7 @@ public class MultipleAuthProvidersSecurityConfig extends WebSecurityConfigurerAd
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
 		//auth.authenticationProvider(customAuthProvider);
-		auth.inMemoryAuthentication().withUser("osatadmin").password("{noop}osatadmin123").roles("ADMIN", "USER")
+		auth.inMemoryAuthentication().withUser("osatadmin").password("{noop}osatadmin123").roles("ADMIN")
 		.and()
 		.withUser("osatuser").password("{noop}osatuser123").roles("USER");
 	}

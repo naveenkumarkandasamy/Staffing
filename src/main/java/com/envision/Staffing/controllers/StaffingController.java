@@ -26,13 +26,13 @@ public class StaffingController {
 		return "Greetings from Spring Boot!";
 	}
 
-	@RequestMapping(value = "/shiftPlan", method = RequestMethod.POST)
+	@RequestMapping(value = "/request/shiftPlan", method = RequestMethod.POST)
 
 	public Output getShiftPlan(@RequestBody Input input) throws IOException {
 		return shiftPlanningService.getShiftPlan(input);
 	}
 
-	@RequestMapping(value = "/shiftPlanFileUpload", method = RequestMethod.POST, consumes = { "multipart/form-data" })
+	@RequestMapping(value = "/request/shiftPlanFileUpload", method = RequestMethod.POST, consumes = { "multipart/form-data" })
 	@ResponseBody
 	public Output getShiftPlanFromFile(@RequestPart("workloadExcel") MultipartFile excelFile,
 			@RequestPart("inputData") String inputData) throws IOException {

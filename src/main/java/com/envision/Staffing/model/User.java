@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity // This tells Hibernate to make a table out of this class
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
 	public User() {

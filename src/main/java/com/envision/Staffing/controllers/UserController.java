@@ -12,7 +12,7 @@ import com.envision.Staffing.model.User;
 import com.envision.Staffing.services.UserService;
 
 @Controller // This means that this class is a Controller
-@RequestMapping(path="/demo") 
+@RequestMapping(path="/users") 
 public class UserController {
 	
 

@@ -4,40 +4,48 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "job_details")
 public class JobDetails {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private String id ;
-	
-	@Column(name="user_id")
+	@GeneratedValue(generator = "uuid")
+	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	private String id;
+
+	@Column(name = "user_id")
 	private String userId;
 
-	@Column(name="shify_length_preferences")
+	@Column(name = "shift_length_preferences")
 	private String shiftLengthPPreferences;
-	
-	@Column(name="lower_utilization_factor")
-	private float lowerUtilizationFactor;
-	
-	@Column(name="upper_utilization_factor")
-	private float upperUtilizationFactor;
-	
-	@Column(name="schedule_datetime")
+
+	@Column(name = "lower_utilization_factor")
+	private Float lowerUtilizationFactor;
+
+	@Column(name = "upper_utilization_factor")
+	private Float upperUtilizationFactor;
+
+	@Column(name = "schedule_datetime")
 	private Date scheduledDate;
-	
-	
-	@Column(name="job_name")
+
+	@Column(name = "job_name")
 	private String name;
-	
-	@Column(name="input_type")
+
+	@Column(name = "input_type")
 	private String inputType;
+
+	@OneToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "input_id", nullable = false)
+	private FtpDetails ftpDetails;
 
 	public String getId() {
 		return id;
@@ -63,19 +71,19 @@ public class JobDetails {
 		this.shiftLengthPPreferences = shiftLengthPPreferences;
 	}
 
-	public float getLowerUtilizationFactor() {
+	public Float getLowerUtilizationFactor() {
 		return lowerUtilizationFactor;
 	}
 
-	public void setLowerUtilizationFactor(float lowerUtilizationFactor) {
+	public void setLowerUtilizationFactor(Float lowerUtilizationFactor) {
 		this.lowerUtilizationFactor = lowerUtilizationFactor;
 	}
 
-	public float getUpperUtilizationFactor() {
+	public Float getUpperUtilizationFactor() {
 		return upperUtilizationFactor;
 	}
 
-	public void setUpperUtilizationFactor(float upperUtilizationFactor) {
+	public void setUpperUtilizationFactor(Float upperUtilizationFactor) {
 		this.upperUtilizationFactor = upperUtilizationFactor;
 	}
 
@@ -102,5 +110,13 @@ public class JobDetails {
 	public void setInputType(String inputType) {
 		this.inputType = inputType;
 	}
-}
 
+	public FtpDetails getFtpDetails() {
+		return ftpDetails;
+	}
+
+	public void setFtpDetails(FtpDetails ftpDetails) {
+		this.ftpDetails = ftpDetails;
+	}
+
+}

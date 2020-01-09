@@ -26,7 +26,7 @@ public class UserService {
 		}
 	}
 
-	public User getUserById(Integer id) {
+	public User getUserById(String id) {
 		Optional<User> user = userRepository.findById(id);
 
 		if (user.isPresent()) {
@@ -52,7 +52,7 @@ public class UserService {
 		}
 	}
 
-	public void deleteUserById(Integer id) {
+	public void deleteUserById(String id) {
 		Optional<User> user = userRepository.findById(id);
 
 		if (user.isPresent()) {

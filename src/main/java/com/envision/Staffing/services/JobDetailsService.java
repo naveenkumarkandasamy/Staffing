@@ -38,17 +38,8 @@ public class JobDetailsService {
 	}
 
 	public JobDetails createOrUpdateJobDetails(JobDetails entity) {
-		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(entity.getId());
-
-		if (jobDetails.isPresent()) {
-			JobDetails newEntity = jobDetails.get();
-			newEntity.setName(entity.getName());
-			newEntity = jobDetailsRepository.save(newEntity);
-			return newEntity;
-		} else {
 			entity = jobDetailsRepository.save(entity);
 			return entity;
-		}
 	}
 
 	public void deleteJobDetailsById(String id) {

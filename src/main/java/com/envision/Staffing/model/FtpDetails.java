@@ -2,14 +2,22 @@ package com.envision.Staffing.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "ftp_details")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FtpDetails {
-	
-	@javax.persistence.Id
-	private String Id;
+	@Id
+	@GeneratedValue(generator = "uuid")
+	@GenericGenerator(name = "uuid", strategy =  "org.hibernate.id.UUIDGenerator")
+	private String id;
 	
 	@Column(name="file_url")
 	private String fileUrl;
@@ -19,11 +27,11 @@ public class FtpDetails {
 	private String password;
 
 	public String getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(String id) {
-		Id = id;
+		this.id = id;
 	}
 
 	public String getFileUrl() {

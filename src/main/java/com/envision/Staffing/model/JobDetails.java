@@ -2,6 +2,7 @@ package com.envision.Staffing.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,20 +14,23 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "job_details")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JobDetails {
 
 	@Id
 	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	@GenericGenerator(name = "uuid", strategy =  "org.hibernate.id.UUIDGenerator")
 	private String id;
 
 	@Column(name = "user_id")
 	private String userId;
 
 	@Column(name = "shift_length_preferences")
-	private String shiftLengthPPreferences;
+	private String shiftLengthPreferences;
 
 	@Column(name = "lower_utilization_factor")
 	private Float lowerUtilizationFactor;
@@ -41,12 +45,12 @@ public class JobDetails {
 	private String name;
 
 	@Column(name = "input_type")
-	private String inputType;
+	private String inputFormat;
 
-	@OneToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "input_id", nullable = false)
+	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade= CascadeType.ALL)
+	@JoinColumn(name = "input_id")
 	private FtpDetails ftpDetails;
-
+	
 	public String getId() {
 		return id;
 	}
@@ -63,12 +67,12 @@ public class JobDetails {
 		this.userId = userId;
 	}
 
-	public String getShiftLengthPPreferences() {
-		return shiftLengthPPreferences;
+	public String getShiftLengthPreferences() {
+		return shiftLengthPreferences;
 	}
 
-	public void setShiftLengthPPreferences(String shiftLengthPPreferences) {
-		this.shiftLengthPPreferences = shiftLengthPPreferences;
+	public void setShiftLengthPreferences(String shiftLengthPreferences) {
+		this.shiftLengthPreferences = shiftLengthPreferences;
 	}
 
 	public Float getLowerUtilizationFactor() {
@@ -103,12 +107,12 @@ public class JobDetails {
 		this.name = name;
 	}
 
-	public String getInputType() {
-		return inputType;
+	public String getInputFormat() {
+		return inputFormat;
 	}
 
-	public void setInputType(String inputType) {
-		this.inputType = inputType;
+	public void setInputFormat(String inputFormat) {
+		this.inputFormat = inputFormat;
 	}
 
 	public FtpDetails getFtpDetails() {
@@ -118,5 +122,6 @@ public class JobDetails {
 	public void setFtpDetails(FtpDetails ftpDetails) {
 		this.ftpDetails = ftpDetails;
 	}
+
 
 }

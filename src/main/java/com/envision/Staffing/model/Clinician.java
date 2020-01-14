@@ -1,20 +1,66 @@
 package com.envision.Staffing.model;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.envision.Staffing.converter.StringListConverter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 //Model to hold data about a clinician
-public class Clinician implements Comparable<Clinician> {
+@Entity
+@Table(name = "clinician_details")
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Clinician implements Comparable<Clinician>, Serializable {
 
-	private int id;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(generator = "uuid")
+	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+	private String id;
+
+	@Column(name = "role")
 	private String name; // clinician description
-	private Double patientsPerHour; //indicates the number of patients the clinician can handle in an hour
-	private double coefficient; //denotes the percentage with respect to physician 
-	private int cost; // cost of each clinician per hour
-	private double[] capacity; // for first hour, mid hour and last hour
-	private int[] clinicianCountPerHour;  
-	private String[] expressions; //expressions to handle the relationships between clinicians 
 
+	@Column(name = "patients_per_hour")
+	private Double patientsPerHour; // indicates the number of patients the clinician can handle in an hour
+
+	@Transient
+	private double coefficient; // denotes the percentage with respect to physician
+
+	@Column(name = "cost_per_hour")
+	private int cost; // cost of each clinician per hour
+
+	@Transient
+	private double[] capacity; // for first hour, mid hour and last hour
+
+	@Transient
+	private int[] clinicianCountPerHour;
+
+	@Transient
 	
-	//constructor
-	public Clinician(int id, String name, Double patientsPerHour, double coefficient, int cost, double[] capacity) {
+	@Column(name="expressions")
+	@Convert(converter = StringListConverter.class)
+	private List<String> expressionsString;
+	
+	@Transient
+	private String[] expressions; // expressions to handle the relationships between clinicians
+
+	// constructor
+	public Clinician(String id, String name, Double patientsPerHour, double coefficient, int cost, double[] capacity) {
 		this.id = id;
 		this.name = name;
 		this.patientsPerHour = patientsPerHour;
@@ -23,13 +69,12 @@ public class Clinician implements Comparable<Clinician> {
 		this.capacity = capacity;
 	}
 
-	
-	//getters and setters for each field
-	public int getId() {
+	// getters and setters for each field
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -93,14 +138,21 @@ public class Clinician implements Comparable<Clinician> {
 		super();
 	}
 
-	//overriding compare to function, to provide sort on clinician objects based on the clinician's cost in ascending order
+	// overriding compare to function, to provide sort on clinician objects based on
+	// the clinician's cost in ascending order
 	public int compareTo(Clinician cli) {
 		int comparecost = cli.getCost();
 		// ascending order
 		return this.cost - comparecost;
 
 	}
-	
-	
-	
+
+	public List<String> getExpressionsString() {
+		return expressionsString;
+	}
+
+	public void setExpressionsString(List<String> expressionsString) {
+		this.expressionsString = expressionsString;
+	}
+
 }

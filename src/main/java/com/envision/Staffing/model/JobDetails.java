@@ -1,6 +1,8 @@
 package com.envision.Staffing.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -9,6 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -19,11 +23,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "job_details")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class JobDetails {
+public class JobDetails implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy =  "org.hibernate.id.UUIDGenerator")
+	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
 	private String id;
 
 	@Column(name = "user_id")
@@ -47,10 +56,18 @@ public class JobDetails {
 	@Column(name = "input_type")
 	private String inputFormat;
 
-	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade= CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "input_id")
-	private FtpDetails ftpDetails;
-	
+	private FtpDetails inputFtpDetails;
+
+	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+	@JoinColumn(name = "output_id")
+	private FtpDetails outputFtpDetails;
+
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "job_id", referencedColumnName = "id")
+	public List<Clinician> clinicians;
+
 	public String getId() {
 		return id;
 	}
@@ -115,13 +132,28 @@ public class JobDetails {
 		this.inputFormat = inputFormat;
 	}
 
-	public FtpDetails getFtpDetails() {
-		return ftpDetails;
+	public FtpDetails getInputFtpDetails() {
+		return inputFtpDetails;
 	}
 
-	public void setFtpDetails(FtpDetails ftpDetails) {
-		this.ftpDetails = ftpDetails;
+	public void setInputFtpDetails(FtpDetails inputFtpDetails) {
+		this.inputFtpDetails = inputFtpDetails;
 	}
 
+	public FtpDetails getOutputFtpDetails() {
+		return outputFtpDetails;
+	}
+
+	public void setOutputFtpDetails(FtpDetails outputFtpDetails) {
+		this.outputFtpDetails = outputFtpDetails;
+	}
+
+	public List<Clinician> getClinicians() {
+		return clinicians;
+	}
+
+	public void setClinicians(List<Clinician> clinicians) {
+		this.clinicians = clinicians;
+	}
 
 }

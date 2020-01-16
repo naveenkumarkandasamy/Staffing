@@ -53,16 +53,24 @@ public class JobDetails implements Serializable {
 	@Column(name = "job_name")
 	private String name;
 
-	@Column(name = "input_type")
+	@Column(name = "input_format")
 	private String inputFormat;
 
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
-	@JoinColumn(name = "input_id")
+	@JoinColumn(name = "input_ftp_id")
 	private FtpDetails inputFtpDetails;
+	
+	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+	@JoinColumn(name = "input_file_id")
+	private FileDetails inputFileDetails; 
 
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
-	@JoinColumn(name = "output_id")
+	@JoinColumn(name = "output_ftp_id")
 	private FtpDetails outputFtpDetails;
+	
+
+	@Column(name = "output_format")
+	private String outputFormat;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "job_id", referencedColumnName = "id")
@@ -154,6 +162,22 @@ public class JobDetails implements Serializable {
 
 	public void setClinicians(List<Clinician> clinicians) {
 		this.clinicians = clinicians;
+	}
+
+	public FileDetails getInputFileDetails() {
+		return inputFileDetails;
+	}
+
+	public void setInputFileDetails(FileDetails inputFileDetails) {
+		this.inputFileDetails = inputFileDetails;
+	}
+
+	public String getOutputFormat() {
+		return outputFormat;
+	}
+
+	public void setOutputFormat(String outputFormat) {
+		this.outputFormat = outputFormat;
 	}
 
 }

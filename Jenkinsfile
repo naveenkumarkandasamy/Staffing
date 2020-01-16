@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
            steps {
 		
-			sh "mvn -B -DskipTests clean install";
+			sh "mvn -B -DskipTests -P prod clean install";
 		}
 	    
          }

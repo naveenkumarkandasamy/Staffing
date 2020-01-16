@@ -2,41 +2,63 @@ package com.envision.Staffing.model;
 
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@Entity // This tells Hibernate to make a table out of this class
+@Table(name = "users")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-	
-	private String userName;
-	
 
-	private String status;
-	
-	private Set<String> roles;
-
-	public User(String status) {
-		this.status = status;
+	public User() {
+		super();
 	}
 
-	
-	public User(String userName, Set<String> roles) {
+	@Transient
+	private Set<String> roles;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private String id;
+
+	private String name;
+
+	private String email;
+
+	public User(String name, Set<String> roles) {
 		super();
-		this.userName = userName;
+		this.name = name;
 		this.roles = roles;
 	}
 
-
-	public String getStatus() {
-		return status;
+	public String getId() {
+		return id;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getName() {
+		return name;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public Set<String> getRoles() {

@@ -53,7 +53,6 @@ public class ShiftPlanningService {
 
 			}
 
-
 			workload[i].setExpectedPatientsPerHour(personPerHour);
 		}
 		input.setDayWorkload(workload);
@@ -101,27 +100,25 @@ public class ShiftPlanningService {
 		ShiftCalculator shiftCalculator = new ShiftCalculator();
 		shiftCalculator.setWorkloads(work);
 
-		for (int i=0;i< shiftPreferences.length; i++) {
-			if (i != (shiftPreferences.length-1))
+		for (int i = 0; i < shiftPreferences.length; i++) {
+			if (i != (shiftPreferences.length - 1))
 				shiftCalculator.calculatePhysicianSlotsForAll(shiftPreferences[i], clinicians, lowerLimitFactor);
 			else
 				shiftCalculator.calculate4hourslots(clinicians, shiftPreferences[i]);
 		}
 
-
-		List<List<Shift>> dayToshiftsmapping = shiftCalculator.printSlots();
 		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians, work.getDocEfficency());
 
 		// calculating the count of clinicians starting and ending at each hour
 
 		ArrayList<Map<Integer, Map<String, Integer>>> clinicianStartEndCount = new ArrayList<>(168);
 
-		String[] clincianCountKeys = new String[2* clinicians.length];
-		for(int i=0;i<clinicians.length;i++) {
-			clincianCountKeys[2*i] = clinicians[i].getName()+"Start";
-			clincianCountKeys[2*i+1] = clinicians[i].getName()+"End";
+		String[] clincianCountKeys = new String[2 * clinicians.length];
+		for (int i = 0; i < clinicians.length; i++) {
+			clincianCountKeys[2 * i] = clinicians[i].getName() + "Start";
+			clincianCountKeys[2 * i + 1] = clinicians[i].getName() + "End";
 		}
-		
+
 		for (int i = 0; i < 168; i++) {
 			Map<Integer, Map<String, Integer>> slotMap = new HashMap<>();
 			for (int slot : shiftPreferences) {
@@ -189,43 +186,9 @@ public class ShiftPlanningService {
 				}
 			}
 
-
 		}
 
 		return work;
 	}
-
-
-
-	private void calculateHourlyCost(Clinician[] clinicians) {
-		int[] hourlyCost = new int[168];
-		int[] dayCost = new int[7];
-		int weeklyCost = 0;
-		int dayCostCounter = -1;
-		for (int i = 0; i < 168; i++) {
-
-			if (i % 24 == 0) {
-				if (dayCostCounter != -1)
-					System.out.println("Day Cost " + dayCost[dayCostCounter]);
-				dayCostCounter += 1;
-				System.out.println("Day " + dayCostCounter);
-
-			}
-			hourlyCost[i] = (clinicians[0].getClinicianCountPerHour()[i] * clinicians[0].getCost())
-					+ (clinicians[1].getClinicianCountPerHour()[i] * clinicians[1].getCost())
-					+ (clinicians[2].getClinicianCountPerHour()[i] * clinicians[2].getCost());
-			System.out.println("Hour " + i + " Cost " + hourlyCost[i]);
-			dayCost[dayCostCounter] += hourlyCost[i];
-
-			weeklyCost += hourlyCost[i];
-		}
-
-		System.out.println("Weekly cost " + weeklyCost);
-	}
-	
-	
-	
-	
-
 
 }

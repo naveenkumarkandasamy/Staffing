@@ -13,6 +13,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.envision.Staffing.converter.DoubleArrayToStringConverter;
 import com.envision.Staffing.converter.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -44,23 +45,22 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 	@Column(name = "cost_per_hour")
 	private int cost; // cost of each clinician per hour
 
-	@Transient
-	private double[] capacity; // for first hour, mid hour and last hour
+	@Column(name = "capacity")
+	@Convert(converter = DoubleArrayToStringConverter.class)
+	private Double[] capacity; // for first hour, mid hour and last hour
 
 	@Transient
 	private int[] clinicianCountPerHour;
 
-	@Transient
-	
-	@Column(name="expressions")
+	@Column(name = "expressions")
 	@Convert(converter = StringListConverter.class)
 	private List<String> expressionsString;
-	
+
 	@Transient
 	private String[] expressions; // expressions to handle the relationships between clinicians
 
 	// constructor
-	public Clinician(String id, String name, Double patientsPerHour, double coefficient, int cost, double[] capacity) {
+	public Clinician(String id, String name, Double patientsPerHour, double coefficient, int cost, Double[] capacity) {
 		this.id = id;
 		this.name = name;
 		this.patientsPerHour = patientsPerHour;
@@ -110,11 +110,11 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 		this.cost = cost;
 	}
 
-	public double[] getCapacity() {
+	public Double[] getCapacity() {
 		return capacity;
 	}
 
-	public void setCapacity(double[] capacity) {
+	public void setCapacity(Double[] capacity) {
 		this.capacity = capacity;
 	}
 

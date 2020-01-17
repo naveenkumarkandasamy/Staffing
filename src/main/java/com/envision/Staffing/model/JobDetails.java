@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -59,15 +58,14 @@ public class JobDetails implements Serializable {
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "input_ftp_id")
 	private FtpDetails inputFtpDetails;
-	
+
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "input_file_id")
-	private FileDetails inputFileDetails; 
+	private FileDetails inputFileDetails;
 
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "output_ftp_id")
 	private FtpDetails outputFtpDetails;
-	
 
 	@Column(name = "output_format")
 	private String outputFormat;

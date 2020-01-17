@@ -7,18 +7,23 @@ import java.util.List;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-@Converter
+import org.springframework.stereotype.Component;
+
+@Component
+@Converter(autoApply = false)
 public class StringListConverter implements AttributeConverter<List<String>, String> {
 
 	@Override
 	public String convertToDatabaseColumn(List<String> list) {
-		 // Java 8
-	    return String.join(",", list); 
+		return String.join(",", list);
 	}
 
 	@Override
 	public List<String> convertToEntityAttribute(String dbData) {
-		 return new ArrayList<>(Arrays.asList(dbData.split(",")));
+		if (dbData != null)
+			return new ArrayList<>(Arrays.asList(dbData.split(",")));
+		else
+			return new ArrayList<String>();
 	}
 
 }

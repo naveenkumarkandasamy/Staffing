@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.JobDetails;
 import com.envision.Staffing.repository.JobDetailsRepository;
 
@@ -38,8 +39,8 @@ public class JobDetailsService {
 	}
 
 	public JobDetails createOrUpdateJobDetails(JobDetails entity) {
-			entity = jobDetailsRepository.save(entity);
-			return entity;
+		entity = jobDetailsRepository.save(entity);
+		return entity;
 	}
 
 	public void deleteJobDetailsById(String id) {

@@ -142,7 +142,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, double[] physicianCapacity) {
+	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
@@ -208,7 +208,7 @@ public class ShiftCalculator {
 		return tempArray[clinicians.length - index - 1];
 	}
 
-	private void addNewShift(int start, int shiftLength, Shift newShift, double[] capacity, int[] clinicianCounter) {
+	private void addNewShift(int start, int shiftLength, Shift newShift, Double[] capacity, int[] clinicianCounter) {
 		// A 12 hour slot can be added
 		if (start + shiftLength > wl.getSizeOfArray()) {
 			shiftLength = wl.getSizeOfArray() - start;
@@ -238,7 +238,7 @@ public class ShiftCalculator {
 		return newShift;
 	}
 
-	public void calculateNewWorkloads(int start, int end, double[] capacity) {
+	public void calculateNewWorkloads(int start, int end, Double[] capacity) {
 		// Reduces the workloads as per the capacities of each physician per hour
 		for (int i = start; i < end; i++) {
 			if (i == start) {
@@ -253,7 +253,7 @@ public class ShiftCalculator {
 
 	}
 
-	public void calculateCapacities(int start, int end, double[] capacity) {
+	public void calculateCapacities(int start, int end, Double[] capacity) {
 		for (int i = start; i < end; i++) {
 			if (i == start) {
 				wl.getCapacityArray()[i] = round(wl.getCapacityArray()[i] + capacity[0], 2);

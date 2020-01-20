@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -25,6 +26,47 @@ public class FtpDetails {
 	private String username;
 	
 	private String password;
+	
+	@Transient
+	private String host;
+	
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getDirPath() {
+		return dirPath;
+	}
+
+	public void setDirPath(String dirPath) {
+		this.dirPath = dirPath;
+	}
+
+	@Transient
+	private String fileName;
+	
+	@Transient
+	private String dirPath;
+	
+
+	public FtpDetails(String fileUrl, String username, String password) {
+		super();
+		this.fileUrl = fileUrl;
+		this.username = username;
+		this.password = password;
+	}
 
 	public String getId() {
 		return id;

@@ -8,8 +8,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name="file_details")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileDetails {
 	
 	@Id

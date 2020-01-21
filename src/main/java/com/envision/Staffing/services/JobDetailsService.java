@@ -37,7 +37,10 @@ public class JobDetailsService {
 		}
 	}
 
-	public JobDetails createOrUpdateJobDetails(JobDetails entity) {
+	public JobDetails createOrUpdateJobDetails(JobDetails entity, byte[] fileData) {
+		if (entity.getInputFormat().equals("DATA_FILE")) {
+			entity.getInputFileDetails().setDataFile(fileData);
+		}
 		entity = jobDetailsRepository.save(entity);
 		return entity;
 	}

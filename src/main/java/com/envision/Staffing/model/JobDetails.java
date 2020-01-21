@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,9 +18,10 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.envision.Staffing.converter.DoubleArrayToStringConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Entity 
 @Table(name = "job_details")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JobDetails implements Serializable {
@@ -38,7 +40,8 @@ public class JobDetails implements Serializable {
 	private String userId;
 
 	@Column(name = "shift_length_preferences")
-	private String shiftLengthPreferences;
+	@Convert(converter = DoubleArrayToStringConverter.class)
+	private Double[] shiftLengthPreferences; // for first hour, mid hour and last hour
 
 	@Column(name = "lower_utilization_factor")
 	private Float lowerUtilizationFactor;
@@ -72,7 +75,7 @@ public class JobDetails implements Serializable {
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "job_id", referencedColumnName = "id")
-	public List<Clinician> clinicians;
+	private List<Clinician> clinicians;
 
 	public String getId() {
 		return id;
@@ -90,11 +93,11 @@ public class JobDetails implements Serializable {
 		this.userId = userId;
 	}
 
-	public String getShiftLengthPreferences() {
+	public Double[] getShiftLengthPreferences() {
 		return shiftLengthPreferences;
 	}
 
-	public void setShiftLengthPreferences(String shiftLengthPreferences) {
+	public void setShiftLengthPreferences(Double[] shiftLengthPreferences) {
 		this.shiftLengthPreferences = shiftLengthPreferences;
 	}
 

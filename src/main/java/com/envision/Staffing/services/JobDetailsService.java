@@ -15,6 +15,9 @@ public class JobDetailsService {
 
 	@Autowired
 	private JobDetailsRepository jobDetailsRepository;
+	
+	@Autowired
+	private QuartzSchedulerService quartzSchedulerService;
 
 	public List<JobDetails> getAllJobDetails() {
 		List<JobDetails> jobDetailsList = (List<JobDetails>) jobDetailsRepository.findAll();
@@ -42,8 +45,10 @@ public class JobDetailsService {
 			entity.getInputFileDetails().setDataFile(fileData);
 		}
 		entity = jobDetailsRepository.save(entity);
+	//	quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
 		return entity;
 	}
+
 
 	public void deleteJobDetailsById(String id) {
 		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(id);

@@ -3,6 +3,7 @@ package com.envision.Staffing.converter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -24,7 +25,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
 	@Override
 	public List<String> convertToEntityAttribute(String dbData) {
 		if (dbData != null)
-			return new ArrayList<>(Arrays.asList(dbData.split(",")));
+			return Arrays.stream(dbData.split(",")).map(String::trim).collect(Collectors.toList());
 		else
 			return new ArrayList<String>();
 	}

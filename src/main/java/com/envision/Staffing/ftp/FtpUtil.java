@@ -1,11 +1,11 @@
 package com.envision.Staffing.ftp;
 
 import com.envision.Staffing.model.FtpDetails;
+import com.envision.Staffing.model.Output;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,9 +15,11 @@ import org.apache.commons.net.ftp.FTPReply;
 
 public class FtpUtil {
 
-	public static FtpDetails fieldExtraction(FtpDetails ftpDetails, boolean download) {
+	public static FtpDetails fieldExtraction(FtpDetails ftpDetails) {
 
-		String ftpUrl = ftpDetails.getFileUrl();		
+		String ftpUrl = ftpDetails.getFileUrl();	
+		
+		// Host Name
 		Pattern hostPattern = Pattern.compile("(ftp|sftp)://[^/]*/");
 		Matcher hostMatcher = hostPattern.matcher(ftpUrl);
 		if (hostMatcher.find()) {
@@ -27,20 +29,21 @@ public class FtpUtil {
 			ftpDetails.setHost(match);
 		}
 
+		// Directory Name
 		Pattern dirPattern = Pattern.compile("[/][^:.]+/");
 		Matcher dirMatcher = dirPattern.matcher(ftpUrl);
 		if (dirMatcher.find()) {
 			ftpDetails.setDirPath(dirMatcher.group(0));
 		}
-
-		if(download = false) {
-			Pattern fileNamePattern = Pattern.compile("[/][^/:.]+[.][^:/.0-9]+");
-			Matcher fileMatcher = fileNamePattern.matcher(ftpUrl);
-			while (fileMatcher.find()) {
-				ftpDetails.setFileName(fileMatcher.group(0));
-			}
-			ftpDetails.setFileName(ftpDetails.getFileName().substring(1));
-			}
+		
+		// File Name 
+		Pattern fileNamePattern = Pattern.compile("[/][^/:.]+[.][^:/.0-9]+");
+		Matcher fileMatcher = fileNamePattern.matcher(ftpUrl);
+		while (fileMatcher.find()) {
+			ftpDetails.setFileName(fileMatcher.group(0));
+		}
+		ftpDetails.setFileName(ftpDetails.getFileName().substring(1));
+			
 		return ftpDetails;
 	}
 
@@ -53,7 +56,6 @@ public class FtpUtil {
 
 		try {
 //			ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
-
 			int reply;
 			ftp.connect(host, port);
 			ftp.login(username, password);
@@ -72,23 +74,20 @@ public class FtpUtil {
 		return ftp;
 	}
 
-	public static boolean downloadFile(String ftpUrl, String username, String password, String localDirPath) {
+	public static InputStream downloadFile(String ftpUrl, String username, String password) {
 		FtpDetails ftpDetails = new FtpDetails(ftpUrl, username, password);
-		ftpDetails = FtpUtil.fieldExtraction(ftpDetails, true);
+		ftpDetails = FtpUtil.fieldExtraction(ftpDetails);
 		
 		String dirPath = ftpDetails.getDirPath();
 		String fileName = ftpDetails.getFileName();
-		boolean flag = false;
-
 		FTPClient ftp = connect(ftpDetails);
-
+		
+		InputStream in = null;
 		if (ftp.isConnected()) {
 			try {
-				FileOutputStream fos = new FileOutputStream(localDirPath + fileName);
-				ftp.retrieveFile(dirPath + fileName, fos);
-				flag = true;
-
+				in = ftp.retrieveFileStream(dirPath + fileName);
 //				System.out.println("FTP File downloaded successfully");
+				
 				if (ftp.isConnected()) {
 					ftp.logout();
 					ftp.disconnect();
@@ -97,26 +96,26 @@ public class FtpUtil {
 				e.printStackTrace();
 			}
 		}
-		return flag;
+		return in;
 	}
 
-	public static boolean uploadFile(String ftpUrl, String username, String password, String localFilePath,
-			String remoteFileName) {
+	public static boolean uploadFile(String ftpUrl, String username, String password, Output output) {
 		FtpDetails ftpDetails = new FtpDetails(ftpUrl, username, password);
-		ftpDetails = FtpUtil.fieldExtraction(ftpDetails, false);
+		ftpDetails = FtpUtil.fieldExtraction(ftpDetails);
 		
 		String remoteDirPath = ftpDetails.getDirPath();
-		String fileName = remoteFileName;
-
+		String remoteFileName = ftpDetails.getFileName();
+		
+		
 		boolean flag = false;
 
 		FTPClient ftp = connect(ftpDetails);
-
 		if (ftp.isConnected()) {
-			try {
-				FileInputStream input = new FileInputStream(new File(localFilePath));
-				ftp.storeFile(remoteDirPath + fileName, input);
-				input.close();
+			try {				
+				ObjectOutputStream oos = new ObjectOutputStream(ftp.storeFileStream(remoteDirPath + remoteFileName));
+				oos.writeObject(output);
+				
+				oos.close();
 				flag = true;
 //				System.out.println("Upload Successful");
 
@@ -128,5 +127,4 @@ public class FtpUtil {
 		}
 		return flag;
 	}
-	
 }

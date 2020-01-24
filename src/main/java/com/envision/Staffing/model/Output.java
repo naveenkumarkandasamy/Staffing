@@ -1,11 +1,12 @@
 package com.envision.Staffing.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 //Model to combine the fields to be sent to the output
-public class Output {
+public class Output implements Serializable{
 
     
 	private HourlyDetail[] hourlyDetail;

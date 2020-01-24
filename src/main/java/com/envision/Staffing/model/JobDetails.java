@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.envision.Staffing.converter.DoubleArrayToStringConverter;
+import com.envision.Staffing.converter.IntegerArrayToStringConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity 
@@ -40,8 +41,8 @@ public class JobDetails implements Serializable {
 	private String userId;
 
 	@Column(name = "shift_length_preferences")
-	@Convert(converter = DoubleArrayToStringConverter.class)
-	private Double[] shiftLengthPreferences; // for first hour, mid hour and last hour
+	@Convert(converter = IntegerArrayToStringConverter.class)
+	private Integer[] shiftLengthPreferences; // for first hour, mid hour and last hour
 
 	@Column(name = "lower_utilization_factor")
 	private Float lowerUtilizationFactor;
@@ -93,11 +94,11 @@ public class JobDetails implements Serializable {
 		this.userId = userId;
 	}
 
-	public Double[] getShiftLengthPreferences() {
+	public Integer[] getShiftLengthPreferences() {
 		return shiftLengthPreferences;
 	}
 
-	public void setShiftLengthPreferences(Double[] shiftLengthPreferences) {
+	public void setShiftLengthPreferences(Integer[] shiftLengthPreferences) {
 		this.shiftLengthPreferences = shiftLengthPreferences;
 	}
 

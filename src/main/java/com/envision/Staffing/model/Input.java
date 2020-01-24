@@ -3,7 +3,7 @@ package com.envision.Staffing.model;
 public class Input {
 
 	private Clinician[] clinician;
-	private int[] shiftLength;
+	private Integer[] shiftLength;
 	private Double lowerLimitFactor;
 	private Day[] dayWorkload;
 
@@ -15,11 +15,11 @@ public class Input {
 		this.clinician = clinician;
 	}
 
-	public int[] getShiftLength() {
+	public Integer[] getShiftLength() {
 		return shiftLength;
 	}
 
-	public void setShiftLength(int[] shiftLength) {
+	public void setShiftLength(Integer[] shiftLength) {
 		this.shiftLength = shiftLength;
 	}
 

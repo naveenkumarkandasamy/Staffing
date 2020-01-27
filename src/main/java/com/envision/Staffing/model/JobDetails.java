@@ -58,6 +58,9 @@ public class JobDetails implements Serializable {
 
 	@Column(name = "input_format")
 	private String inputFormat;
+	
+	@Column(name = "cron_expression")
+	private String cronExpression;
 
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "input_ftp_id")
@@ -180,6 +183,14 @@ public class JobDetails implements Serializable {
 
 	public void setOutputFormat(String outputFormat) {
 		this.outputFormat = outputFormat;
+	}
+
+	public String getCronExpression() {
+		return cronExpression;
+	}
+
+	public void setCronExpression(String cronExpression) {
+		this.cronExpression = cronExpression;
 	}
 
 }

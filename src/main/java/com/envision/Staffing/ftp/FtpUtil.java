@@ -74,8 +74,7 @@ public class FtpUtil {
 		return ftp;
 	}
 
-	public static InputStream downloadFile(String ftpUrl, String username, String password) {
-		FtpDetails ftpDetails = new FtpDetails(ftpUrl, username, password);
+	public static InputStream downloadFile(FtpDetails ftpDetails) {
 		ftpDetails = FtpUtil.fieldExtraction(ftpDetails);
 		
 		String dirPath = ftpDetails.getDirPath();
@@ -99,25 +98,23 @@ public class FtpUtil {
 		return in;
 	}
 
-	public static boolean uploadFile(String ftpUrl, String username, String password, Output output) {
-		FtpDetails ftpDetails = new FtpDetails(ftpUrl, username, password);
+	public static boolean uploadFile(FtpDetails ftpDetails, String jsonString) {
 		ftpDetails = FtpUtil.fieldExtraction(ftpDetails);
 		
 		String remoteDirPath = ftpDetails.getDirPath();
 		String remoteFileName = ftpDetails.getFileName();
-		
 		
 		boolean flag = false;
 
 		FTPClient ftp = connect(ftpDetails);
 		if (ftp.isConnected()) {
 			try {				
+				
 				ObjectOutputStream oos = new ObjectOutputStream(ftp.storeFileStream(remoteDirPath + remoteFileName));
-				oos.writeObject(output);
+				oos.writeBytes(jsonString);
 				
 				oos.close();
 				flag = true;
-//				System.out.println("Upload Successful");
 
 				ftp.logout();
 				ftp.disconnect();

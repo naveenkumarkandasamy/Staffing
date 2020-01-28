@@ -45,7 +45,7 @@ public class JobDetailsService {
 			entity.getInputFileDetails().setDataFile(fileData);
 		}
 		entity = jobDetailsRepository.save(entity);
-	//	quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
+		quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
 		return entity;
 	}
 

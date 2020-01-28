@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.envision.Staffing.model.JobDetails;
 import com.envision.Staffing.services.WorkflowService;
 
-@SpringBootApplication
+//@SpringBootApplication
 public class AutorunTest implements CommandLineRunner{
 	
 	@Autowired
@@ -20,8 +20,9 @@ public class AutorunTest implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		
-		String jobId = "666d4d29-1bb4-4256-90fa-2dd870f96f6d";
-		JobDetails jobDetails = workflowService.autorunWorkflowService("666d4d29-1bb4-4256-90fa-2dd870f96f6d");
+//		String jobId = "666d4d29-1bb4-4256-90fa-2dd870f96f6d";
+		String jobId = "5318a8aa-721b-4015-8fde-3d457f925946";
+		JobDetails jobDetails = workflowService.autorunWorkflowService(jobId);
 	}
 
 }

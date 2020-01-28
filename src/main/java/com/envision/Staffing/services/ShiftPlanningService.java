@@ -98,14 +98,6 @@ public class ShiftPlanningService {
 			work = assignWorkload(input, work);
 		}
 
-		for (double w : work.getFixedworkloadArray()) {
-			System.out.println(w + " ");
-		}
-
-		for (double we : work.getWorkloadArray()) {
-			System.out.println(we + " ");
-		}
-
 		for (int i = 0; i < clinicians.length; i++) {
 			clinicians[i].setClinicianCountPerHour(new int[168]);
 		}

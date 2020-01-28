@@ -36,7 +36,7 @@ public class JobDetails implements Serializable {
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
 	private String id;
-
+	
 	@Column(name = "user_id")
 	private String userId;
 

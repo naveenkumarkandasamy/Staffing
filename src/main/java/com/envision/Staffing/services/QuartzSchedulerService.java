@@ -12,6 +12,7 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.envision.Staffing.job.AutorunJob;
 import com.envision.Staffing.job.EmailJob;
 import com.envision.Staffing.model.JobDetails;
 
@@ -39,7 +40,7 @@ public class QuartzSchedulerService {
 
 	        jobDataMap.put("jobId", jobDetails.getId());
 
-	        return JobBuilder.newJob(EmailJob.class) // TODO: Change to respective class when added
+	        return JobBuilder.newJob(AutorunJob.class) // TODO: Change to respective class when added
 	                .withIdentity(jobDetails.getId())
 	                .withDescription(jobDetails.getName())
 	                .usingJobData(jobDataMap)

@@ -35,49 +35,125 @@ public class WorkflowService {
 	@Autowired
 	private EmailService emailService;
 	
-	public JobDetails autorunWorkflowService(String jobId){
-		JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
+	private InputStream getInputDataStreamFromAutorunJobDetails(JobDetails jobDetails) {
 		String inputType = jobDetails.getInputFormat();
-		String fileExtension;
-		InputStream ftpInputStream;
 		
 		if(inputType.contentEquals("FTP_URL")) {
 			FtpDetails inputFtpDetails = jobDetails.getInputFtpDetails();
+			InputStream ftpInputStream= FtpUtil.downloadFile(inputFtpDetails);	
+			return ftpInputStream;
+		}
+		else { // if(inputType.contentEquals("DATA_FILE"))
+			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile() ;
+			InputStream fileInputStream = new ByteArrayInputStream(inputFile);
+			return fileInputStream;
+		}
+	}
+	
+//	private 
+	
+	private String getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails) throws IOException {
+		String inputType = jobDetails.getInputFormat();
+		String fileExtension;
+		String jsonStr;
+		if(inputType.contentEquals("FTP_URL")) {
 			fileExtension = FilenameUtils.getExtension(jobDetails.getInputFtpDetails().getFileUrl());
-			ftpInputStream= FtpUtil.downloadFile(inputFtpDetails);			
 		}
 		else {
-			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile() ;
-			ftpInputStream = new ByteArrayInputStream(inputFile);
-			fileExtension = "xlsx"; // ***			
+			fileExtension = "xlsx"; // ***
 		}
-
-		if(fileExtension.contentEquals("xlsx")) { // only allow if file is Excel Sheet
-				Input input = shiftPlannerSerivce.processFtpInput(ftpInputStream, jobDetails);
-			try {
-				Output output = shiftPlannerSerivce.getShiftPlan(input);
-				ObjectMapper Obj = new ObjectMapper();
-				String jsonStr = Obj.writeValueAsString(output);
-				String outputType = jobDetails.getOutputFormat();
-				
-				if(outputType.contentEquals("FTP_URL")) {
-					FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
-					if(FtpUtil.uploadFile(outputFtpDetails, jsonStr) == true) {
-						System.out.println("Job created successfully with Job Name: "+ jobDetails.getName());
-					}
-				}
-				else{
-					emailService.sendMail("gundla.sushant@gmail.com", "WorkflowTest-1", "--Successfull--", jsonStr);
-					System.out.println("Output to Email");
-					System.out.println("Job created successfully with Job Name: "+ jobDetails.getName());
-				}
-				
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		if(fileExtension.contentEquals("xlsx")) {
+			Input input = shiftPlannerSerivce.processFtpInput(inputStream, jobDetails);
+			Output output = shiftPlannerSerivce.getShiftPlan(input);
+			ObjectMapper Obj = new ObjectMapper();
+			jsonStr = Obj.writeValueAsString(output);
 		}
-		return jobDetails;
+		else {
+			jsonStr = "";
+			System.out.println("Given file is not an Excel file");
+		}
+		return jsonStr;
+	}
+	
+	private void sendOutput(JobDetails jobDetails, String jsonStr) {
+		String outputType = jobDetails.getOutputFormat();
+		String email = "gundla.sushant@gmail.com"; // *** jobDetails.getEmail();
+		if(outputType.contentEquals("FTP_URL")) {
+			sendOutputToEmail(jsonStr, email);
+		}
+		else{
+			putOutputStringToFtpUrl(jsonStr, jobDetails);
+		}
+	}
+	
+	private void sendOutputToEmail(String jsonStr, String email) {
+		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", jsonStr);
+	}
+	
+	private void putOutputStringToFtpUrl(String jsonStr, JobDetails jobDetails) {
+		FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
+		FtpUtil.uploadFile(outputFtpDetails, jsonStr);
+	}
+	
+	public void autorunWorkflowService(String jobId){
+		
+		try {
+			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
+		
+			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
+			
+			String outputJsonString = getOutputStringFromInputStream(inputStream, jobDetails);
+			
+			sendOutput(jobDetails, outputJsonString);
+			
+			System.out.println("Job: "+ jobDetails.getName() + " successfully executed ");
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+			
+//		JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
+//		String inputType = jobDetails.getInputFormat();
+//		
+//		InputStream ftpInputStream;
+//		
+//		if(inputType.contentEquals("FTP_URL")) {
+//			FtpDetails inputFtpDetails = jobDetails.getInputFtpDetails();
+//			fileExtension = FilenameUtils.getExtension(jobDetails.getInputFtpDetails().getFileUrl());
+//			ftpInputStream= FtpUtil.downloadFile(inputFtpDetails);			
+//		}
+//		else {
+//			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile() ;
+//			ftpInputStream = new ByteArrayInputStream(inputFile);
+//						
+//		}
+//
+//		if(fileExtension.contentEquals("xlsx")) { // only allow if file is Excel Sheet
+//				Input input = shiftPlannerSerivce.processFtpInput(ftpInputStream, jobDetails);
+//			try {
+//				Output output = shiftPlannerSerivce.getShiftPlan(input);
+//				ObjectMapper Obj = new ObjectMapper();
+//				String jsonStr = Obj.writeValueAsString(output);
+//				String outputType = jobDetails.getOutputFormat();
+//				
+//				if(outputType.contentEquals("FTP_URL")) {
+//					FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
+//					if(FtpUtil.uploadFile(outputFtpDetails, jsonStr) == true) {
+//						System.out.println("Job: "+ jobDetails.getName() + " successfully executed ");
+//					}
+//				}
+//				else{
+//					emailService.sendMail("gundla.sushant@gmail.com", "WorkflowTest-1", "--Successfull--", jsonStr);
+//					System.out.println("Job: "+ jobDetails.getName() + " successfully executed ");
+//				}
+//				
+//				
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return jobDetails;
 		
 	}
 }

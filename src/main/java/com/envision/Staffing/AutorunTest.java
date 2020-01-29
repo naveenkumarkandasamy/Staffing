@@ -22,7 +22,7 @@ public class AutorunTest implements CommandLineRunner{
 		
 //		String jobId = "666d4d29-1bb4-4256-90fa-2dd870f96f6d";
 		String jobId = "5318a8aa-721b-4015-8fde-3d457f925946";
-		JobDetails jobDetails = workflowService.autorunWorkflowService(jobId);
+		workflowService.autorunWorkflowService(jobId);
 	}
 
 }

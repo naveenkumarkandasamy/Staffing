@@ -37,6 +37,28 @@ public class JobDetails implements Serializable {
 	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
 	private String id;
 	
+	@Column(name = "email_id")
+	private String outputEmailId;
+	
+	@Column(name = "status")
+	private String status;
+	
+	public String getOutputEmailId() {
+		return outputEmailId;
+	}
+
+	public void setOutputEmailId(String outputEmailId) {
+		this.outputEmailId = outputEmailId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	@Column(name = "user_id")
 	private String userId;
 

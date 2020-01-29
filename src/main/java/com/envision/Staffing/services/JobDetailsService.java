@@ -30,14 +30,15 @@ public class JobDetailsService {
 	}
 
 	public JobDetails getJobDetailsById(String id) {
-		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(id);
-
-		if (jobDetails.isPresent()) {
-			return jobDetails.get();
-		} else {
-			return null;
-			// throw new RecordNotFoundException("No jobDetails record exist for given id");
-		}
+		JobDetails jobDetails = jobDetailsRepository.getByIdLeftJoin(id);
+		return jobDetails;
+//
+//		if (jobDetails.isPresent()) {
+//			return jobDetails.get();
+//		} else {
+//			return null;
+//			// throw new RecordNotFoundException("No jobDetails record exist for given id");
+	//	}
 	}
 
 	public JobDetails createOrUpdateJobDetails(JobDetails entity, byte[] fileData) {

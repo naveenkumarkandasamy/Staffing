@@ -46,7 +46,7 @@ public class JobDetailsService {
 			entity.getInputFileDetails().setDataFile(fileData);
 		}
 		entity = jobDetailsRepository.save(entity);
-		if(entity.getStatus() == "SCHEDULED") {
+		if(entity.getStatus().equals("SCHEDULED")) {
 			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
 		}
 		return entity;

@@ -77,8 +77,8 @@ public class WorkflowService {
 	
 	private void sendOutput(JobDetails jobDetails, String jsonStr) {
 		String outputType = jobDetails.getOutputFormat();
-		String email = jobDetails.getOutputEmailId();
-		if(outputType.contentEquals("FTP_URL")) {
+		if(outputType.contentEquals("EMAIL")) {
+			String email = jobDetails.getOutputEmailId();
 			sendOutputToEmail(jsonStr, email);
 		}
 		else{

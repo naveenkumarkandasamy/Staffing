@@ -15,6 +15,9 @@ public class JobDetailsService {
 
 	@Autowired
 	private JobDetailsRepository jobDetailsRepository;
+	
+	@Autowired
+	private QuartzSchedulerService quartzSchedulerService;
 
 	public List<JobDetails> getAllJobDetails() {
 		List<JobDetails> jobDetailsList = (List<JobDetails>) jobDetailsRepository.findAll();
@@ -27,14 +30,15 @@ public class JobDetailsService {
 	}
 
 	public JobDetails getJobDetailsById(String id) {
-		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(id);
-
-		if (jobDetails.isPresent()) {
-			return jobDetails.get();
-		} else {
-			return null;
-			// throw new RecordNotFoundException("No jobDetails record exist for given id");
-		}
+		JobDetails jobDetails = jobDetailsRepository.getByIdLeftJoin(id);
+		return jobDetails;
+//
+//		if (jobDetails.isPresent()) {
+//			return jobDetails.get();
+//		} else {
+//			return null;
+//			// throw new RecordNotFoundException("No jobDetails record exist for given id");
+	//	}
 	}
 
 	public JobDetails createOrUpdateJobDetails(JobDetails entity, byte[] fileData) {
@@ -42,8 +46,12 @@ public class JobDetailsService {
 			entity.getInputFileDetails().setDataFile(fileData);
 		}
 		entity = jobDetailsRepository.save(entity);
+		if(entity.getStatus().equals("SCHEDULED")) {
+			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
+		}
 		return entity;
 	}
+
 
 	public void deleteJobDetailsById(String id) {
 		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(id);

@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.envision.Staffing.converter.DoubleArrayToStringConverter;
+import com.envision.Staffing.converter.IntegerArrayToStringConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity 
@@ -35,13 +36,35 @@ public class JobDetails implements Serializable {
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
 	private String id;
+	
+	@Column(name = "email_id")
+	private String outputEmailId;
+	
+	@Column(name = "status")
+	private String status;
+	
+	public String getOutputEmailId() {
+		return outputEmailId;
+	}
+
+	public void setOutputEmailId(String outputEmailId) {
+		this.outputEmailId = outputEmailId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	@Column(name = "user_id")
 	private String userId;
 
 	@Column(name = "shift_length_preferences")
-	@Convert(converter = DoubleArrayToStringConverter.class)
-	private Double[] shiftLengthPreferences; // for first hour, mid hour and last hour
+	@Convert(converter = IntegerArrayToStringConverter.class)
+	private Integer[] shiftLengthPreferences; // for first hour, mid hour and last hour
 
 	@Column(name = "lower_utilization_factor")
 	private Float lowerUtilizationFactor;
@@ -57,6 +80,9 @@ public class JobDetails implements Serializable {
 
 	@Column(name = "input_format")
 	private String inputFormat;
+	
+	@Column(name = "cron_expression")
+	private String cronExpression;
 
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "input_ftp_id")
@@ -93,11 +119,11 @@ public class JobDetails implements Serializable {
 		this.userId = userId;
 	}
 
-	public Double[] getShiftLengthPreferences() {
+	public Integer[] getShiftLengthPreferences() {
 		return shiftLengthPreferences;
 	}
 
-	public void setShiftLengthPreferences(Double[] shiftLengthPreferences) {
+	public void setShiftLengthPreferences(Integer[] shiftLengthPreferences) {
 		this.shiftLengthPreferences = shiftLengthPreferences;
 	}
 
@@ -179,6 +205,14 @@ public class JobDetails implements Serializable {
 
 	public void setOutputFormat(String outputFormat) {
 		this.outputFormat = outputFormat;
+	}
+
+	public String getCronExpression() {
+		return cronExpression;
+	}
+
+	public void setCronExpression(String cronExpression) {
+		this.cronExpression = cronExpression;
 	}
 
 }

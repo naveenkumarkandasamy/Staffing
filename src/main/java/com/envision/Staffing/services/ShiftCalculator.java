@@ -108,8 +108,8 @@ public class ShiftCalculator {
 			else {
 				for (int hour = start; hour < start + shiftLength && hour < 168; hour++) {
 					double value = 0.0d;
-					for (int j = 0; j < clinicians[index].getExpressions().length; j++) {
-						value += evaluate(clinicians[index].getExpressions()[j], clinicians, hour);
+					for (int j = 0; j < clinicians[index].getExpressions().size(); j++) {
+						value += evaluate(clinicians[index].getExpressions().get(j), clinicians, hour);
 					}
 					if (evaluateFunction(clinicians[index].getClinicianCountPerHour()[hour] + 1, value, ">"))
 						// TODO: handle different operators here instead of '<='

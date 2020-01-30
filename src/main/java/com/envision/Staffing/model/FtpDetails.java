@@ -30,6 +30,12 @@ public class FtpDetails {
 	@Transient
 	private String host;
 	
+	@Transient
+	private String fileName;
+	
+	@Transient
+	private String dirPath;
+	
 	public String getHost() {
 		return host;
 	}
@@ -53,12 +59,10 @@ public class FtpDetails {
 	public void setDirPath(String dirPath) {
 		this.dirPath = dirPath;
 	}
-
-	@Transient
-	private String fileName;
 	
-	@Transient
-	private String dirPath;
+	public FtpDetails() {
+		super();
+	}
 	
 
 	public FtpDetails(String fileUrl, String username, String password) {

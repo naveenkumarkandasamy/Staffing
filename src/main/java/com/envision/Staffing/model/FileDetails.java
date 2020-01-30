@@ -20,6 +20,17 @@ public class FileDetails {
 	@GenericGenerator(name = "uuid", strategy =  "org.hibernate.id.UUIDGenerator")
 	private String id;
 	
+	@Column(name = "file_extension")
+	private String fileExtension;
+	
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
+
 	public String getId() {
 		return id;
 	}

@@ -52,12 +52,13 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 	@Transient
 	private int[] clinicianCountPerHour;
 
+	@Transient
+	private List<String> expressionsString;
+	
+	
 	@Column(name = "expressions")
 	@Convert(converter = StringListConverter.class)
-	private List<String> expressionsString;
-
-	@Transient
-	private String[] expressions; // expressions to handle the relationships between clinicians
+	private  List<String> expressions; // expressions to handle the relationships between clinicians
 
 	// constructor
 	public Clinician(String id, String name, Double patientsPerHour, double coefficient, int cost, Double[] capacity) {
@@ -125,17 +126,25 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 	public void setClinicianCountPerHour(int[] clinicianCountPerHour) {
 		this.clinicianCountPerHour = clinicianCountPerHour;
 	}
-
-	public String[] getExpressions() {
-		return expressions;
-	}
-
-	public void setExpressions(String[] expressions) {
-		this.expressions = expressions;
-	}
+//
+//	public String[] getExpressions() {
+//		return expressions;
+//	}
+//
+//	public void setExpressions(String[] expressions) {
+//		this.expressions = expressions;
+//	}
 
 	public Clinician() {
 		super();
+	}
+
+	public List<String> getExpressions() {
+		return expressions;
+	}
+
+	public void setExpressions(List<String> expressions) {
+		this.expressions = expressions;
 	}
 
 	// overriding compare to function, to provide sort on clinician objects based on

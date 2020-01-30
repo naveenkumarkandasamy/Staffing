@@ -1,8 +1,10 @@
 package com.envision.Staffing.model;
 
+import java.io.Serializable;
+
 //model to hold the hourly details containing the hour and the count of clinicians
 //in each hour, count of clinicians starting their shifts and ending their shifts
-public class HourlyDetail {
+public class HourlyDetail implements Serializable {
 
 	private Integer hour; //denotes the hour [0-167]
 

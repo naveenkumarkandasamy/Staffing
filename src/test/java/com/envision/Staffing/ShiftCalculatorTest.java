@@ -1,5 +1,8 @@
 package com.envision.Staffing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 //import org.junit.jupiter.api.Test;
@@ -42,13 +45,13 @@ public class ShiftCalculatorTest {
 		clinicians[1].setClinicianCountPerHour(countArray);
 		clinicians[1].setCost(65);
 
-		String[] expressions = new String[1];
-		expressions[0] = "1 * physician";
-		clinicians[1].setExpressions(expressions);
+		List<String> appExpressions = new ArrayList<>();
+		appExpressions.add("1 * physician");
+		clinicians[1].setExpressions(appExpressions);
 
-		String[] scribeExpressions = new String[2];
-		scribeExpressions[0] = "1 * physician";
-		scribeExpressions[1] = "1 * app";
+		List<String> scribeExpressions = new ArrayList<>();
+		scribeExpressions.add("1 * physician");
+		scribeExpressions.add("1 * app");
 		clinicians[2].setName("scribe");
 		clinicians[2].setClinicianCountPerHour(countArray);
 		clinicians[2].setExpressions(scribeExpressions);
@@ -174,6 +177,7 @@ public class ShiftCalculatorTest {
 		// write Assert.assertEquals
 		Assert.assertEquals(true, result);
 	}
+
 	@Test
 	public void testGetClinicianWithLeastCost() throws Throwable {
 		// Given

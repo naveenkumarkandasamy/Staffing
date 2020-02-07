@@ -176,7 +176,7 @@ public class ShiftCalculator {
 			int j = start;
 
 			// checking for utilization < 1.1 to not add clinicians
-			if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1) {
+			if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1) { // ***
 				start = start + 1;
 			} else {
 				boolean conditionalValue = true;

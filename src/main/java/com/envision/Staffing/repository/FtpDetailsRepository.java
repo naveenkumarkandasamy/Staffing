@@ -7,18 +7,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.envision.Staffing.model.JobDetails;
+import com.envision.Staffing.model.FtpDetails;
 
 @Repository
-public interface JobDetailsRepository extends CrudRepository<JobDetails, String> {
-
-	@Query("Select j from JobDetails j LEFT JOIN j.inputFtpDetails ifd LEFT JOIN j.outputFtpDetails ofD LEFT JOIN j.inputFileDetails iflD LEFT JOIN j.clinicians c  Where j.id=:id")
-	JobDetails getByIdLeftJoin(@Param("id") String id);
-	
+public interface FtpDetailsRepository extends CrudRepository<FtpDetails, String> {	
 	
 	@Modifying(clearAutomatically = true)
 	@Transactional
-	@Query("delete from JobDetails j where j.id=:id")
+	@Query("delete from FtpDetails f where f.id=:id")
 	void deleteJobDetailById(@Param("id") String id);
 	
 }

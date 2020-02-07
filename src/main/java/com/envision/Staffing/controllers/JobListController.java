@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.envision.Staffing.model.Response;
 import com.envision.Staffing.services.JobListService;
 
 @Controller
@@ -24,9 +25,12 @@ public class JobListController {
 
 	@PostMapping(path= "/delete")
 	@ResponseBody
-	public String deleteJob(@RequestBody String jobId) throws IOException {
+	public Response deleteJob(@RequestBody String jobId) throws IOException {
 			
-		jobListService.deleteJobById(jobId);		
-		return "Delted";
+		jobListService.deleteJobById(jobId);	
+		
+		Response response = new Response();
+		response.setMessage("Deleted");
+		return response;
 	}
 }

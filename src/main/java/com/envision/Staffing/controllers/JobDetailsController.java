@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.envision.Staffing.model.JobDetails;
+import com.envision.Staffing.model.Response;
 import com.envision.Staffing.services.JobDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,14 +25,27 @@ public class JobDetailsController {
 
 	@RequestMapping(path = "/add", method = RequestMethod.POST, consumes = { "multipart/form-data" })
 	@ResponseBody
-	public String addNewJobDetails(@RequestPart(required = false) MultipartFile file,
+	public Response addNewJobDetails(@RequestPart(required = false) MultipartFile file,
 			@RequestPart("input") String input) throws IOException {
 		JobDetails jobDetails = new ObjectMapper().readValue(input, JobDetails.class);
 		if (file != null && jobDetails != null)
 			jobDetailsService.createOrUpdateJobDetails(jobDetails, file.getBytes());
 		else
 			jobDetailsService.createOrUpdateJobDetails(jobDetails, null);
-		return "Saved";
+		
+		Response response = new Response();
+		if (jobDetails.getStatus().contentEquals("SCHEDULED")) {
+			response.setMessage("Successfully schedules Job: "+jobDetails.getName());
+		}
+		else {
+			if(jobDetails.getName().contentEquals("")) {
+				response.setMessage("Successfully saved job as draft");
+		      }
+			else{
+				response.setMessage("Successfully saved " + jobDetails.getName() + " as draft");
+		      }
+		}		
+		return response;
 	}
 
 	@GetMapping(path = "/all")

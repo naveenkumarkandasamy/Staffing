@@ -41,7 +41,7 @@ public class ShiftCalculator {
 																									// expressions
 				do {
 					Shift newShift = getNewShift(shiftLength, start, clinician.getName());
-					flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity());// checks for
+					flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity());// `checks for
 																											// utilization
 					if (flag == 1 && conditionalValue) { // add clinician and check with next
 						addNewShift(start, shiftLength, newShift, clinician.getCapacity(),

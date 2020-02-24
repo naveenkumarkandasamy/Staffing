@@ -259,10 +259,9 @@ public class ShiftCalculator {
 				wl.getCapacityArray()[i] = round(wl.getCapacityArray()[i] + capacity[0], 2);
 			}
 
-			else if (i == end - 1) {				wl.getCapacityArray()[i] = round(wl.getCapacityArray()[i] + capacity[0], 2);
-
+			else if (i == end - 1) {			
 				wl.getCapacityArray()[i] = round(wl.getCapacityArray()[i] + capacity[2], 2);
-
+				
 			} else {
 				wl.getCapacityArray()[i] = round(wl.getCapacityArray()[i] + capacity[1], 2);
 			}

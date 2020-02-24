@@ -15,7 +15,7 @@ public class JobDetailsService {
 
 	@Autowired
 	private JobDetailsRepository jobDetailsRepository;
-	
+
 	@Autowired
 	private QuartzSchedulerService quartzSchedulerService;
 
@@ -38,20 +38,24 @@ public class JobDetailsService {
 //		} else {
 //			return null;
 //			// throw new RecordNotFoundException("No jobDetails record exist for given id");
-	//	}
+		// }
 	}
 
 	public JobDetails createOrUpdateJobDetails(JobDetails entity, byte[] fileData) {
 		if (entity.getInputFormat().equals("DATA_FILE")) {
 			entity.getInputFileDetails().setDataFile(fileData);
 		}
-		entity = jobDetailsRepository.save(entity);
-		if(entity.getStatus().equals("SCHEDULED")) {
+		if (entity.getId() != null) {
+			JobDetails jobdetails = jobDetailsRepository.getByIdLeftJoin(entity.getId());
+			entity = jobDetailsRepository.save((JobDetails) entity);
+		} else {
+			entity = jobDetailsRepository.save(entity);
+		}
+		if (entity.getStatus().equals("SCHEDULED")) {
 			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
 		}
 		return entity;
 	}
-
 
 	public void deleteJobDetailsById(String id) {
 		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(id);
@@ -61,6 +65,17 @@ public class JobDetailsService {
 		} else {
 			// throw new RecordNotFoundException("No jobDetails record exist for given id");
 		}
+	}
+
+	public JobDetails UpdateJobDetails(JobDetails entity, byte[] fileData) {
+		if (entity.getInputFormat().equals("DATA_FILE")) {
+			entity.getInputFileDetails().setDataFile(fileData);
+		}
+		entity = jobDetailsRepository.save(entity);
+		if (entity.getStatus().equals("SCHEDULED")) {
+			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
+		}
+		return entity;
 	}
 
 }

@@ -67,15 +67,4 @@ public class JobDetailsService {
 		}
 	}
 
-	public JobDetails UpdateJobDetails(JobDetails entity, byte[] fileData) {
-		if (entity.getInputFormat().equals("DATA_FILE")) {
-			entity.getInputFileDetails().setDataFile(fileData);
-		}
-		entity = jobDetailsRepository.save(entity);
-		if (entity.getStatus().equals("SCHEDULED")) {
-			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
-		}
-		return entity;
-	}
-
 }

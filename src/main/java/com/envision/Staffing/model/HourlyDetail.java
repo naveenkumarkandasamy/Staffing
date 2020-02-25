@@ -132,4 +132,11 @@ public class HourlyDetail implements Serializable {
 		this.costPerHour = costPerHour;
 	}
 
+	@Override
+	public String toString() {
+		return "HourlyDetail [hour=" + hour + ", numberOfPhysicians=" + numberOfPhysicians + ", numberOfAPPs="
+				+ numberOfAPPs + ", numberOfScribes=" + numberOfScribes +  ", capacityWorkLoad=" + capacityWorkLoad + ", utilization=" + utilization
+				+ ", costPerHour=" + costPerHour + "]";
+	}
+
 }

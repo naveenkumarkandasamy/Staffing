@@ -1,0 +1,11 @@
+Cost Summary
+-------------------------------------------------
+Day | Clinician | Total Hours | Total Cost (in $)
+-------------------------------------------------
+Sunday | Physician | 136 | 43520
+Monday | Physician | 116 | 37120
+Tuesday | Physician | 140 | 44800
+Wednesday | Physician | 124 | 39680
+Thursday | Physician | 116 | 37120
+Friday | Physician | 76 | 24320
+Saturday | Physician | 24 | 7680

@@ -1,17 +1,15 @@
-package com.envision.Staffing.services;
 
+package com.envision.Staffing.services;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.Day;
 import com.envision.Staffing.model.HourlyDetail;
@@ -22,7 +20,7 @@ import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Service
+@Service	
 public class ShiftPlanningService {
 
 	private String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
@@ -37,6 +35,7 @@ public class ShiftPlanningService {
 		input.setDayWorkload(getDataFromExcelFile(ftpInputStream));
 		return input;
 	}
+	
 	
 	// function to process form-data containing json object and the workload as an
 	// .xlsx file
@@ -88,16 +87,17 @@ public class ShiftPlanningService {
 		}
 
 		Workload work = new Workload();
+		
 		// Checking if at least one clinician is sent and the PatientsPerHour is not
 		// empty, mostly physicians
 		// ensure the first clinician is physician
 		if (clinicians[0] != null && clinicians[0].getPatientsPerHour() != null)// try to check for physician
 			work.setDocEfficency(clinicians[0].getPatientsPerHour());
-
+		
 		if (input.getDayWorkload() != null) {
 			work = assignWorkload(input, work);
 		}
-
+		
 		for (int i = 0; i < clinicians.length; i++) {
 			clinicians[i].setClinicianCountPerHour(new int[168]);
 		}
@@ -109,10 +109,11 @@ public class ShiftPlanningService {
 			if (i != (shiftPreferences.length - 1))
 				shiftCalculator.calculatePhysicianSlotsForAll(shiftPreferences[i], clinicians, lowerLimitFactor);
 			else
+				
 				shiftCalculator.calculate4hourslots(clinicians, shiftPreferences[i]);
 		}
 
-		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians, work.getDocEfficency());
+		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians, work.getDocEfficency(),lowerLimitFactor);
 
 		// calculating the count of clinicians starting and ending at each hour
 
@@ -126,7 +127,7 @@ public class ShiftPlanningService {
 
 		for (int i = 0; i < 168; i++) {
 			Map<Integer, Map<String, Integer>> slotMap = new HashMap<>();
-			for (int slot : shiftPreferences) {
+			for (int slot =1;slot<=12;slot++) {
 
 				Map<String, Integer> clinicianMap = new HashMap<>();
 				for (String clinicianKey : clincianCountKeys) {
@@ -135,8 +136,9 @@ public class ShiftPlanningService {
 
 				}
 				slotMap.put(slot, clinicianMap);
-
+              
 			}
+
 
 			clinicianStartEndCount.add(slotMap);
 
@@ -144,17 +146,23 @@ public class ShiftPlanningService {
 
 		List<List<Shift>> dayToshiftsmappingTemp = shiftCalculator.printSlots();
 		for (int i = 0; i < 7; i++) {
-
+            System.out.println(days[i]);
 			for (Shift s : dayToshiftsmappingTemp.get(i)) {
+				
 				Map<Integer, Map<String, Integer>> slotMapTemp = clinicianStartEndCount
 						.get(s.getStartTime() + (i * 24));
 				Map<String, Integer> clinicianMapTempStart = slotMapTemp.get(s.getNoOfHours());
-
-				clinicianMapTempStart.put(s.getPhysicianType() + "Start",
+            
+            	clinicianMapTempStart.put(s.getPhysicianType() + "Start",
 						clinicianMapTempStart.get(s.getPhysicianType() + "Start") + 1);
 				slotMapTemp.put(s.getNoOfHours(), clinicianMapTempStart);
 				clinicianStartEndCount.set(s.getStartTime() + (i * 24), slotMapTemp);
-
+				
+				
+		System.out.print("["+(s.getStartTime()+(i*24))+" "+s.getNoOfHours()+" "+s.getPhysicianType() +
+				"Start"+" "+(clinicianMapTempStart.get(s.getPhysicianType() + "Start") ));
+              
+				 
 				// updating end time
 				if (((s.getStartTime() + (i * 24)) + (s.getNoOfHours())) < 168) {
 					slotMapTemp = clinicianStartEndCount.get(s.getStartTime() + (i * 24) + s.getNoOfHours());
@@ -164,10 +172,17 @@ public class ShiftPlanningService {
 							clinicianMapTempStart.get(s.getPhysicianType() + "End") + 1);
 					slotMapTemp.put(s.getNoOfHours(), clinicianMapTempStart);
 					clinicianStartEndCount.set(s.getStartTime() + (i * 24) + s.getNoOfHours(), slotMapTemp);
-
+					
+					  
+					
+		System.out.println(s.getPhysicianType() + "End"+" "+(clinicianMapTempStart.get(s.getPhysicianType() + "End") )+"]");
+					 
+					 
 				}
+				
 
 			}
+			
 		}
 
 		Output out = new Output();
@@ -180,20 +195,22 @@ public class ShiftPlanningService {
 	private Workload assignWorkload(Input input, Workload work) {
 		Day[] day;
 		int k = 0;
-
+		//System.out.println(work.getDocEfficency());
 		if (input.getDayWorkload() != null) {
+			
 			day = input.getDayWorkload();
 			for (Day eachDay : day) {
 				for (Double patientsPerHour : eachDay.getExpectedPatientsPerHour()) {
-					work.getFixedworkloadArray()[k] = patientsPerHour / work.getDocEfficency();
+					work.getFixedworkloadArray()[k] = patientsPerHour  ;
 					work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k];
+					//System.out.println(work.getWorkloadArray()[k]);
 					k++;
 				}
 			}
 
 		}
 
-		return work;
+	return work;
 	}
 
 }

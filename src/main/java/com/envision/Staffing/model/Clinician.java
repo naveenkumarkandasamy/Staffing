@@ -28,6 +28,8 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	
+
 	@Id
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")

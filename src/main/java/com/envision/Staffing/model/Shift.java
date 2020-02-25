@@ -102,6 +102,6 @@ public class Shift {
 	//overriding toString() method
 	public String toString() {
 		return this.id + " " + this.day + " " + this.startTime + " " + this.endTime + " "
-				+ Arrays.toString(utilization);
+				+ " " + (this.endTime-this.startTime) + " " + this.noOfHours + " "+ Arrays.toString(utilization);
 	}
 }

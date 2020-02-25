@@ -472,11 +472,7 @@ public class ShiftCalculator {
 		return dayToShiftMapping;
 	}
 
-	double diff[]= new double[168];
-	double arr[]=new double[168];
-	int count[]=new int[168];
-	double wait[]= new double[168];
-	double loss[]=new double[168];
+	
 	
 	public HourlyDetail[] generateHourlyDetail(Clinician[] clinicians, double docEfficiency,double lowerLimitFactor) {
 		HourlyDetail[] hourlyDetailList = wl.getHourlyDetailList();
@@ -495,7 +491,7 @@ public class ShiftCalculator {
 			hourlyDetailList[i].setCostPerHour((clinicians[0].getClinicianCountPerHour()[i] * clinicians[0].getCost())
 					+ (clinicians[1].getClinicianCountPerHour()[i] * clinicians[1].getCost())
 					+ (clinicians[2].getClinicianCountPerHour()[i] * clinicians[2].getCost()));
-			diff[i]=hourlyDetailList[i].getCapacityWorkLoad()-hourlyDetailList[i].getExpectedWorkLoad();
+
 			
 		}
 		

@@ -67,7 +67,7 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 		this.id = id;
 		this.name = name;
 		this.patientsPerHour = patientsPerHour;
-		this.coefficient = coefficient;
+		this.coefficient = coefficient; 
 		this.cost = cost;
 		this.capacity = capacity;
 	}
@@ -79,7 +79,7 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 
 	public void setId(String id) {
 		this.id = id;
-	}
+	} 
 
 	public String getName() {
 		return name;

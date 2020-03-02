@@ -28,12 +28,29 @@ public class HourlyDetail implements Serializable {
 	
 	private Integer costPerHour;//cost for each hour considering all the clinicians 
 
-	
+	private double  wait;
+	private double  loss;
 	//constructor
 	public HourlyDetail() {
 		this.numberOfShiftBeginning = 0;
 		this.numberOfShiftEnding = 0;
 		this.costPerHour = 0;
+	}
+    
+	public double getWait() {
+		return wait;
+	}
+
+	public void setWait(double wait) {
+		this.wait = wait;
+	}
+
+	public double getLoss() {
+		return loss;
+	}
+
+	public void setLoss(double loss) {
+		this.loss = loss;
 	}
 
 	//getters and setters for all the fields
@@ -114,11 +131,11 @@ public class HourlyDetail implements Serializable {
 	public void setNumberOfAPPs(Integer numberOfAPPs) {
 		this.numberOfAPPs = numberOfAPPs;
 	}
-
+ 
 	public Integer getNumberOfScribes() {
 		return numberOfScribes;
 	}
-
+ 
 	public void setNumberOfScribes(Integer numberOfScribes) {
 		this.numberOfScribes = numberOfScribes;
 	}
@@ -136,7 +153,7 @@ public class HourlyDetail implements Serializable {
 	public String toString() {
 		return "HourlyDetail [hour=" + hour + ", numberOfPhysicians=" + numberOfPhysicians + ", numberOfAPPs="
 				+ numberOfAPPs + ", numberOfScribes=" + numberOfScribes +  ", capacityWorkLoad=" + capacityWorkLoad + ", utilization=" + utilization
-				+ ", costPerHour=" + costPerHour + "]";
+				+ ", costPerHour=" + costPerHour  + ", Wait =" + wait  + ", loss=" + loss + "]";
 	}
 
 }

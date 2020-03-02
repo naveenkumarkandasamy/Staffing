@@ -24,7 +24,7 @@ public class UserService {
 		} else {
 			return new ArrayList<User>();
 		}
-	}
+	} 
 
 	public User getUserById(String id) {
 		Optional<User> user = userRepository.findById(id);

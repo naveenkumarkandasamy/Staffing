@@ -27,13 +27,13 @@ public class ShiftPlanningService {
 			"Saturday" };
 
 	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) {
-		Input input = new Input();
+		Input input = new Input(); 
 		
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
 		input.setLowerLimitFactor(jobDetails.getLowerUtilizationFactor());
 		input.setShiftLength(jobDetails.getShiftLengthPreferences());
 		input.setDayWorkload(getDataFromExcelFile(ftpInputStream));
-		return input;
+		return input; 
 	}
 	
 	
@@ -48,8 +48,8 @@ public class ShiftPlanningService {
 	}
 	
 	public Day[] getDataFromExcelFile(InputStream excelInputStream) {
-		XSSFWorkbook myExcelBook;
-		Day[] workload = new Day[7];
+		XSSFWorkbook myExcelBook; 
+		Day[] workload = new Day[7]; 
 		try {
 			myExcelBook = new XSSFWorkbook(excelInputStream);
 			XSSFSheet myExcelSheet = myExcelBook.getSheetAt(0);
@@ -84,7 +84,7 @@ public class ShiftPlanningService {
 		}
 		if (input.getLowerLimitFactor() != null) {
 			lowerLimitFactor = input.getLowerLimitFactor();
-		}
+		} 
 
 		Workload work = new Workload();
 		
@@ -104,6 +104,28 @@ public class ShiftPlanningService {
 
 		ShiftCalculator shiftCalculator = new ShiftCalculator();
 		shiftCalculator.setWorkloads(work);
+		
+		int arrindex[]=new int[3],k=0;
+		// Check every 12 hour slot Eg : 0-12 , 1-13, 2-14 ..... (Assuming numberOfHours = 12)
+	     for(int i=2;i>=0;i--)
+	     {
+	    	 
+	    	 if(clinicians[i].getExpressions().size()==0)
+	    		 {
+	    			 arrindex[k]=i;
+	    			 k++;
+	    		 } 
+	    		 else
+	    		 {  
+	    			 arrindex[k]=-1;  
+	    			 k++;
+	    		 }
+	    	
+	     } 
+	     for(int i=2;i>=0;i--)
+	     {
+	    	 System.out.println(arrindex[i]);
+	     }
 
 		for (int i = 0; i < shiftPreferences.length; i++) {
 			if (i != (shiftPreferences.length - 1))
@@ -120,7 +142,7 @@ public class ShiftPlanningService {
 		ArrayList<Map<Integer, Map<String, Integer>>> clinicianStartEndCount = new ArrayList<>(168);
 
 		String[] clincianCountKeys = new String[2 * clinicians.length];
-		for (int i = 0; i < clinicians.length; i++) {
+		for (int i = 0; i < clinicians.length; i++) { 
 			clincianCountKeys[2 * i] = clinicians[i].getName() + "Start";
 			clincianCountKeys[2 * i + 1] = clinicians[i].getName() + "End";
 		}
@@ -197,7 +219,7 @@ public class ShiftPlanningService {
 		int k = 0;
 		//System.out.println(work.getDocEfficency());
 		if (input.getDayWorkload() != null) {
-			
+			 
 			day = input.getDayWorkload();
 			for (Day eachDay : day) {
 				for (Double patientsPerHour : eachDay.getExpectedPatientsPerHour()) {

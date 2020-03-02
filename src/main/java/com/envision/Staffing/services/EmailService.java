@@ -33,7 +33,7 @@ public class EmailService {
             messageHelper.setTo(toEmail);
             InputStream input = null;
             messageHelper.addAttachment("attachment.txt", new ByteArrayDataSource( attachment,"text/plain"));
-
+            System.out.println("Message sent successfully");
 
             mailSender.send(message);
         } catch (MessagingException | IOException ex) {

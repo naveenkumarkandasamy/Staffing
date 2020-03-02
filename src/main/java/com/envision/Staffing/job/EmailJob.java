@@ -44,7 +44,6 @@ public class EmailJob implements Job {
 	            messageHelper.setText(body, true);
 	            messageHelper.setFrom(fromEmail);
 	            messageHelper.setTo(toEmail);
-
 	            mailSender.send(message);
 	        } catch (MessagingException ex) {
 	            System.out.println("Failed to send email to {}"+ toEmail);

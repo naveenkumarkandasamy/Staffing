@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,9 +49,15 @@ public class JobDetailsController {
 		return response;
 	}
 
+	
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<JobDetails> getAllJobDetails() {
 		return jobDetailsService.getAllJobDetails();
+	}
+	
+	@GetMapping(path = "/get")
+	public @ResponseBody JobDetails getJobById(@RequestParam("jobId") String jobId) {
+		return jobDetailsService.getJobDetailsById(jobId);
 	}
 
 }

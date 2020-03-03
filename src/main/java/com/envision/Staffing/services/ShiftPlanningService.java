@@ -72,7 +72,7 @@ public class ShiftPlanningService {
 		}
 		return workload;
 	}
-
+ 
 	public Output getShiftPlan(Input input) throws IOException {
 
 		Integer[] shiftPreferences = new Integer[] { 12, 10, 8, 4 };
@@ -95,7 +95,7 @@ public class ShiftPlanningService {
 			work.setDocEfficency(clinicians[0].getPatientsPerHour());
 
 		if (input.getDayWorkload() != null) {
-			work = assignWorkload(input, work);
+			work = assignWorkload(input, work); 
 		}
 
 		for (int i = 0; i < clinicians.length; i++) {
@@ -112,14 +112,14 @@ public class ShiftPlanningService {
 				shiftCalculator.calculate4hourslots(clinicians, shiftPreferences[i]);
 		}
 
-		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians, work.getDocEfficency());
-
+		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians, work.getDocEfficency(),lowerLimitFactor);
+ 
 		// calculating the count of clinicians starting and ending at each hour
 
 		ArrayList<Map<Integer, Map<String, Integer>>> clinicianStartEndCount = new ArrayList<>(168);
 
 		String[] clincianCountKeys = new String[2 * clinicians.length];
-		for (int i = 0; i < clinicians.length; i++) {
+		for (int i = 0; i < clinicians.length; i++) { 
 			clincianCountKeys[2 * i] = clinicians[i].getName() + "Start";
 			clincianCountKeys[2 * i + 1] = clinicians[i].getName() + "End";
 		}
@@ -185,7 +185,7 @@ public class ShiftPlanningService {
 			day = input.getDayWorkload();
 			for (Day eachDay : day) {
 				for (Double patientsPerHour : eachDay.getExpectedPatientsPerHour()) {
-					work.getFixedworkloadArray()[k] = patientsPerHour / work.getDocEfficency();
+					work.getFixedworkloadArray()[k] = patientsPerHour;
 					work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k];
 					k++;
 				}

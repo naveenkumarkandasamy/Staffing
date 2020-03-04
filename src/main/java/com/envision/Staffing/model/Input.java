@@ -6,6 +6,9 @@ public class Input {
 	private Integer[] shiftLength;
 	private Double lowerLimitFactor;
 	private Day[] dayWorkload;
+	private Integer from;
+	private Integer to;
+	private Integer hourwait;
 
 	public Clinician[] getClinician() {
 		return clinician;
@@ -39,4 +42,28 @@ public class Input {
 		this.dayWorkload = dayWorkload;
 	}
 
+	public Integer getFrom() {
+		return from;
+	}
+
+	public void setFrom(Integer from) {
+		this.from = from;
+	}
+
+	public Integer getTo() {
+		return to;
+	}
+
+	public void setTo(Integer to) {
+		this.to = to;
+	}
+
+	public Integer getHourwait() {
+		return hourwait;
+	}
+
+	public void setHourwait(Integer hourwait) {
+		this.hourwait = hourwait;
+	}
+    
 }

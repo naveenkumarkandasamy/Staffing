@@ -31,7 +31,7 @@ public class JobListService {
 	public boolean deleteJobById(String jobId) {
 		boolean flag;
 		try{
-			JobDetails jobDetails = jobDetailsService.getJobDetailsById("5af50e5f-2ecb-4975-8686-2cfea4891fb9");
+			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
 			
 			jobDetailsRepository.deleteJobDetailById(jobId); // deletes job and clinicians
 			if(jobDetails.getInputFormat().contentEquals("FTP_URL")) {

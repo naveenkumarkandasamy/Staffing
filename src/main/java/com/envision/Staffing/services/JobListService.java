@@ -37,7 +37,7 @@ public class JobListService {
 			if(jobDetails.getInputFormat().contentEquals("FTP_URL")) {
 				ftpDetailsRepository.deleteById(jobDetails.getInputFtpDetails().getId()); // deletes input_ftp
 			}
-			else {
+			else if(jobDetails.getInputFormat().contentEquals("DATA_FILE")){
 				fileDetailsRepository.deleteById(jobDetails.getInputFileDetails().getId()); // deletes input_file
 			}
 			if(jobDetails.getOutputFormat().contentEquals("FTP_URL")) {

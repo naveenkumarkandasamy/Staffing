@@ -28,7 +28,7 @@ public class ShiftPlanningService {
 	private String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 			"Saturday" };
 
-	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) {
+	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception{
 		Input input = new Input();
 		
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
@@ -41,14 +41,14 @@ public class ShiftPlanningService {
 	// function to process form-data containing json object and the workload as an
 	// .xlsx file
 	// return the input object
-	public Input processFileInput(MultipartFile excelFile, String inputData) throws IOException {
+	public Input processFileInput(MultipartFile excelFile, String inputData) throws IOException, Exception {
 		Input input = new ObjectMapper().readValue(inputData, Input.class);
 		InputStream excelInput = excelFile.getInputStream();
 		input.setDayWorkload( getDataFromExcelFile(excelInput));
 		return input;
 	}
 	
-	public Day[] getDataFromExcelFile(InputStream excelInputStream) {
+	public Day[] getDataFromExcelFile(InputStream excelInputStream) throws Exception{
 		XSSFWorkbook myExcelBook;
 		Day[] workload = new Day[7];
 		try {
@@ -69,7 +69,12 @@ public class ShiftPlanningService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IllegalStateException illegalStateException) {
+			throw new Exception(illegalStateException.toString());
+		} catch (NumberFormatException numberFormatException) {
+			throw new Exception(numberFormatException.toString());
 		}
+		
 		return workload;
 	}
 

@@ -35,7 +35,7 @@ public class StaffingController {
 	@RequestMapping(value = "/request/shiftPlanFileUpload", method = RequestMethod.POST, consumes = { "multipart/form-data" })
 	@ResponseBody
 	public Output getShiftPlanFromFile(@RequestPart("workloadExcel") MultipartFile excelFile,
-			@RequestPart("inputData") String inputData) throws IOException {
+			@RequestPart("inputData") String inputData) throws IOException, Exception {
 
 		Input input = shiftPlanningService.processFileInput(excelFile, inputData);
 

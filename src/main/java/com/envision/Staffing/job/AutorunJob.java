@@ -17,7 +17,11 @@ public class AutorunJob implements Job {
 		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
         String autorunJobId = jobDataMap.getString("jobId");
 
-        workflowService.autorunWorkflowService(autorunJobId);
+        try {
+			workflowService.autorunWorkflowService(autorunJobId);
+		} catch (Exception e) {
+			System.out.println("Given File is not an Excel File or is Corrupted.");
+		}
 	}
 
 }

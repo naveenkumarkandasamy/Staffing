@@ -260,7 +260,7 @@ public class ShiftCalculator {
 		return flag;   
 	}
 
-	public void calculate4hourslots(int from,int to,int[] arrindex,Clinician[] clinicians, int sizeOfSlot) {
+	public void calculate4hourslots(double u,int from,int to,int[] arrindex,Clinician[] clinicians, int sizeOfSlot) {
 		int start = 0,s=0,h=0;
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
@@ -270,12 +270,12 @@ public class ShiftCalculator {
 			  if(start % 24 >=from && start %24 <=to)
 			  {
 				  s= ((start/24) * 24)+ from -1;
-		      calculate4hourslot(arrindex,s,clinicians,sizeOfSlot);
+		      calculate4hourslot(u,arrindex,s,clinicians,sizeOfSlot);
 		      start+=1;
 		      } 
 			else {
 			// checking for utilization < 1.1 to not add clinicians
-			if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1) { 
+			if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < u) { 
 				start = start + 1; 
 			} else {
 				boolean  
@@ -306,21 +306,21 @@ public class ShiftCalculator {
 							//break;
 					}
 
-					if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1)
+					if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < u)
 						break;
 				}
 			}
 		}
 	}
 	}
-	public void calculate4hourslot(int[] arrindex,int start,Clinician[] clinicians, int sizeOfSlot) {
+	public void calculate4hourslot(double u,int[] arrindex,int start,Clinician[] clinicians, int sizeOfSlot) {
 
 		int c =start,h=0;
 		while (start == c) {
 			int j = start;
     
 			// checking for utilization < 1.1 to not add clinicians
-			if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1) { 
+			if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < u) { 
 				start = start + 1; 
 				 
 			} else {
@@ -350,7 +350,7 @@ public class ShiftCalculator {
 							break;
 					}
 
-					if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < 1.1)
+					if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < u)
 						break;
 				}
 			}

@@ -77,17 +77,21 @@ public class ShiftPlanningService {
 
 		Integer[] shiftPreferences = new Integer[] { 12, 10, 8, 4 };
 		double lowerLimitFactor = 0.75;
+		double upperLimitFactor = 1.1;
 		int from = 1;
 		int to = 6;
         int hourwait =2;
 		Clinician[] clinicians = input.getClinician();
      
-	
+	 
 		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();
 		}
 		if (input.getLowerLimitFactor() != null) {
 			lowerLimitFactor = input.getLowerLimitFactor();
+		}
+		if (input.getUpperLimitFactor() != null) {
+			upperLimitFactor = input.getUpperLimitFactor();
 		}
 		
 		if (input.getFrom() != null)
@@ -145,7 +149,7 @@ public class ShiftPlanningService {
 			
 			}
 			else
-				shiftCalculator.calculate4hourslots(from,to,arrindex,clinicians, shiftPreferences[i]);
+				shiftCalculator.calculate4hourslots(upperLimitFactor,from,to,arrindex,clinicians, shiftPreferences[i]);
 		}
 
 		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(hourwait,clinicians, work.getDocEfficency(),lowerLimitFactor);

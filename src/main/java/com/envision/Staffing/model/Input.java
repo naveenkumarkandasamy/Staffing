@@ -5,6 +5,7 @@ public class Input {
 	private Clinician[] clinician;
 	private Integer[] shiftLength;
 	private Double lowerLimitFactor;
+	private Double upperLimitFactor;
 	private Day[] dayWorkload;
 	private Integer from;
 	private Integer to;
@@ -64,6 +65,14 @@ public class Input {
 
 	public void setHourwait(Integer hourwait) {
 		this.hourwait = hourwait;
+	}
+
+	public Double getUpperLimitFactor() {
+		return upperLimitFactor;
+	}
+
+	public void setUpperLimitFactor(Double upperLimitFactor) {
+		this.upperLimitFactor = upperLimitFactor;
 	}
     
 }

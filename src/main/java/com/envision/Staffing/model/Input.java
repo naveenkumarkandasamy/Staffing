@@ -74,5 +74,5 @@ public class Input {
 	public void setUpperLimitFactor(Double upperLimitFactor) {
 		this.upperLimitFactor = upperLimitFactor;
 	}
-    
+
 }

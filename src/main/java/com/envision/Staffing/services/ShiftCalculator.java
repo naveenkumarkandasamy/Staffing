@@ -26,22 +26,48 @@ public class ShiftCalculator {
 			double lowerLimitFactor) {
 		// Check every 12 hour slot Eg : 0-12 , 1-13, 2-14 ..... (Assuming numberOfHours
 		// = 12)
-		int start = 0, previousstart = 0;
+		int start = 0, previousstart = 0, StoredPreviousstart = 0;
 		double factor = lowerLimitFactor;
 
 		while (start + shiftLength < wl.getSizeOfArray()) {
 
 			int index = clinicians.length - 1;
-			int flag = 1, x = 0;
+			int flag = 1, x = 0, b = 0;
 			boolean conditionalValue = false;
 			boolean[] array = { true, true, true };
 			boolean shiftNextHour = true;
 
-			if (start % 24 >= from && start % 24 <= to) {
+			if (from < to && start % 24 >= from && start % 24 <= to) {
+
 				previousstart = ((start / 24) * 24) + from - 1;
-				calculatePhysicianSlots(arrindex, previousstart, shiftLength, clinicians, lowerLimitFactor);
-				start += 1;
-			} else {
+				if (previousstart < 0) {
+					start += 1;
+					b = 1;
+				} else {
+					calculatePhysicianSlots(arrindex, previousstart, shiftLength, clinicians, lowerLimitFactor);
+					start += 1;
+					b = 1;
+				}
+			}
+			if (from > to && ((start % 24 >= from && start % 24 <= 23) || (start % 24 >= 0 && start % 24 <= to))) {
+
+				if (start < 24 && b == 0 && (start % 24 >= 0 && start % 24 <= to)) {
+					start += 1;
+					b = 2;
+				} else if ((start % 24 >= from && start % 24 <= 23)) {
+					previousstart = ((start / 24) * 24) + from - 1;
+					StoredPreviousstart  = previousstart;
+					b = 1;
+				} else {
+					previousstart = StoredPreviousstart ;
+					b = 1;
+				}
+				if (b == 1) {
+					calculatePhysicianSlots(arrindex, previousstart, shiftLength, clinicians, lowerLimitFactor);
+					start += 1;
+				}
+			}
+			if (b == 0) {
 				for (; index >= 0 && x == 0; index--) {
 					Clinician clinician = getClinicianWithLeastCost(index, clinicians);
 					conditionalValue = isConditionStatisfied(arrindex, clinicians, start, shiftLength, index);// checking
@@ -247,17 +273,46 @@ public class ShiftCalculator {
 
 	public void calculate4hourslots(double upperLimitFactor, int from, int to, int[] arrindex, Clinician[] clinicians,
 			int sizeOfSlot) {
-		int start = 0, previousstart = 0;
+		int start = 0, previousstart = 0, StoredPreviousstart  = 0;
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
 		while (start < wl.getSizeOfArray()) {
-			int j = start;
+			int j = start, b = 0;
 
-			if (start % 24 >= from && start % 24 <= to) {
+			if (from < to && start % 24 >= from && start % 24 <= to) {
+
 				previousstart = ((start / 24) * 24) + from - 1;
-				calculate4hourslot(upperLimitFactor, arrindex, previousstart, clinicians, sizeOfSlot);
-				start += 1;
-			} else {
+				if (previousstart < 0) {
+					start += 1;
+					b = 1;
+				} else {
+					calculate4hourslot(upperLimitFactor, arrindex, previousstart, clinicians, sizeOfSlot);
+					start += 1;
+					b = 1;
+
+				}
+			}
+			if (from > to && ((start % 24 >= from && start % 24 <= 23) || (start % 24 >= 0 && start % 24 <= to))) {
+				if ((start % 24 >= from && start % 24 <= 23)) {
+					previousstart = ((start / 24) * 24) + from - 1;
+					StoredPreviousstart  = previousstart;
+					b = 1;
+				} else {
+					if ((start >= 0 && start < 24) && b == 0) {
+						start += 1;
+						b = 2;
+					} else {
+						previousstart = StoredPreviousstart ;
+						b = 1;
+					}
+				}
+				if (b == 1) {
+					calculate4hourslot(upperLimitFactor, arrindex, previousstart, clinicians, sizeOfSlot);
+					start += 1;
+				}
+			}
+
+			if (b == 0) {
 				// checking for utilization < 1.1 to not add clinicians
 				if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor) {
 					start = start + 1;

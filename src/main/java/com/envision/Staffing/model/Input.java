@@ -7,9 +7,9 @@ public class Input {
 	private Double lowerLimitFactor;
 	private Double upperLimitFactor;
 	private Day[] dayWorkload;
-	private Integer from;
-	private Integer to;
-	private Integer hourwait;
+	private Integer notAllocatedStartTime;
+	private Integer notAllocatedEndTime;
+	private Integer patientHourWait;
 
 	public Clinician[] getClinician() {
 		return clinician;
@@ -43,30 +43,6 @@ public class Input {
 		this.dayWorkload = dayWorkload;
 	}
 
-	public Integer getFrom() {
-		return from;
-	}
-
-	public void setFrom(Integer from) {
-		this.from = from;
-	}
-
-	public Integer getTo() {
-		return to;
-	}
-
-	public void setTo(Integer to) {
-		this.to = to;
-	}
-
-	public Integer getHourwait() {
-		return hourwait;
-	}
-
-	public void setHourwait(Integer hourwait) {
-		this.hourwait = hourwait;
-	}
-
 	public Double getUpperLimitFactor() {
 		return upperLimitFactor;
 	}
@@ -74,5 +50,30 @@ public class Input {
 	public void setUpperLimitFactor(Double upperLimitFactor) {
 		this.upperLimitFactor = upperLimitFactor;
 	}
+
+	public Integer getNotAllocatedStartTime() {
+		return notAllocatedStartTime;
+	}
+
+	public void setNotAllocatedStartTime(Integer notAllocatedStartTime) {
+		this.notAllocatedStartTime = notAllocatedStartTime;
+	}
+
+	public Integer getNotAllocatedEndTime() {
+		return notAllocatedEndTime;
+	}
+
+	public void setNotAllocatedEndTime(Integer notAllocatedEndTime) {
+		this.notAllocatedEndTime = notAllocatedEndTime;
+	}
+
+	public Integer getPatientHourWait() {
+		return patientHourWait;
+	}
+
+	public void setPatientHourWait(Integer patientHourWait) {
+		this.patientHourWait = patientHourWait;
+	}
+	
 
 }

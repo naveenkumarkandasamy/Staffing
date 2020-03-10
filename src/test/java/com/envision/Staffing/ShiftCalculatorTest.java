@@ -23,7 +23,6 @@ public class ShiftCalculatorTest {
 	ShiftCalculator testObject;
 
 	Clinician[] clinicians;
-	int[] arrindex = new int[3];
 
 	@Before
 	public void initializeCliniciansArray() {
@@ -31,9 +30,7 @@ public class ShiftCalculatorTest {
 		for (int i = 0; i < 3; i++) {
 			clinicians[i] = new Clinician();
 		}
-		arrindex[0] = 0;
-		arrindex[1] = -1;
-		arrindex[2] = -1;
+		
 		int[] countArray = new int[168];
 		for (int i = 0; i < 168; i++) {
 			countArray[i] = i;
@@ -165,7 +162,7 @@ public class ShiftCalculatorTest {
 		int start = 0;
 		int shiftLength = 4;
 		int index = 1;
-		boolean result = testObject.isConditionStatisfied(arrindex, clinicians, start, shiftLength, index);
+		boolean result = testObject.isConditionStatisfied( clinicians, start, shiftLength, index);
 		// write Assert.assertEquals
 		Assert.assertEquals(false, result);
 	}
@@ -176,7 +173,7 @@ public class ShiftCalculatorTest {
 		int start = 0;
 		int shiftLength = 4;
 		int index = 0;
-		boolean result = testObject.isConditionStatisfied(arrindex, clinicians, start, shiftLength, index);
+		boolean result = testObject.isConditionStatisfied( clinicians, start, shiftLength, index);
 		// write Assert.assertEquals
 		Assert.assertEquals(true, result);
 	}

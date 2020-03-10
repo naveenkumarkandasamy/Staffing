@@ -78,11 +78,11 @@ public class ShiftPlanningService {
 		Integer[] shiftPreferences = new Integer[] { 12, 10, 8, 4 };
 		double lowerLimitFactor = 0.75;
 		double upperLimitFactor = 1.1;
-		int from = 1;
-		int to = 6;
-		int hourwait = 2;
+		Integer notAllocatedStartTime = input.getNotAllocatedStartTime();
+	    Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
+	    Integer patientHourWait = input.getPatientHourWait();
+	    
 		Clinician[] clinicians = input.getClinician();
-
 		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();
 		}
@@ -93,18 +93,6 @@ public class ShiftPlanningService {
 
 		if (input.getUpperLimitFactor() != null) {
 			upperLimitFactor = input.getUpperLimitFactor();
-		}
-
-		if (input.getFrom() != null) {
-			from = input.getFrom();
-		}
-
-		if (input.getTo() != null) {
-			to = input.getTo();
-		}
-
-		if (input.getHourwait() != null) {
-			hourwait = input.getHourwait();
 		}
 
 		Workload work = new Workload();
@@ -127,28 +115,17 @@ public class ShiftPlanningService {
 
 		// checking which clinician is always true and store index in arrindex for this
 		// clinician
-		int[] arrindex = new int[3];
-		int k = 0;
-		for (int g = 2; g >= 0; g--) {
-			if (clinicians[g].getExpressions().size() == 0) {
-				arrindex[k] = g;
-				k++;
-			} else {
-				arrindex[k] = -1;
-				k++;
-			}
-		}
-
+		
 		for (int i = 0; i < shiftPreferences.length; i++) {
 			if (i != (shiftPreferences.length - 1)) {
-				shiftCalculator.calculatePhysicianSlotsForAll(from, to, arrindex, shiftPreferences[i], clinicians,
+				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime,notAllocatedEndTime, shiftPreferences[i], clinicians,
 						lowerLimitFactor);
-			} else
-				shiftCalculator.calculate4hourslots(upperLimitFactor, from, to, arrindex, clinicians,
+			} else  
+				shiftCalculator.calculate4hourslots(upperLimitFactor,notAllocatedStartTime,notAllocatedEndTime, clinicians,
 						shiftPreferences[i]);
 		}
 
-		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(hourwait, clinicians,
+		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(patientHourWait, clinicians,
 				work.getDocEfficency(), lowerLimitFactor);
 
 		// calculating the count of clinicians starting and ending at each hour

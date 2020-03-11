@@ -11,6 +11,10 @@ import com.envision.Staffing.model.HourlyDetail;
 import com.envision.Staffing.model.Shift;
 import com.envision.Staffing.model.Workload;
 
+enum allocation {
+	AllocationForNormalShift, AllocationForRestrictionShift, SkipAllocation
+};
+
 @Service
 public class ShiftCalculator {
 
@@ -22,144 +26,109 @@ public class ShiftCalculator {
 		wl = w;
 	}
 
-	public void calculatePhysicianSlotsForAll(int notAllocatedStartTime, int notAllocatedEndTime, int shiftLength, Clinician[] clinicians,
-			double lowerLimitFactor) {
+	public void calculatePhysicianSlotsForAll(int notAllocatedStartTime, int notAllocatedEndTime, int shiftLength,
+			Clinician[] clinicians, double lowerLimitFactor) {
 		// Check every 12 hour slot Eg : 0-12 , 1-13, 2-14 ..... (Assuming numberOfHours
 		// = 12)
+
 		int start = 0, previousstart = 0, StoredPreviousstart = 0;
 		double factor = lowerLimitFactor;
-
 		while (start + shiftLength < wl.getSizeOfArray()) {
-
-			int index = clinicians.length - 1;
-			int flag = 1, x = 0, b = 0;
-			boolean conditionalValue = false;
-			boolean[] array = { true, true, true };
-			boolean shiftNextHour = true;
-
-			if ((notAllocatedStartTime <= notAllocatedEndTime) && start % 24 >= notAllocatedStartTime && start % 24 <= notAllocatedEndTime) {
+			String b1 = "AllocationForNormalShift";
+			if ((notAllocatedStartTime <= notAllocatedEndTime) && start % 24 >= notAllocatedStartTime
+					&& start % 24 <= notAllocatedEndTime) {
 
 				previousstart = ((start / 24) * 24) + notAllocatedStartTime - 1;
 				if (previousstart < 0) {
 					start += 1;
-					b = 1;
+					b1 = "SkipAllocation";
 				} else {
 					calculatePhysicianSlots(previousstart, shiftLength, clinicians, lowerLimitFactor);
 					start += 1;
-					b = 1;
+					b1 = "AllocationForRestrictionShift";
 				}
 			}
-			if ((notAllocatedStartTime > notAllocatedEndTime) && ((start % 24 >= notAllocatedStartTime && start % 24 <= 23) || (start % 24 >= 0 && start % 24 <= notAllocatedEndTime))) {
+			if ((notAllocatedStartTime > notAllocatedEndTime)
+					&& ((start % 24 >= notAllocatedStartTime) || (start % 24 <= notAllocatedEndTime))) {
 
-				if (start < 24 && b == 0 && (start % 24 >= 0 && start % 24 <= notAllocatedEndTime)) {
+				if (start < 24 && allocation.valueOf(b1).ordinal() == 0 && start % 24 <= notAllocatedEndTime) {
 					start += 1;
-					b = 2;
-				} else if ((start % 24 >= notAllocatedStartTime && start % 24 <= 23)) {
+					b1 = "SkipAllocation";
+				} else if ((start % 24 >= notAllocatedStartTime)) {
 					previousstart = ((start / 24) * 24) + notAllocatedStartTime - 1;
-					StoredPreviousstart  = previousstart;
-					b = 1;
+					StoredPreviousstart = previousstart;
+					b1 = "AllocationForRestrictionShift";
 				} else {
-					previousstart = StoredPreviousstart ;
-					b = 1;
+					previousstart = StoredPreviousstart;
+					b1 = "AllocationForRestrictionShift";
 				}
-				if (b == 1) {
-					calculatePhysicianSlots( previousstart, shiftLength, clinicians, lowerLimitFactor);
+				if (allocation.valueOf(b1).ordinal() == 1) {
+					calculatePhysicianSlots(previousstart, shiftLength, clinicians, lowerLimitFactor);
 					start += 1;
 				}
 			}
-			if (b == 0) {
-				for (; index >= 0 && x == 0; index--) {
-					Clinician clinician = getClinicianWithLeastCost(index, clinicians);
-					conditionalValue = isConditionStatisfied( clinicians, start, shiftLength, index);// checking
-																												// Expression
-
-					do {
-
-						Shift newShift = getNewShift(shiftLength, start, clinician.getName());
-						flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity());// checking
-																												// utilization
-
-						if (flag == 1 && conditionalValue) // adding shift
-						{
-							addNewShift(start, shiftLength, newShift, clinician.getCapacity(),
-									clinician.getClinicianCountPerHour());
-							index = 3;
-							break;
-						} else if (flag == 0 && index == clinicians.length - 1) // even scribe cannot be added,move to
-																				// next hour
-						{
-							start = start + 1;
-							x = 1;
-							break;
-						} else {
-							array[index] = false;
-						}
-						conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index);
-					} while (conditionalValue && flag == 1);
-				}
-
-				for (boolean value : array) {
-					if (value)
-						shiftNextHour = false;
-				}
-
-				if (shiftNextHour) {
-					shiftNextHour = false;
-					start = start + 1;
-
-				}
+			if (allocation.valueOf(b1).ordinal() == 0) {
+				start = CheckAndAddClinician(shiftLength, clinicians, start, factor);
 
 			}
 		}
 	}
 
-	public void calculatePhysicianSlots (int start, int shiftLength, Clinician[] clinicians,double lowerLimitFactor) {
+	private int CheckAndAddClinician(int shiftLength, Clinician[] clinicians, int start, double factor) {
+		int index = clinicians.length - 1;
+		int flag = 1;
+		int isShiftToNextHour = 0;
+		boolean conditionalValue = false;
+		boolean[] array = { true, true, true };
+		boolean shiftNextHour = true;
+
+		for (; index >= 0 && isShiftToNextHour == 0; index--) {
+			Clinician clinician = getClinicianWithLeastCost(index, clinicians);
+			conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index);// checking
+			do {
+
+				Shift newShift = getNewShift(shiftLength, start, clinician.getName());
+				flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity());// checking
+																										// utilization
+
+				if (flag == 1 && conditionalValue) // adding shift
+				{
+					addNewShift(start, shiftLength, newShift, clinician.getCapacity(),
+							clinician.getClinicianCountPerHour());
+					index = 3;
+					break;
+				} else if (flag == 0 && index == clinicians.length - 1) // even scribe cannot be added,move to
+																		// next hour
+				{
+					start = start + 1;
+					isShiftToNextHour = 1;
+					break;
+				} else {
+					array[index] = false;
+				}
+				conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index);
+			} while (conditionalValue && flag == 1);
+		}
+
+		for (boolean value : array) {
+			if (value)
+				shiftNextHour = false;
+		}
+
+		if (shiftNextHour) {
+			shiftNextHour = false;
+			start = start + 1;
+
+		}
+		return start;
+	}
+
+	public void calculatePhysicianSlots(int start, int shiftLength, Clinician[] clinicians, double lowerLimitFactor) {
 		// function - only one shift for previous start
 		double factor = lowerLimitFactor;
 		int c = start + shiftLength;
 		while (c == (start + shiftLength) && (start + shiftLength) < wl.getSizeOfArray()) {
-
-			int index = clinicians.length - 1;
-			int flag = 1;
-			boolean conditionalValue = false;
-			boolean[] array = { true, true, true };
-			boolean shiftNextHour = true;
-
-			for (; index >= 0 && c == (start + shiftLength); index--) {
-				Clinician clinician = getClinicianWithLeastCost(index, clinicians);
-				conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index); // checking
-																											// expression
-				do {
-					Shift newShift = getNewShift(shiftLength, start, clinician.getName());
-
-					flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity()); // checking
-																											// utilization
-
-					if (flag == 1 && conditionalValue) {
-						addNewShift(start, shiftLength, newShift, clinician.getCapacity(),
-								clinician.getClinicianCountPerHour());
-						index = 3;
-						break;
-					} else if (flag == 0 && index == clinicians.length - 1) {
-						start = start + 1;
-						break;
-					} else {
-						array[index] = false;
-					}
-					conditionalValue = isConditionStatisfied( clinicians, start, shiftLength, index);
-				} while (conditionalValue && flag == 1);
-			}
-
-			for (boolean value : array) {
-				if (value)
-					shiftNextHour = false;
-			}
-
-			if (shiftNextHour) {
-				shiftNextHour = false;
-				start = start + 1;
-			}
-
+			start = CheckAndAddClinician(shiftLength, clinicians, start, factor);
 		}
 	}
 
@@ -192,14 +161,13 @@ public class ShiftCalculator {
 		return 0;
 	}
 
-	public boolean isConditionStatisfied( Clinician[] clinicians, int start, int shiftLength,
-			int index) {
+	public boolean isConditionStatisfied(Clinician[] clinicians, int start, int shiftLength, int index) {
 		// if clinician is more important, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
-			
-            if(clinicians[index].getExpressions().size()==0) 
-            	return true;
-			 else {
+
+			if (clinicians[index].getExpressions().size() == 0)
+				return true;
+			else {
 				for (int hour = start; hour < start + shiftLength && hour < 168; hour++) {
 					double value = 0.0d;
 					for (int j = 0; j < clinicians[index].getExpressions().size(); j++) {
@@ -264,107 +232,92 @@ public class ShiftCalculator {
 		return flag;
 	}
 
-	public void calculate4hourslots(double upperLimitFactor, int notAllocatedStartTime, int notAllocatedEndTime, Clinician[] clinicians,
-			int sizeOfSlot) {
-		int start = 0, previousstart = 0, StoredPreviousstart  = 0;
+	public void calculate4hourslots(double upperLimitFactor, int notAllocatedStartTime, int notAllocatedEndTime,
+			Clinician[] clinicians, int sizeOfSlot) {
+		int start = 0, previousstart = 0, StoredPreviousstart = 0;
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
 		while (start < wl.getSizeOfArray()) {
-			int j = start, b = 0;
 
-			if ((notAllocatedStartTime<= notAllocatedEndTime) && start % 24 >= notAllocatedStartTime && start % 24 <= notAllocatedEndTime) {
+			String b1 = "AllocationForNormalShift";
+			if ((notAllocatedStartTime <= notAllocatedEndTime) && start % 24 >= notAllocatedStartTime
+					&& start % 24 <= notAllocatedEndTime) {
 
 				previousstart = ((start / 24) * 24) + notAllocatedStartTime - 1;
 				if (previousstart < 0) {
 					start += 1;
-					b = 1;
+					b1 = "SkipAllocation";
 				} else {
 					calculate4hourslot(upperLimitFactor, previousstart, clinicians, sizeOfSlot);
 					start += 1;
-					b = 1;
+					b1 = "AllocationForRestrictionShift";
 
 				}
 			}
-			if (notAllocatedStartTime > notAllocatedEndTime && ((start % 24 >= notAllocatedStartTime && start % 24 <= 23) || (start % 24 >= 0 && start % 24 <= notAllocatedEndTime))) {
-				if ((start % 24 >= notAllocatedStartTime && start % 24 <= 23)) {
+			if (notAllocatedStartTime > notAllocatedEndTime
+					&& ((start % 24 >= notAllocatedStartTime) || (start % 24 <= notAllocatedEndTime))) {
+				if ((start % 24 >= notAllocatedStartTime)) {
 					previousstart = ((start / 24) * 24) + notAllocatedStartTime - 1;
-					StoredPreviousstart  = previousstart;
-					b = 1;
+					StoredPreviousstart = previousstart;
+					b1 = "AllocationForRestrictionShift";
 				} else {
-					if ((start >= 0 && start < 24) && b == 0) {
+					if (start < 24 && allocation.valueOf(b1).ordinal() == 0) {
 						start += 1;
-						b = 2;
+						b1 = "SkipAllocation";
 					} else {
-						previousstart = StoredPreviousstart ;
-						b = 1;
+						previousstart = StoredPreviousstart;
+						b1 = "AllocationForRestrictionShift";
 					}
 				}
-				if (b == 1) {
+				if (allocation.valueOf(b1).ordinal() == 1) {
 					calculate4hourslot(upperLimitFactor, previousstart, clinicians, sizeOfSlot);
 					start += 1;
 				}
 			}
 
-			if (b == 0) {
-				// checking for utilization < 1.1 to not add clinicians
-				if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor) {
-					start = start + 1;
-				} else {
-					boolean conditionalValue = true;
-					for (int i = clinicians.length - 1; i >= 0; i--) {
-						Clinician clinician = getClinicianWithLeastCost(i, clinicians);
-						int tempSlotSize = sizeOfSlot;
-						conditionalValue = isConditionStatisfied( clinicians, start, tempSlotSize, i);
-
-						while (conditionalValue) {
-							Shift newShift = getNewShift(sizeOfSlot, start, clinician.getName());
-
-							addNewShift(start, sizeOfSlot, newShift, clinician.getCapacity(),
-									clinician.getClinicianCountPerHour());
-							i = 3;
-							break;
-						}
-						if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor)
-							break;
-					}
-				}
+			if (allocation.valueOf(b1).ordinal() == 0) {
+				start = CheckandAddForLastShift(upperLimitFactor, start, clinicians, sizeOfSlot);
 			}
 		}
 	}
 
-	public void calculate4hourslot(double upperLimitFactor, int start, Clinician[] clinicians,
-			int sizeOfSlot) {
+	public void calculate4hourslot(double upperLimitFactor, int start, Clinician[] clinicians, int sizeOfSlot) {
 		// function - only one shift for going back to previous start and assigning a
 		// shift
 		int c = start;
 		while (start == c) {
-			int j = start;
+			start = CheckandAddForLastShift(upperLimitFactor, start, clinicians, sizeOfSlot);
+		}
+	}
 
-			// checking for utilization < 1.1 to not add clinicians
-			if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor) {
-				start = start + 1;
+	private int CheckandAddForLastShift(double upperLimitFactor, int start, Clinician[] clinicians, int sizeOfSlot) {
+		int j = start;
 
-			} else {
-				boolean conditionalValue = true;
-				for (int i = clinicians.length - 1; i >= 0; i--) {
-					Clinician clinician = getClinicianWithLeastCost(i, clinicians);
-					int tempSlotSize = sizeOfSlot;
-					conditionalValue = isConditionStatisfied( clinicians, start, tempSlotSize, i);
+		// checking for utilization < 1.1 to not add clinicians
+		if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor) {
+			start = start + 1;
 
-					while (conditionalValue) {
-						Shift newShift = getNewShift(sizeOfSlot, start, clinician.getName());
+		} else {
+			boolean conditionalValue = true;
+			for (int i = clinicians.length - 1; i >= 0; i--) {
+				Clinician clinician = getClinicianWithLeastCost(i, clinicians);
+				int tempSlotSize = sizeOfSlot;
+				conditionalValue = isConditionStatisfied(clinicians, start, tempSlotSize, i);
 
-						addNewShift(start, sizeOfSlot, newShift, clinician.getCapacity(),
-								clinician.getClinicianCountPerHour());
-						i = 3;
-						break;
-					}
+				while (conditionalValue) {
+					Shift newShift = getNewShift(sizeOfSlot, start, clinician.getName());
 
-					if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor)
-						break;
+					addNewShift(start, sizeOfSlot, newShift, clinician.getCapacity(),
+							clinician.getClinicianCountPerHour());
+					i = 3;
+					break;
 				}
+
+				if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor)
+					break;
 			}
 		}
+		return start;
 	}
 
 	public Clinician getClinicianWithLeastCost(int index, Clinician[] clinicians) {
@@ -465,7 +418,7 @@ public class ShiftCalculator {
 	}
 
 	double diff[] = new double[168];
-	double arr[] = new double[168];
+	double copyDiff[] = new double[168];
 	double wait[] = new double[168];
 	double loss[] = new double[168];
 	int count[] = new int[168];
@@ -473,13 +426,7 @@ public class ShiftCalculator {
 	public HourlyDetail[] generateHourlyDetail(int patientHourWait, Clinician[] clinicians, double docEfficiency,
 			double lowerLimitFactor) {
 		HourlyDetail[] hourlyDetailList = wl.getHourlyDetailList();
-		for (int i = 0; i < 168; i++) { // initialization
-			count[i] = 0;
-			arr[i] = 0;
-			diff[i] = 0;
-			wait[i] = 0;
-			loss[i] = 0;
-		}
+
 		for (int i = 0; i < 168; i++) { // Assuming the order of clinicians is physician, app and scribe
 
 			hourlyDetailList[i].setNumberOfPhysicians(clinicians[0].getClinicianCountPerHour()[i]);
@@ -496,37 +443,26 @@ public class ShiftCalculator {
 
 		}
 		if (patientHourWait == 1) { // one hour wait
-			for (int i = 0; i < 168; i++) {
-				if (i == 0) // index is 0
-				{
-					arr[i] = diff[i];
-					wait[i] = 0;
-					loss[i] = 0;
-				} else {
-					arr[i] = diff[i];
-					if (arr[i - 1] > 0) // in previous hour,already we more capacity, so next hour wait and loss
-										// will be 0
-					{
-						wait[i] = 0;
-						loss[i] = 0;
-					} else if (arr[i - 1] < 0 && arr[i] < 0)// in previous hour,some patients are not handled
+			for (int i = 1; i < 168; i++) {
+				copyDiff[i] = diff[i];
+				if (copyDiff[i - 1] < 0 && copyDiff[i] < 0)// in previous hour,some patients are not handled
 															// even in this hour also, some patients are waiting
-					{
-						wait[i] = 0;
-						loss[i] = arr[i - 1];
-					} else if (arr[i - 1] < 0 && arr[i] > 0)// handling patients who are waiting in previous hour
-															// using current capacity.
-					{
-						wait[i] = 0;
-						loss[i] = min(0, arr[i - 1] + arr[i]);
-					}
+				{
+					wait[i] = 0;
+					loss[i] = copyDiff[i - 1];
+				} else if (copyDiff[i - 1] < 0 && copyDiff[i] > 0)// handling patients who are waiting in previous hour
+				// using current capacity.
+				{
+					wait[i] = 0;
+					loss[i] = min(0, copyDiff[i - 1] + copyDiff[i]);
 				}
 			}
+
 		}
 
 		if (patientHourWait > 1) { // more than one hour wait
 			for (int i = 0; i < 168; i++) {
-				arr[i] = diff[i];
+				copyDiff[i] = diff[i];
 				if (i == 0) // index is 0
 				{
 					wait[i] = 0;
@@ -534,192 +470,99 @@ public class ShiftCalculator {
 					count[i] = 1;
 				} else {
 					int index = i - patientHourWait;
+					int p = 0;
 					if (index >= 0) // sliding window is possible
 					{
-						for (int j = index; j <= index + patientHourWait; j++) // acting like sliding window
-						{
-							count[j]++;
-						}
-						if (wait[i - 1] == 0 && arr[i - 1] < 0) // previous hour_wait ==0 and previous hour_diff <0
-						{
-							if (arr[i] >= 0) { // current hour_diff >=0
-								double ch = arr[i] + arr[i - 1];
-								wait[i] = min(0, arr[i] + arr[i - 1]);
-								arr[i - 1] = wait[i];
-								if (ch < 0) // updating array for further processing
-								{
-									arr[i] = 0;
-								} else {
-									arr[i] = ch;
-								}
-							} else {
-								wait[i] = arr[i - 1];
-							}
-							loss[i] = 0;
-						} else if (wait[i - 1] < 0 && arr[i] < 0) // previous hour_wait <0 and current hour_diff <0
-						{
-							int h = i - patientHourWait;
-							if (count[h] == patientHourWait + 1 && arr[h] < 0) {
-								loss[i] = arr[h];
-								wait[i] = wait[i - 1] + arr[i - 1] - loss[i];
-							} else {
-								loss[i] = 0;
-								wait[i] = wait[i - 1] + arr[i - 1];
-							}
-						} else if (wait[i - 1] < 0 && arr[i] >= 0) // previous hour_wait <0 and current hour_diff >=0
-						{
-							int h = i - patientHourWait;
-							double d = arr[i];
-							double sum = wait[i - 1] + arr[i - 1];
-
-							if (Math.abs(sum) < arr[i]) // current hour_diff can handle all patients who are waiting
-														// from previous hour
-							{
-								wait[i] = 0;
-								loss[i] = 0;
-								arr[i] = 0;
-								for (int g = h; g < i; g++) {
-									arr[g] = 0;
-								}
-							} else if (count[h] == patientHourWait+ 1) {
-								for (int g = h; g < i && d >= 0; g++) {
-									if (arr[g] >= 0) // already patients are handled
-										continue;
-									else {
-										double sd = d + arr[g];
-										if (sd < 0 && count[g] == patientHourWait + 1) {
-											arr[g] = sd;
-											loss[i] = arr[g];
-											d = 0;
-											arr[i] = 0;
-										} else if (sd < 0) {
-											arr[g] = sd;
-											arr[i] = 0;
-											d = 0;
-										} else {
-											d = sd;
-											arr[g] = 0;
-											arr[i] = d;
-										}
-									}
-								}
-
-								if (wait[i - 1] == 0 && arr[i - 1] < 0) {
-									if (arr[i] > 0) {
-
-										wait[i] = min(0, arr[i] + arr[i - 1]);
-										arr[i - 1] = wait[i];
-									}
-									if (arr[i] == 0) {
-										wait[i] = arr[i - 1];
-										loss[i] = 0;
-									} else {
-										wait[i] = arr[i - 1];
-									}
-									loss[i] = 0;
-								} else {
-									for (int g = h + 1; g < i; g++) {
-										wait[i] += arr[g];
-									}
-								}
-							}
-						} else // no previous conditions are true
-						{
-							wait[i] = 0;
-							loss[i] = 0;
-						}
-						if (wait[i] > 0) {
-							wait[i] = 0;
-						}
-					} else // index is less than (no.of hour wait) -> no loss
+						p = index;
+					}
+					for (int j = p; j <= i; j++) // acting like sliding window
 					{
-						for (int g = 0; g <= i; g++) // acting like sliding window
-						{
-							count[g]++;
-						}
-						if (wait[i - 1] == 0 && arr[i - 1] < 0) // previous hour_wait ==0 and previous hour_diff <0
-						{
-							if (arr[i] >= 0) {
-								double ch = arr[i] + arr[i - 1];
-								wait[i] = min(0, arr[i] + arr[i - 1]);
-								arr[i - 1] = wait[i];
-								if (ch < 0) // updating
-								{
-									arr[i] = 0;
-								} else {
-									arr[i] = ch;
-								}
-							} else {
-								wait[i] = arr[i - 1];
-							}
-							loss[i] = 0;
-						} else if (wait[i - 1] < 0 && arr[i] < 0) // previous hour_wait <0 and current hour_diff <0
-						{
-							loss[i] = 0;
-							wait[i] = wait[i - 1] + arr[i - 1];
-						} else if (wait[i - 1] < 0 && arr[i] >= 0) // previous hour_wait <0 and current hour_diff >=0
-						{
-							int h = 0;
-							double d = arr[i];
-							double sum = wait[i - 1] + arr[i - 1];
-							if (Math.abs(sum) < arr[i]) // current hour_diff can handle all patients who are waiting
-														// from previous hour
+						count[j]++;
+					}
+					if (wait[i - 1] == 0 && copyDiff[i - 1] < 0) // previous hour_wait ==0 and previous hour_diff <0
+					{
+						if (copyDiff[i] >= 0) { // current hour_diff >=0
+							double addedValue = copyDiff[i] + copyDiff[i - 1];
+							wait[i] = min(0, copyDiff[i] + copyDiff[i - 1]);
+							copyDiff[i - 1] = wait[i];
+							if (addedValue < 0) // updating array for further processing
 							{
-								wait[i] = 0;
-								loss[i] = 0;
-								arr[i] = 0;
-								for (int g = h; g < i; g++) {
-									arr[g] = 0;
-								}
+								copyDiff[i] = 0;
 							} else {
-								for (int g = h; g < i && d >= 0; g++) {
-									if (arr[g] >= 0)
-										continue;
-									else {
-										double sd = d + arr[g];
-										if (sd < 0) {
-											arr[g] = sd;
-											arr[i] = 0;
-											d = 0;
-										} else {
-											d = sd;
-											arr[g] = 0;
-											arr[i] = d;
-										}
-									}
-								}
-								if (wait[i - 1] == 0 && arr[i - 1] < 0) {
-									if (arr[i] > 0) {
-
-										wait[i] = min(0, arr[i] + arr[i - 1]);
-										arr[i - 1] = wait[i];
-									}
-									if (arr[i] == 0) {
-										wait[i] = arr[i - 1];
-										loss[i] = 0;
-									} else {
-										wait[i] = arr[i - 1];
-									}
-									loss[i] = 0;
-								} else {
-									for (int g = h + 1; g < i; g++) {
-										wait[i] += arr[g];
-									}
-								}
+								copyDiff[i] = addedValue;
 							}
-						} else // no previous conditions are satisfied
+						} else {
+							wait[i] = copyDiff[i - 1];
+						}
+						loss[i] = 0;
+					} else if (wait[i - 1] < 0 && copyDiff[i] < 0) // previous hour_wait <0 and current hour_diff <0
+					{
+						int h = i - patientHourWait;
+						if (h >= 0 && count[h] == patientHourWait + 1 && copyDiff[h] < 0) {
+							loss[i] = copyDiff[h];
+							wait[i] = wait[i - 1] + copyDiff[i - 1] - loss[i];
+						} else {
+							loss[i] = 0;
+							wait[i] = wait[i - 1] + copyDiff[i - 1];
+						}
+					} else if (wait[i - 1] < 0 && copyDiff[i] >= 0) // previous hour_wait <0 and current hour_diff >=0
+					{
+						int h = i - patientHourWait;
+						if (h < 0) {
+							h = 0;
+						}
+						double currentDiffValue = copyDiff[i];
+						double sum = wait[i - 1] + copyDiff[i - 1];
+
+						if (Math.abs(sum) < copyDiff[i]) // current hour_diff can handle all patients who are waiting
+						// from previous hour
 						{
 							wait[i] = 0;
 							loss[i] = 0;
-						}
-						if (wait[i] > 0) {
-							wait[i] = 0;
-						}
+							copyDiff[i] = 0;
+							for (int g = h; g < i; g++) {
+								copyDiff[g] = 0;
+							}
+						} else {
+							for (int g = h; g < i && currentDiffValue >= 0; g++) {
+								if (copyDiff[g] >= 0) // already patients are handled
+									continue;
+								else {
+									double addedValue = currentDiffValue + copyDiff[g];
+									if (h >= 0 && addedValue < 0 && count[g] == patientHourWait + 1) {
+										copyDiff[g] = addedValue;
+										loss[i] = copyDiff[g];
+										currentDiffValue = 0;
+										copyDiff[i] = 0;
+									} else if (addedValue < 0) {
+										copyDiff[g] = addedValue;
+										copyDiff[i] = 0;
+										currentDiffValue = 0;
+									} else {
+										currentDiffValue = addedValue;
+										copyDiff[g] = 0;
+										copyDiff[i] = currentDiffValue;
+									}
+								}
+							}
 
+							for (int g = h + 1; g < i; g++) {
+								wait[i] += copyDiff[g];
+							}
+
+						}
+					} else // no previous conditions are true
+					{
+						wait[i] = 0;
+						loss[i] = 0;
+					}
+					if (wait[i] > 0) {
+						wait[i] = 0;
 					}
 				}
-				if (arr[i] >= 0) {
-					arr[i] = 0;
+
+				if (copyDiff[i] >= 0) {
+					copyDiff[i] = 0;
 				}
 			}
 		}

@@ -82,6 +82,7 @@ public class ShiftPlanningService {
 	    Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
 	    Integer patientHourWait = input.getPatientHourWait();
 	    
+	    
 		Clinician[] clinicians = input.getClinician();
 		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();

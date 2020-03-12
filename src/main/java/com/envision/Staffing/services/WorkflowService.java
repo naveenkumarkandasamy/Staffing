@@ -43,7 +43,7 @@ public class WorkflowService {
 	
 //	private 
 	
-	private String getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails) throws IOException {
+	private String getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails) throws IOException, Exception {
 		String inputType = jobDetails.getInputFormat();
 		String fileExtension;
 		String jsonStr;
@@ -86,7 +86,7 @@ public class WorkflowService {
 		FtpUtil.uploadFile(outputFtpDetails, jsonStr);
 	}
 	
-	public void autorunWorkflowService(String jobId){
+	public void autorunWorkflowService(String jobId) throws Exception{
 		
 		try {
 			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);

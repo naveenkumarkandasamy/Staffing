@@ -9,6 +9,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,18 @@ public class QuartzSchedulerService {
 		Trigger trigger = buildJobTrigger(jobDetail, jobDetails);
 		try {
 			scheduler.scheduleJob(jobDetail, trigger);
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void rescheduleJob(String id, JobDetails jobDetails) {
+		JobDetail jobDetail = buildJobDetail(jobDetails);
+		Trigger trigger = buildJobTrigger(jobDetail, jobDetails);
+		TriggerKey triggerkey = TriggerKey.triggerKey(id,"DEFAULT");
+		try {
+			scheduler.rescheduleJob(triggerkey, trigger);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

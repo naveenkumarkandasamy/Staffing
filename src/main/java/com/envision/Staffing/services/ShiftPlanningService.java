@@ -28,7 +28,7 @@ public class ShiftPlanningService {
 	private String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 			"Saturday" };
 
-	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) {
+	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception {
 		Input input = new Input();
 
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
@@ -41,14 +41,14 @@ public class ShiftPlanningService {
 	// function to process form-data containing json object and the workload as an
 	// .xlsx file
 	// return the input object
-	public Input processFileInput(MultipartFile excelFile, String inputData) throws IOException {
+	public Input processFileInput(MultipartFile excelFile, String inputData) throws Exception {
 		Input input = new ObjectMapper().readValue(inputData, Input.class);
 		InputStream excelInput = excelFile.getInputStream();
 		input.setDayWorkload(getDataFromExcelFile(excelInput));
 		return input;
 	}
 
-	public Day[] getDataFromExcelFile(InputStream excelInputStream) {
+	public Day[] getDataFromExcelFile(InputStream excelInputStream) throws Exception {
 		XSSFWorkbook myExcelBook;
 		Day[] workload = new Day[7];
 		try {
@@ -79,10 +79,9 @@ public class ShiftPlanningService {
 		double lowerLimitFactor = 0.75;
 		double upperLimitFactor = 1.1;
 		Integer notAllocatedStartTime = input.getNotAllocatedStartTime();
-	    Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
-	    Integer patientHourWait = input.getPatientHourWait();
-	    
-	    
+		Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
+		Integer patientHourWait = input.getPatientHourWait();
+
 		Clinician[] clinicians = input.getClinician();
 		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();
@@ -116,14 +115,14 @@ public class ShiftPlanningService {
 
 		// checking which clinician is always true and store index in arrindex for this
 		// clinician
-		
+
 		for (int i = 0; i < shiftPreferences.length; i++) {
 			if (i != (shiftPreferences.length - 1)) {
-				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime,notAllocatedEndTime, shiftPreferences[i], clinicians,
-						lowerLimitFactor);
-			} else  
-				shiftCalculator.calculate4hourslots(upperLimitFactor,notAllocatedStartTime,notAllocatedEndTime, clinicians,
-						shiftPreferences[i]);
+				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime, notAllocatedEndTime,
+						shiftPreferences[i], clinicians, lowerLimitFactor);
+			} else
+				shiftCalculator.calculate4hourslots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime,
+						clinicians, shiftPreferences[i]);
 		}
 
 		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(patientHourWait, clinicians,

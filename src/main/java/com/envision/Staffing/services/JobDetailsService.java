@@ -42,17 +42,30 @@ public class JobDetailsService {
 	}
 
 	public JobDetails createOrUpdateJobDetails(JobDetails entity, byte[] fileData) {
+		String expression = null;
+		String status = null;
+
 		if (entity.getInputFormat().equals("DATA_FILE")) {
 			entity.getInputFileDetails().setDataFile(fileData);
 		}
-		if (entity.getId() != null) {
-			JobDetails jobdetails = jobDetailsRepository.getByIdLeftJoin(entity.getId());
-			entity = jobDetailsRepository.save((JobDetails) entity);
+		String id = entity.getId();
+		if (id != null) {
+			JobDetails jobdetails = jobDetailsRepository.getByIdLeftJoin(id);
+			expression = jobdetails.getCronExpression();
+			status = jobdetails.getStatus();
+		}
+
+		if (id != null) {
+			entity = jobDetailsRepository.save((JobDetails) entity); // updating job details
 		} else {
 			entity = jobDetailsRepository.save(entity);
 		}
-		if (entity.getStatus().equals("SCHEDULED")) {
+		if (entity.getStatus().equals("SCHEDULED") && (id == null || id!=null && status.equals("DRAFT") )) {
 			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
+		} else if (entity.getStatus().equals("SCHEDULED") && id != null) {
+			if (status.equals("SCHEDULED") && !entity.getCronExpression().equals(expression)) {
+				quartzSchedulerService.rescheduleJob(entity.getId(), entity);
+			}
 		}
 		return entity;
 	}

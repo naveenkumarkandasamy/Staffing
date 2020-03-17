@@ -121,7 +121,7 @@ public class ShiftPlanningService {
 				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime, notAllocatedEndTime,
 						shiftPreferences[i], clinicians, lowerLimitFactor);
 			} else
-				shiftCalculator.calculate4hourslots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime,
+				shiftCalculator.calculateLastHourSlots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime,
 						clinicians, shiftPreferences[i]);
 		}
 

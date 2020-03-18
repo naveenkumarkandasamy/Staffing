@@ -2,6 +2,7 @@ package com.envision.Staffing.ftp;
 
 import com.envision.Staffing.model.FtpDetails;
 import com.envision.Staffing.model.Output;
+import com.envision.Staffing.services.JobDetailsService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,9 +13,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.log4j.Logger;
 
 public class FtpUtil {
 
+	static Logger log = Logger.getLogger(FtpUtil.class);
 	public static FtpDetails fieldExtraction(FtpDetails ftpDetails) {
 
 		String ftpUrl = ftpDetails.getFileUrl();	
@@ -46,7 +49,7 @@ public class FtpUtil {
 			
 		return ftpDetails;
 	}
-
+ 
 	public static FTPClient connect(FtpDetails ftpDetails) {
 		FTPClient ftp = new FTPClient();
 		String host = ftpDetails.getHost();
@@ -68,6 +71,7 @@ public class FtpUtil {
 				ftp.disconnect();
 			}
 		} catch (IOException e) {
+			log.error(e);
 			e.printStackTrace();
 		}
 
@@ -92,6 +96,7 @@ public class FtpUtil {
 					ftp.disconnect();
 				}
 			} catch (Exception e) {
+				log.error(e);
 				e.printStackTrace();
 			}
 		}
@@ -119,6 +124,7 @@ public class FtpUtil {
 				ftp.logout();
 				ftp.disconnect();
 			} catch (IOException e) {
+				log.error(e);
 				e.printStackTrace();
 			}
 		}

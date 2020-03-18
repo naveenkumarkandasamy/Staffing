@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.envision.Staffing.job.EmailJob;
 import com.envision.Staffing.model.ScheduleEmailRequest;
+import com.envision.Staffing.services.EmailService;
 
 @RestController
 public class TestQuartzController {
@@ -24,10 +26,11 @@ public class TestQuartzController {
 	  @Autowired
 	    private Scheduler scheduler;
 	  
-	  
+	  Logger log = Logger.getLogger(TestQuartzController.class);   
 	@PostMapping("/scheduleEmail")
     public ResponseEntity<String> scheduleEmail(@Valid @RequestBody ScheduleEmailRequest scheduleEmailRequest) {
-        try {
+        log.info("Entering scheduleEmail endpoint");   
+		try {
             ZonedDateTime dateTime = ZonedDateTime.of(scheduleEmailRequest.getDateTime(), scheduleEmailRequest.getTimeZone());
             if(dateTime.isBefore(ZonedDateTime.now())) {
                 return ResponseEntity.badRequest().body("dateTime must be after current time");
@@ -37,10 +40,11 @@ public class TestQuartzController {
             scheduler.scheduleJob(jobDetail, trigger);
             return ResponseEntity.ok("Email Scheduled Successfully!");
         } catch (SchedulerException ex) {
+        	log.error("Error happened in scheduling email :"+ex);
             System.out.println("Error scheduling email"+ ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     "Error scheduling email. Please try later!");
-        }
+        } 
     }
 
 	

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,9 @@ public class JobDetailsService {
 
 	@Autowired
 	private QuartzSchedulerService quartzSchedulerService;
-
+	Logger log = Logger.getLogger(JobDetailsService.class);
 	public List<JobDetails> getAllJobDetails() {
+		log.info("Entering method to get all job Details ");
 		List<JobDetails> jobDetailsList = (List<JobDetails>) jobDetailsRepository.findAll();
 
 		if (jobDetailsList.size() > 0) {
@@ -28,8 +30,9 @@ public class JobDetailsService {
 			return new ArrayList<JobDetails>();
 		}
 	}
-
+  
 	public JobDetails getJobDetailsById(String id) {
+		log.info("Entering method to get job Details by using id");
 		JobDetails jobDetails = jobDetailsRepository.getByIdLeftJoin(id);
 		return jobDetails;
 //
@@ -47,7 +50,7 @@ public class JobDetailsService {
 
 		if (entity.getInputFormat().equals("DATA_FILE")) {
 			entity.getInputFileDetails().setDataFile(fileData);
-		}
+		} 
 		String id = entity.getId();
 		if (id != null) {
 			JobDetails jobdetails = jobDetailsRepository.getByIdLeftJoin(id);
@@ -56,6 +59,7 @@ public class JobDetailsService {
 		}
 
 		if (id != null) {
+			log.info("Updating job Details");
 			entity = jobDetailsRepository.save((JobDetails) entity); // updating job details
 		} else {
 			entity = jobDetailsRepository.save(entity);
@@ -71,6 +75,7 @@ public class JobDetailsService {
 	}
 
 	public void deleteJobDetailsById(String id) {
+		log.info("Entering method to delete job Details by id ");
 		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(id);
 
 		if (jobDetails.isPresent()) {

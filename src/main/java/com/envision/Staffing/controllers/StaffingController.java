@@ -29,9 +29,9 @@ public class StaffingController {
 	@RequestMapping(value = "/request/shiftPlan", method = RequestMethod.POST)
 
 	public Output getShiftPlan(@RequestBody Input input) throws IOException {
-		return shiftPlanningService.getShiftPlan(input);
+		return shiftPlanningService.getShiftPlan(input);       
 	}
-
+ 
 	@RequestMapping(value = "/request/shiftPlanFileUpload", method = RequestMethod.POST, consumes = { "multipart/form-data" })
 	@ResponseBody
 	public Output getShiftPlanFromFile(@RequestPart("workloadExcel") MultipartFile excelFile,

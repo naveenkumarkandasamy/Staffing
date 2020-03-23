@@ -28,33 +28,36 @@ public class ShiftPlanningService {
 	private String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 			"Saturday" };
 
-	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception{
+	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception {
+  
 		Input input = new Input();
-		
+
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
 		input.setLowerLimitFactor(jobDetails.getLowerUtilizationFactor());
 		input.setShiftLength(jobDetails.getShiftLengthPreferences());
 		input.setDayWorkload(getDataFromExcelFile(ftpInputStream));
 		return input;
 	}
-	
+
 	// function to process form-data containing json object and the workload as an
 	// .xlsx file
 	// return the input object
-	public Input processFileInput(MultipartFile excelFile, String inputData) throws IOException, Exception {
+	public Input processFileInput(MultipartFile excelFile, String inputData) throws Exception {
+
 		Input input = new ObjectMapper().readValue(inputData, Input.class);
 		InputStream excelInput = excelFile.getInputStream();
-		input.setDayWorkload( getDataFromExcelFile(excelInput));
+		input.setDayWorkload(getDataFromExcelFile(excelInput));
 		return input;
 	}
-	
-	public Day[] getDataFromExcelFile(InputStream excelInputStream) throws Exception{
+
+	public Day[] getDataFromExcelFile(InputStream excelInputStream) throws Exception {
+
 		XSSFWorkbook myExcelBook;
 		Day[] workload = new Day[7];
 		try {
 			myExcelBook = new XSSFWorkbook(excelInputStream);
 			XSSFSheet myExcelSheet = myExcelBook.getSheetAt(0);
-			
+
 			for (int i = 0; i <= 6; i++) {
 				workload[i] = new Day();
 				// setting days name as saturday or monday etc
@@ -64,7 +67,7 @@ public class ShiftPlanningService {
 					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
 				}
 				workload[i].setExpectedPatientsPerHour(personPerHour);
-			}		
+			}
 			myExcelBook.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -82,14 +85,22 @@ public class ShiftPlanningService {
 
 		Integer[] shiftPreferences = new Integer[] { 12, 10, 8, 4 };
 		double lowerLimitFactor = 0.75;
+		double upperLimitFactor = 1.1;
+		Integer notAllocatedStartTime = input.getNotAllocatedStartTime();
+		Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
+		Integer patientHourWait = input.getPatientHourWait();
 
 		Clinician[] clinicians = input.getClinician();
-
 		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();
 		}
+
 		if (input.getLowerLimitFactor() != null) {
 			lowerLimitFactor = input.getLowerLimitFactor();
+		}
+
+		if (input.getUpperLimitFactor() != null) {
+			upperLimitFactor = input.getUpperLimitFactor();
 		}
 
 		Workload work = new Workload();
@@ -110,14 +121,20 @@ public class ShiftPlanningService {
 		ShiftCalculator shiftCalculator = new ShiftCalculator();
 		shiftCalculator.setWorkloads(work);
 
+		// checking which clinician is always true and store index in arrindex for this
+		// clinician
+
 		for (int i = 0; i < shiftPreferences.length; i++) {
-			if (i != (shiftPreferences.length - 1))
-				shiftCalculator.calculatePhysicianSlotsForAll(shiftPreferences[i], clinicians, lowerLimitFactor);
-			else
-				shiftCalculator.calculate4hourslots(clinicians, shiftPreferences[i]);
+			if (i != (shiftPreferences.length - 1)) {
+				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime, notAllocatedEndTime,
+						shiftPreferences[i], clinicians, lowerLimitFactor);
+			} else
+				shiftCalculator.calculateLastHourSlots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime,
+						clinicians, shiftPreferences[i]);
 		}
 
-		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(clinicians, work.getDocEfficency());
+		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(patientHourWait, clinicians,
+				work.getDocEfficency(), lowerLimitFactor);
 
 		// calculating the count of clinicians starting and ending at each hour
 
@@ -190,14 +207,13 @@ public class ShiftPlanningService {
 			day = input.getDayWorkload();
 			for (Day eachDay : day) {
 				for (Double patientsPerHour : eachDay.getExpectedPatientsPerHour()) {
-					work.getFixedworkloadArray()[k] = patientsPerHour / work.getDocEfficency();
+					work.getFixedworkloadArray()[k] = patientsPerHour;
 					work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k];
 					k++;
 				}
 			}
 
 		}
-
 		return work;
 	}
 

@@ -23,14 +23,6 @@ public class MultipleAuthProvidersSecurityConfig extends WebSecurityConfigurerAd
 	
 	@Autowired
 	private UserDetailsService myUserDetailsService;
-
-//	@Autowired
-//	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//
-//		// auth.authenticationProvider(customAuthProvider);
-//		auth.inMemoryAuthentication().withUser("osatadmin").password("{noop}osatadmin123").roles("ADMIN").and()
-//				.withUser("osatuser").password("{noop}osatuser123").roles("USER");
-//	}
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -40,30 +32,10 @@ public class MultipleAuthProvidersSecurityConfig extends WebSecurityConfigurerAd
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 
-//		http.csrf().disable()
-//        .exceptionHandling()
-//        .and()
-//        .authorizeRequests()
-//        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-//        .antMatchers("/request").authenticated()
-//        .and()
-//    .formLogin()
-//        .loginProcessingUrl("/login")
-//        .permitAll()
-//        .usernameParameter("username")
-//        .passwordParameter("pass")
-//        .successHandler(new MySimpleUrlAuthenticationSuccessHandler())
-//       // .failureHandler(new MySimpleUrlAuthenticationSuccessHandler())
-//        .and()
-//        .httpBasic();
-////    .logout()
-////    .logoutUrl("/logout")
-////    .invalidateHttpSession(true);
-		httpSecurity.csrf().disable().authorizeRequests().antMatchers("/login").permitAll().anyRequest().authenticated()
+		httpSecurity.csrf().disable().authorizeRequests().antMatchers("/login","/token").permitAll().anyRequest().authenticated()
 				.and().exceptionHandling().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
 	}
 
 	@Bean
@@ -77,8 +49,4 @@ public class MultipleAuthProvidersSecurityConfig extends WebSecurityConfigurerAd
 		return super.authenticationManagerBean();
 	}
 
-//    @Bean
-//    public PasswordEncoder encoder() {
-//        return new BCryptPasswordEncoder();
-//    }
 }

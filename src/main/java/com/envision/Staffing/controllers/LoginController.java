@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,33 +22,42 @@ public class LoginController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private JwtUtil jwtTokenUtil;
 
 	@Autowired
 	private MyUserDetailsService userDetailsService;
-	
+
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestParam(value = "username") String username, @RequestParam(value = "pass") String password) throws Exception {
+	public ResponseEntity<?> createAuthenticationToken(@RequestParam(value = "username") String username,
+			@RequestParam(value = "pass") String password) throws Exception {
 		
-		System.out.println(username+" "+password);
 		try {
-			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(username, password)
-			);
-		}
-		catch (BadCredentialsException e) {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		} catch (BadCredentialsException e) {
 			throw new Exception("Incorrect username or password", e);
 		}
-		final UserDetails userDetails = userDetailsService
-				.loadUserByUsername(username);
-		
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
 		final User user = userDetailsService.getUser(username);
 
-		final String jwt = jwtTokenUtil.generateToken(userDetails);
-		
-		return ResponseEntity.ok(new AuthenticationResponse(jwt,user));
+		final String accessToken = jwtTokenUtil.generateToken(userDetails);
+		final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
+
+		return ResponseEntity.ok(new AuthenticationResponse(accessToken, user, refreshToken));
+	}
+
+	@RequestMapping(value = "/token", method = RequestMethod.POST)
+	public ResponseEntity<?> sendRefreshToken(@RequestHeader("refreshToken") String refreshToken,
+			@RequestHeader String username) throws Exception {
+
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+		if (jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+			final String accessToken = jwtTokenUtil.generateToken(userDetails);
+			return ResponseEntity.ok(new AuthenticationResponse(accessToken));
+		}
+		return (ResponseEntity<?>) ResponseEntity.badRequest();
 	}
 
 }

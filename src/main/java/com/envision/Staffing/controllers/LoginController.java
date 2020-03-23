@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.envision.Staffing.model.AuthenticationResponse;
+import com.envision.Staffing.model.User;
 import com.envision.Staffing.services.JwtUtil;
 import com.envision.Staffing.services.MyUserDetailsService;
 
@@ -30,7 +31,7 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestParam(value = "username") String username, @RequestParam(value = "pass") String password) throws Exception {
 		
-		System.out.println("login controller");
+		System.out.println(username+" "+password);
 		try {
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(username, password)
@@ -39,13 +40,14 @@ public class LoginController {
 		catch (BadCredentialsException e) {
 			throw new Exception("Incorrect username or password", e);
 		}
-		
 		final UserDetails userDetails = userDetailsService
 				.loadUserByUsername(username);
+		
+		final User user = userDetailsService.getUser(username);
 
 		final String jwt = jwtTokenUtil.generateToken(userDetails);
 		
-		return ResponseEntity.ok(new AuthenticationResponse(jwt));
+		return ResponseEntity.ok(new AuthenticationResponse(jwt,user));
 	}
 
 }

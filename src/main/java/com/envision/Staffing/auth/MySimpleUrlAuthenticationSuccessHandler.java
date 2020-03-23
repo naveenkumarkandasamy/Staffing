@@ -23,15 +23,6 @@ import com.envision.Staffing.services.MyUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private JwtUtil jwtTokenUtil;
-
-	@Autowired
-	private MyUserDetailsService userDetailsService;
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -39,20 +30,8 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
 		Set<String> roles = authentication.getAuthorities().stream().map(r -> r.getAuthority())
 				.collect(Collectors.toSet());
 		User user = new User(authentication.getName(), roles);
-		// TODO Auto-generated method stub
-		System.out.println(authentication.getPrincipal().getClass().getProtectionDomain());
 		response.getWriter().write(new ObjectMapper().writeValueAsString(user));
 		response.setStatus(200);
 		System.out.println("Hi");
-
-//		try {
-//			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//					authentication.getName(), authentication.getDetails()));
-//		} catch (BadCredentialsException e) {
-//			throw new Exception("Incorrect username or password", e);
-//		}
-//		
-//		return ResponseEntity.ok(new AuthenticationResponse(jwt));
-
 	}
 }

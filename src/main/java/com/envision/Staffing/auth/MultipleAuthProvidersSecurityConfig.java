@@ -17,8 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class MultipleAuthProvidersSecurityConfig extends WebSecurityConfigurerAdapter {
-//	@Autowired
-//	CustomAuthenticationProvider customAuthProvider;
 	
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;

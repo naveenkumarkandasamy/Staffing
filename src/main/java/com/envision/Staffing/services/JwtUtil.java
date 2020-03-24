@@ -46,7 +46,7 @@ public class JwtUtil {
 	private String createToken(Map<String, Object> claims, String subject) {
 
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 10 * 1 * 1))
+				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 
@@ -61,7 +61,7 @@ public class JwtUtil {
 
 		return Jwts.builder().setClaims(claims)
 				.setId(UUID.randomUUID().toString()).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1 * 1 + 1000 * 60 * 60 * 48))
+				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1 + 1000 * 60 * 60 * 48))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
 	}
 }

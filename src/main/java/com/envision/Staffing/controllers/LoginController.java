@@ -1,5 +1,6 @@
 package com.envision.Staffing.controllers;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.envision.Staffing.model.AuthenticationResponse;
-import com.envision.Staffing.model.User;
+import com.envision.Staffing.model.UserAuth;
 import com.envision.Staffing.services.JwtUtil;
 import com.envision.Staffing.services.MyUserDetailsService;
 
@@ -40,17 +41,16 @@ public class LoginController {
 		}
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-		final User user = userDetailsService.getUser(username);
-
+		final UserAuth userauth = userDetailsService.getUser(username);
 		final String accessToken = jwtTokenUtil.generateToken(userDetails);
 		final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
-
-		return ResponseEntity.ok(new AuthenticationResponse(accessToken, user, refreshToken));
+		
+		return ResponseEntity.ok(new AuthenticationResponse(accessToken,refreshToken,userauth.getRoles(),userauth.getId(),userauth.getName(),userauth.getEmail()));
 	}
 
 	@RequestMapping(value = "/token", method = RequestMethod.POST)
-	public ResponseEntity<?> sendRefreshToken(@RequestHeader("refreshToken") String refreshToken,
-			@RequestHeader String username) throws Exception {
+	public ResponseEntity<?> sendRefreshToken(@RequestParam(value = "refresh-token") String refreshToken,
+			@RequestParam(value = "current-user") String username) throws Exception {
 
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 		if (jwtTokenUtil.validateToken(refreshToken, userDetails)) {

@@ -3,18 +3,29 @@ package com.envision.Staffing.services;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.function.Function;
 
+@PropertySource(ignoreResourceNotFound = true, value = "classpath:application.properties")
 @Service
 public class JwtUtil {
-
+	
+    @Value("${accessTokenExpiry}")
+    private int accessTokenExpiry;
+    
+    @Value("${refreshTokenExpiry}")
+    private int refreshTokenExpiry;
+    
 	private String SECRET_KEY = "secret";
 
 	public String extractUsername(String token) {
@@ -46,7 +57,7 @@ public class JwtUtil {
 	private String createAccessToken(Map<String, Object> claims, String subject) {
 
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1))
+				.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiry))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 
@@ -56,12 +67,11 @@ public class JwtUtil {
 	}
 
 	public String generateRefreshToken(UserDetails userDetails) {
-
 		Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
 
 		return Jwts.builder().setClaims(claims).setId(UUID.randomUUID().toString())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1 + 1000 * 60 * 60 * 48))
+				.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiry + refreshTokenExpiry))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
 	}
 }

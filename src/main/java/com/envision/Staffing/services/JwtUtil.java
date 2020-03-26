@@ -38,12 +38,12 @@ public class JwtUtil {
 		return extractExpiration(token).before(new Date());
 	}
 
-	public String generateToken(UserDetails userDetails) {
+	public String generateAccessToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
-		return createToken(claims, userDetails.getUsername());
+		return createAccessToken(claims, userDetails.getUsername());
 	}
 
-	private String createToken(Map<String, Object> claims, String subject) {
+	private String createAccessToken(Map<String, Object> claims, String subject) {
 
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1))
@@ -59,8 +59,8 @@ public class JwtUtil {
 
 		Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
 
-		return Jwts.builder().setClaims(claims)
-				.setId(UUID.randomUUID().toString()).setIssuedAt(new Date(System.currentTimeMillis()))
+		return Jwts.builder().setClaims(claims).setId(UUID.randomUUID().toString())
+				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1 + 1000 * 60 * 60 * 48))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
 	}

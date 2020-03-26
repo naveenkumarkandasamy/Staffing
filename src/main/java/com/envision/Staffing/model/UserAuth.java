@@ -2,6 +2,7 @@ package com.envision.Staffing.model;
 
 import java.util.Set;
 
+// Pojo created to match the format of user details used in UI
 public class UserAuth {
 	
 	public UserAuth() {

@@ -3,13 +3,14 @@ package com.envision.Staffing.model;
 import java.io.Serializable;
 import java.util.Set;
 
-
 public class AuthenticationResponse implements Serializable {
 
-    private String accessToken;
-    private String refreshToken;
+	private String accessToken;
+	private String refreshToken;
 	private Set<String> roles;
 	private String id;
+	private String name;
+	private String email;
 
 	public AuthenticationResponse(String accessToken, String refreshToken, Set<String> roles, String id, String name,
 			String email) {
@@ -21,7 +22,7 @@ public class AuthenticationResponse implements Serializable {
 		this.name = name;
 		this.email = email;
 	}
-	
+
 	public Set<String> getRoles() {
 		return roles;
 	}
@@ -54,13 +55,9 @@ public class AuthenticationResponse implements Serializable {
 		this.email = email;
 	}
 
-	private String name;
-
-	private String email;
-
 	public AuthenticationResponse(String jwt) {
 		this.accessToken = jwt;
-    }
+	}
 
 	public String getAccessToken() {
 		return accessToken;
@@ -69,5 +66,5 @@ public class AuthenticationResponse implements Serializable {
 	public String getRefreshToken() {
 		return refreshToken;
 	}
-  
+
 }

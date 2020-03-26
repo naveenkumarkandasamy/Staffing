@@ -13,19 +13,6 @@ public class UserPrincipal implements UserDetails {
         this.user = user;
     }
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//
-//        // Extract list of roles (ROLE_name)
-//        this.user.getRoles().forEach(r -> {
-//            GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + r);
-//            authorities.add(authority);
-//        });
-//
-//        return authorities;
-//    }
-
     @Override
     public String getPassword() {
         return this.user.getPassword();

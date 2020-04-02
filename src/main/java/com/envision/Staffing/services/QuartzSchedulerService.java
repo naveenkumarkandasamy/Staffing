@@ -31,10 +31,13 @@ public class QuartzSchedulerService {
 	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
+
 	Logger log = Logger.getLogger(QuartzSchedulerService.class);
 	public void scheduleJob(JobDetails jobDetails) {
 		log.info("Entering method for scheduling job :");
+		log.info("id"+jobDetails.getId());
 		JobDetail jobDetail = buildJobDetail(jobDetails);
+		log.info(jobDetail.getKey());
 		Trigger trigger = buildJobTrigger(jobDetail, jobDetails);
 		try {
 			scheduler.scheduleJob(jobDetail, trigger);
@@ -43,7 +46,7 @@ public class QuartzSchedulerService {
 			log.error("Error happened in scheduling job :"+e);
 			e.printStackTrace();
 		}
-	}
+	} 
 	
 	public void rescheduleJob(String id, JobDetails jobDetails) {
 		log.info("Entering method for rescheduling job :");
@@ -60,10 +63,12 @@ public class QuartzSchedulerService {
 	}
 
 	private JobDetail buildJobDetail(JobDetails jobDetails) {
+		
 		JobDataMap jobDataMap = new JobDataMap();
-
-		jobDataMap.put("jobId", jobDetails.getId());
-
+		String id =jobDetails.getId();
+        log.info( jobDetails.getId());
+		jobDataMap.put("jobId",jobDetails.getId());
+		log.info("jobid"+jobDetails.getId()); 
 		return JobBuilder.newJob(AutorunJob.class) // TODO: Change to respective class when added
 				.withIdentity(jobDetails.getId()).withDescription(jobDetails.getName()).usingJobData(jobDataMap)
 				.storeDurably() // Whether or not the Job should remain stored after it is orphaned (no Triggers

@@ -79,7 +79,7 @@ public class Shift {
 			return false;
 		Shift shift = (Shift) o;
 		if (id != shift.id)
-			return false;
+			return false; 
 		if (startTime != shift.startTime)
 			return false;
 		if (endTime != shift.endTime)

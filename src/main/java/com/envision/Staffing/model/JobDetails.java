@@ -20,7 +20,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.envision.Staffing.converter.DoubleArrayToStringConverter;
 import com.envision.Staffing.converter.IntegerArrayToStringConverter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "job_details")
@@ -58,6 +60,7 @@ public class JobDetails implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	@Column(name = "user_id")
 	private String userId;
 
@@ -70,6 +73,39 @@ public class JobDetails implements Serializable {
 
 	@Column(name = "upper_utilization_factor")
 	private Float upperUtilizationFactor;
+
+	@Column(name = "not_allocated_start_time")
+	private Integer notAllocatedStartTime;
+
+	@Column(name = "not_allocated_end_time")
+	private Integer notAllocatedEndTime;
+
+	@Column(name = "patient_hour_wait")
+	private Integer patientHourWait;
+
+	public Integer getNotAllocatedStartTime() {
+		return notAllocatedStartTime;
+	}
+
+	public void setNotAllocatedStartTime(Integer notAllocatedStartTime) {
+		this.notAllocatedStartTime = notAllocatedStartTime;
+	}
+
+	public Integer getNotAllocatedEndTime() {
+		return notAllocatedEndTime;
+	}
+
+	public void setNotAllocatedEndTime(Integer notAllocatedEndTime) {
+		this.notAllocatedEndTime = notAllocatedEndTime;
+	}
+
+	public Integer getPatientHourWait() {
+		return patientHourWait;
+	}
+
+	public void setPatientHourWait(Integer patientHourWait) {
+		this.patientHourWait = patientHourWait;
+	}
 
 	@Column(name = "schedule_datetime")
 	private Date scheduledDate;

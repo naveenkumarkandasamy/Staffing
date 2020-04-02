@@ -33,11 +33,15 @@ public class ShiftPlanningService {
 			"Saturday" };
 
 	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception {
-  
+
 		Input input = new Input();
 
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
 		input.setLowerLimitFactor(jobDetails.getLowerUtilizationFactor());
+		input.setUpperLimitFactor((double) jobDetails.getUpperUtilizationFactor());
+		input.setNotAllocatedStartTime(jobDetails.getNotAllocatedStartTime());
+		input.setNotAllocatedEndTime(jobDetails.getNotAllocatedEndTime());
+		input.setPatientHourWait(jobDetails.getPatientHourWait());
 		input.setShiftLength(jobDetails.getShiftLengthPreferences());
 		input.setDayWorkload(getDataFromExcelFile(ftpInputStream));
 		return input;
@@ -81,37 +85,36 @@ public class ShiftPlanningService {
 		} catch (NumberFormatException numberFormatException) {
 			throw new Exception(numberFormatException.toString());
 		}
-		
+
 		return workload;
 	}
 
 	public Output getShiftPlan(Input input) throws IOException {
 
-		
 		log.info("*** ========================== ***");
 		log.info("*** Scheduling Process Started ***");
 		log.info("*** ========================== ***");
-		
+
 		Integer[] shiftPreferences = new Integer[] { 12, 10, 8, 4 };
 		double lowerLimitFactor = 0.75;
 		double upperLimitFactor = 1.1;
-		Integer notAllocatedStartTime =1;
-		Integer notAllocatedEndTime =6;
-		Integer patientHourWait =2;
+		Integer notAllocatedStartTime = 1;
+		Integer notAllocatedEndTime = 6;
+		Integer patientHourWait = 2;
 		log.info("A.Inputs Description");
 		log.info("---------------------------------");
-		log.info("A.1.Default Values for Inputs "); 
+		log.info("A.1.Default Values for Inputs ");
 		log.info("---------------------------------");
-		log.info("A.1.1 ShiftPreferences :"+Arrays.toString(shiftPreferences));
-		log.info("A.1.2 lowerLimitFactor :"+lowerLimitFactor);
-		log.info("A.1.3 upperLimitFactor :"+upperLimitFactor);
-		
-		//Integer notAllocatedStartTime = input.getNotAllocatedStartTime();
-		//Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
-		//Integer patientHourWait = input.getPatientHourWait();
+		log.info("A.1.1 ShiftPreferences :" + Arrays.toString(shiftPreferences));
+		log.info("A.1.2 lowerLimitFactor :" + lowerLimitFactor);
+		log.info("A.1.3 upperLimitFactor :" + upperLimitFactor);
+
+		notAllocatedStartTime = input.getNotAllocatedStartTime();
+		notAllocatedEndTime = input.getNotAllocatedEndTime();
+		patientHourWait = input.getPatientHourWait();
 
 		Clinician[] clinicians = input.getClinician();
-		if (input.getShiftLength() != null) { 
+		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();
 		}
 
@@ -122,23 +125,27 @@ public class ShiftPlanningService {
 		if (input.getUpperLimitFactor() != null) {
 			upperLimitFactor = input.getUpperLimitFactor();
 		}
+
 		log.info("---------------------------------------");
 		log.info("A.2.Getting Actual Values for Inputs ");
 		log.info("---------------------------------------");
-		log.info("A.2.1 shiftPreferences :"+Arrays.toString(shiftPreferences));
-		log.info("A.2.2 lowerLimitFactor :"+lowerLimitFactor);
-		log.info("A.2.3 upperLimitFactor :"+upperLimitFactor);
-		log.info("A.2.4 restrictionStartTime :"+notAllocatedStartTime);
-		log.info("A.2.5 restrictionEndTime :"+notAllocatedEndTime);
-		log.info("A.2.6 numberOfPatientHourWait :"+patientHourWait);
+		log.info("A.2.1 shiftPreferences :" + Arrays.toString(shiftPreferences));
+		log.info("A.2.2 lowerLimitFactor :" + lowerLimitFactor);
+		log.info("A.2.3 upperLimitFactor :" + upperLimitFactor);
+		log.info("A.2.4 restrictionStartTime :" + notAllocatedStartTime);
+		log.info("A.2.5 restrictionEndTime :" + notAllocatedEndTime);
+		log.info("A.2.6 numberOfPatientHourWait :" + patientHourWait);
 		log.info("---------------------------------");
 		log.info("B.Clinicians Details ");
 		log.info("---------------------------------");
 		for (int i = 0; i < clinicians.length; i++) {
-			log.info("B."+(i+1)+".1 clinicianName :"+clinicians[i].getName()+", B."+(i+1)+".2 actualCapacity :"+clinicians[i].getPatientsPerHour()+", B."+(i+1)+".3 Cost :"+clinicians[i].getCost()
-					+", B."+(i+1)+".4 First/Mid/LastHourCapacity :"+Arrays.toString(clinicians[i].getCapacity())+", B."+(i+1)+".5 Expression :"+clinicians[i].getExpressions());
-        } 
-		
+			log.info("B." + (i + 1) + ".1 clinicianName :" + clinicians[i].getName() + ", B." + (i + 1)
+					+ ".2 actualCapacity :" + clinicians[i].getPatientsPerHour() + ", B." + (i + 1) + ".3 Cost :"
+					+ clinicians[i].getCost() + ", B." + (i + 1) + ".4 First/Mid/LastHourCapacity :"
+					+ Arrays.toString(clinicians[i].getCapacity()) + ", B." + (i + 1) + ".5 Expression :"
+					+ clinicians[i].getExpressions());
+		}
+
 		Workload work = new Workload();
 		// Checking if at least one clinician is sent and the PatientsPerHour is not
 		// empty, mostly physicians
@@ -159,8 +166,9 @@ public class ShiftPlanningService {
 
 		// checking which clinician is always true and store index in arrindex for this
 		// clinician
-		 
-		log.info("Assigning Clinicians to Corresponding ShiftPreferences based upon the condition like Utilization,clinicianExpression");
+
+		log.info(
+				"Assigning Clinicians to Corresponding ShiftPreferences based upon the condition like Utilization,clinicianExpression");
 		for (int i = 0; i < shiftPreferences.length; i++) {
 			if (i != (shiftPreferences.length - 1)) {
 				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime, notAllocatedEndTime,
@@ -200,19 +208,15 @@ public class ShiftPlanningService {
 			clinicianStartEndCount.add(slotMap);
 
 		}
-		
+
 		List<List<Shift>> dayToshiftsmappingTemp = shiftCalculator.printSlots();
-		log.info("-------------------------------------");
-        log.info("E.Individual Assigned Shift Details  ");
-        log.info("-------------------------------------");
-		int itr=1;
+
 		for (int i = 0; i < 7; i++) {
 
 			for (Shift s : dayToshiftsmappingTemp.get(i)) {
 				Map<Integer, Map<String, Integer>> slotMapTemp = clinicianStartEndCount
 						.get(s.getStartTime() + (i * 24));
 				Map<String, Integer> clinicianMapTempStart = slotMapTemp.get(s.getNoOfHours());
-                int count=clinicianMapTempStart.get(s.getPhysicianType() + "Start")+1;
 				clinicianMapTempStart.put(s.getPhysicianType() + "Start",
 						clinicianMapTempStart.get(s.getPhysicianType() + "Start") + 1);
 				slotMapTemp.put(s.getNoOfHours(), clinicianMapTempStart);
@@ -227,10 +231,7 @@ public class ShiftPlanningService {
 							clinicianMapTempStart.get(s.getPhysicianType() + "End") + 1);
 					slotMapTemp.put(s.getNoOfHours(), clinicianMapTempStart);
 					clinicianStartEndCount.set(s.getStartTime() + (i * 24) + s.getNoOfHours(), slotMapTemp);
-					log.info("E."+itr+".1 StartTime :"+(s.getStartTime() + (i * 24))+", E."+itr+".2 EndTime :"+((s.getStartTime() + (i * 24)) + (s.getNoOfHours()))+
-							 ", E."+itr+".3 ShiftLength :"+s.getNoOfHours()+", E."+itr+".4 Total"+s.getPhysicianType()+"Count :"+count);	   
-				}   
-			    itr++; 
+				}
 			}
 		}
 
@@ -243,15 +244,16 @@ public class ShiftPlanningService {
 
 	private Workload assignWorkload(Input input, Workload work) {
 		Day[] day;
-		int k = 0,j=1;
+		int k = 0, j = 1;
 		log.info("---------------------------------");
-        log.info("C.WorkLoad Details"); 
-        log.info("---------------------------------");
+		log.info("C.WorkLoad Details");
+		log.info("---------------------------------");
 		if (input.getDayWorkload() != null) {
 			day = input.getDayWorkload();
 			for (Day eachDay : day) {
-				log.info("C."+j+".1 Day :"+eachDay.getName());
-				log.info("C."+j+".2 ExpectedPatientPerHour :"+Arrays.toString(eachDay.getExpectedPatientsPerHour()));
+				log.info("C." + j + ".1 Day :" + eachDay.getName());
+				log.info("C." + j + ".2 ExpectedPatientPerHour :"
+						+ Arrays.toString(eachDay.getExpectedPatientsPerHour()));
 				j++;
 				for (Double patientsPerHour : eachDay.getExpectedPatientsPerHour()) {
 					work.getFixedworkloadArray()[k] = patientsPerHour;

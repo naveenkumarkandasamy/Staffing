@@ -9,6 +9,8 @@ public class Application {
 	public static void main(String[] args) {
 		Logger log = Logger.getLogger(Application.class);
 		SpringApplication.run(Application.class, args);
-		log.info("Started OSAT Application");
+		log.info("=============================");
+		log.info("Started OSAT Application ");
+		log.info("=============================");
 	}
 }

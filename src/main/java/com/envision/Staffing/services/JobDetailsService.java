@@ -20,6 +20,7 @@ public class JobDetailsService {
 	@Autowired
 	private QuartzSchedulerService quartzSchedulerService;
 	Logger log = Logger.getLogger(JobDetailsService.class);
+
 	public List<JobDetails> getAllJobDetails() {
 		log.info("Entering method to get all job Details ");
 		List<JobDetails> jobDetailsList = (List<JobDetails>) jobDetailsRepository.findAll();
@@ -30,10 +31,11 @@ public class JobDetailsService {
 			return new ArrayList<JobDetails>();
 		}
 	}
-  
+
 	public JobDetails getJobDetailsById(String id) {
 		log.info("Entering method to get job Details by using id");
 		JobDetails jobDetails = jobDetailsRepository.getByIdLeftJoin(id);
+		log.info(jobDetails.getName());
 		return jobDetails;
 //
 //		if (jobDetails.isPresent()) {
@@ -50,7 +52,7 @@ public class JobDetailsService {
 
 		if (entity.getInputFormat().equals("DATA_FILE")) {
 			entity.getInputFileDetails().setDataFile(fileData);
-		} 
+		}
 		String id = entity.getId();
 		if (id != null) {
 			JobDetails jobdetails = jobDetailsRepository.getByIdLeftJoin(id);
@@ -64,7 +66,7 @@ public class JobDetailsService {
 		} else {
 			entity = jobDetailsRepository.save(entity);
 		}
-		if (entity.getStatus().equals("SCHEDULED") && (id == null || id!=null && status.equals("DRAFT") )) {
+		if (entity.getStatus().equals("SCHEDULED") && (id == null || id != null && status.equals("DRAFT"))) {
 			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
 		} else if (entity.getStatus().equals("SCHEDULED") && id != null) {
 			if (status.equals("SCHEDULED") && !entity.getCronExpression().equals(expression)) {

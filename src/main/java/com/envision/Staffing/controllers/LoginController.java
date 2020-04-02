@@ -9,8 +9,9 @@ import com.envision.Staffing.services.EmailService;
 
 @RestController
 public class LoginController {
-	Logger log = Logger.getLogger(LoginController.class);  
-	@RequestMapping("/validateLogin") 
+	Logger log = Logger.getLogger(LoginController.class);
+
+	@RequestMapping("/validateLogin")
 	public User validateLogin() {
 		log.info("Entered with endpoint :/validateLogin");
 		return new User();

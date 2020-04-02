@@ -17,33 +17,34 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-	
-	 @Autowired
-	 private JavaMailSender mailSender;
-	
-	 @Autowired
-	 private MailProperties mailProperties;
-	 Logger log = Logger.getLogger(EmailService.class); 
+
+	@Autowired
+	private JavaMailSender mailSender;
+
+	@Autowired
+	private MailProperties mailProperties;
+	Logger log = Logger.getLogger(EmailService.class);
+
 	public void sendMail(String toEmail, String subject, String body, String attachment) {
 		log.info("Entering method for send mail :");
-		log.info("Mail id :"+toEmail+" , subject for email :"+subject+" , bodyMessage :"+body);
-        try { 
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper messageHelper = new MimeMessageHelper(message,true, StandardCharsets.UTF_8.toString());
-            messageHelper.setSubject(subject);
-            messageHelper.setText(body, true);
-            messageHelper.setFrom(mailProperties.getUsername());
-            messageHelper.setTo(toEmail);
-            InputStream input = null;
-            messageHelper.addAttachment("attachment.txt", new ByteArrayDataSource( attachment,"text/plain"));
-            System.out.println("Message sent successfully");
-            mailSender.send(message);
-            log.info("Message sent Successfully to "+ toEmail);
-        } catch (MessagingException | IOException ex) {
-        	log.info("Failed to send email to "+ toEmail);
-        	log.error("Failed to send email :"+ex);
-            System.out.println("Failed to send email to {}"+ toEmail);
-        }
-    }
+		log.info("Mail id :" + toEmail + " , subject for email :" + subject + " , bodyMessage :" + body);
+		try {
+			MimeMessage message = mailSender.createMimeMessage();
+			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());
+			messageHelper.setSubject(subject);
+			messageHelper.setText(body, true);
+			messageHelper.setFrom(mailProperties.getUsername());
+			messageHelper.setTo(toEmail);
+			InputStream input = null;
+			messageHelper.addAttachment("attachment.txt", new ByteArrayDataSource(attachment, "text/plain"));
+			System.out.println("Message sent successfully");
+			mailSender.send(message);
+			log.info("Message sent Successfully to " + toEmail);
+		} catch (MessagingException | IOException ex) {
+			log.info("Failed to send email to " + toEmail);
+			log.error("Failed to send email :" + ex);
+			System.out.println("Failed to send email to {}" + toEmail);
+		}
+	}
 
 }

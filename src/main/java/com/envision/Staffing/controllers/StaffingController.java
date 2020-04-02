@@ -19,7 +19,7 @@ import com.envision.Staffing.services.ShiftPlanningService;
 
 @RestController
 public class StaffingController {
-    Logger log =Logger.getLogger(StaffingController.class); 
+	Logger log = Logger.getLogger(StaffingController.class);
 	@Autowired
 	ShiftPlanningService shiftPlanningService;
 
@@ -32,10 +32,11 @@ public class StaffingController {
 
 	public Output getShiftPlan(@RequestBody Input input) throws IOException {
 		log.info("When path like /request/shiftPlan,Entering ShiftPlanningService with actual Inputs ");
-		return shiftPlanningService.getShiftPlan(input);       
+		return shiftPlanningService.getShiftPlan(input);
 	}
- 
-	@RequestMapping(value = "/request/shiftPlanFileUpload", method = RequestMethod.POST, consumes = { "multipart/form-data" })
+
+	@RequestMapping(value = "/request/shiftPlanFileUpload", method = RequestMethod.POST, consumes = {
+			"multipart/form-data" })
 	@ResponseBody
 	public Output getShiftPlanFromFile(@RequestPart("workloadExcel") MultipartFile excelFile,
 			@RequestPart("inputData") String inputData) throws IOException, Exception {

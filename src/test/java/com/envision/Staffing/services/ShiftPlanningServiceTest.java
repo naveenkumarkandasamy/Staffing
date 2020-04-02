@@ -1,4 +1,4 @@
-package com.envision.Staffing;
+package com.envision.Staffing.services;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.envision.Staffing.model.Clinician;
-import com.envision.Staffing.services.ShiftPlanningService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

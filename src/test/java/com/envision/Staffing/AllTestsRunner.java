@@ -3,6 +3,8 @@ package com.envision.Staffing;
 import org.junit.runner.*;
 import org.junit.runner.notification.Failure;
 
+import com.envision.Staffing.services.ShiftCalculatorTest;
+
 class AllTestsRunner {
 
 	public static void main(String[] args) {

@@ -60,7 +60,7 @@ public class JobDetailsService {
 		} else {
 			entity = jobDetailsRepository.save(entity);
 		}
-		if (entity.getStatus().equals("SCHEDULED") && (id == null || id!=null && status.equals("DRAFT") )) {
+		if (entity.getStatus().equals("SCHEDULED") && (id == null || id != null && status.equals("DRAFT"))) {
 			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
 		} else if (entity.getStatus().equals("SCHEDULED") && id != null) {
 			if (status.equals("SCHEDULED") && !entity.getCronExpression().equals(expression)) {

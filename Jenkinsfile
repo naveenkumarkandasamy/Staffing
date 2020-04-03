@@ -27,17 +27,17 @@ pipeline {
 	   
 	   
 	   
-        stage('Test') {
-            steps {
-                sh 'mvn test -P prod'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml';
-                }
-            }
+        // stage('Test') {
+        //     steps {
+        //         sh 'mvn test -P prod'
+        //     }
+        //     post {
+        //         always {
+        //             junit 'target/surefire-reports/*.xml';
+        //         }
+        //     }
          
-         }
+        //  }
 	   
 	     stage('Building image') {
       steps{
@@ -51,18 +51,18 @@ pipeline {
     }
 	   
 	
-  //  stage('Docker Push') {
+   stage('Docker Push') {
   
-  //     steps {
-  //       withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
           
-	//   sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-  //         sh 'docker push staffingaccolite/staffing:latest'
-  //       }
-  //     }
+	  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+          sh 'docker push staffingaccolite/staffing:latest'
+        }
+      }
 	   
 	   
-  //       }
+        }
 	   
 	   stage('Deploy'){
 		   steps{

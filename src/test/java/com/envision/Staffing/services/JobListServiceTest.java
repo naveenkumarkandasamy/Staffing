@@ -13,6 +13,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 
 import com.envision.Staffing.model.FileDetails;
+import com.envision.Staffing.model.FtpDetails;
 import com.envision.Staffing.model.JobDetails;
 import com.envision.Staffing.repository.FileDetailsRepository;
 import com.envision.Staffing.repository.FtpDetailsRepository;
@@ -23,6 +24,7 @@ public class JobListServiceTest {
 
 	JobDetails jobDetails = new JobDetails();
 	FileDetails fileDetails = new FileDetails();
+	FtpDetails ftpDetails = new FtpDetails();
 
 	@InjectMocks
 	JobListService jobListService;
@@ -51,6 +53,10 @@ public class JobListServiceTest {
 		fileDetails.setDataFile(file);
 		fileDetails.setFileExtension("xlsx");
 		fileDetails.setId("ce362521-5f94-4ede-bbc7-433f1c818e99");
+		
+		ftpDetails.setFileUrl("ftp://182.74.103.251/files/output.txt");
+		ftpDetails.setPassword("test");
+		ftpDetails.setUsername("test");
 
 		jobDetails.setId(id);
 		jobDetails.setName("Test1");
@@ -59,9 +65,9 @@ public class JobListServiceTest {
 		jobDetails.setInputFormat("DATA_FILE");
 		jobDetails.setInputFtpDetails(null);
 		jobDetails.setLowerUtilizationFactor((float) 0.85);
-		jobDetails.setOutputEmailId("a@gmail.com");
-		jobDetails.setOutputFormat("EMAIL");
-		jobDetails.setOutputFtpDetails(null);
+		jobDetails.setOutputEmailId(null);
+		jobDetails.setOutputFormat("FTP_URL");
+		jobDetails.setOutputFtpDetails(ftpDetails);
 		jobDetails.setShiftLengthPreferences(shiftPref);
 		jobDetails.setStatus("SCHEDULED");
 		jobDetails.setUpperUtilizationFactor((float) 1.10);

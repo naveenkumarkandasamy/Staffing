@@ -24,6 +24,8 @@ public class QuartzSchedulerService {
 	@Autowired
 	private Scheduler scheduler;
 
+	Logger log = Logger.getLogger(QuartzSchedulerService.class);
+
 	public Scheduler getScheduler() {
 		return scheduler;
 	}
@@ -32,43 +34,37 @@ public class QuartzSchedulerService {
 		this.scheduler = scheduler;
 	}
 
-	Logger log = Logger.getLogger(QuartzSchedulerService.class);
 	public void scheduleJob(JobDetails jobDetails) {
 		log.info("Entering method for scheduling job :");
-		log.info("id"+jobDetails.getId());
+		log.info(" Job Id ::" + jobDetails.getId());
 		JobDetail jobDetail = buildJobDetail(jobDetails);
-		log.info(jobDetail.getKey());
 		Trigger trigger = buildJobTrigger(jobDetail, jobDetails);
 		try {
 			scheduler.scheduleJob(jobDetail, trigger);
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
-			log.error("Error happened in scheduling job :"+e);
+			log.error("Error happened in scheduling job :", e);
 			e.printStackTrace();
 		}
-	} 
-	
+	}
+
 	public void rescheduleJob(String id, JobDetails jobDetails) {
 		log.info("Entering method for rescheduling job :");
 		JobDetail jobDetail = buildJobDetail(jobDetails);
 		Trigger trigger = buildJobTrigger(jobDetail, jobDetails);
-		TriggerKey triggerkey = TriggerKey.triggerKey(id,"DEFAULT");
+		TriggerKey triggerkey = TriggerKey.triggerKey(id, "DEFAULT");
 		try {
 			scheduler.rescheduleJob(triggerkey, trigger);
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
-			log.error(e);
+			log.error("Error happened in ReScheduling job :", e);
 			e.printStackTrace();
 		}
 	}
 
 	private JobDetail buildJobDetail(JobDetails jobDetails) {
-		
+
 		JobDataMap jobDataMap = new JobDataMap();
-		String id =jobDetails.getId();
-        log.info( jobDetails.getId());
-		jobDataMap.put("jobId",jobDetails.getId());
-		log.info("jobid"+jobDetails.getId()); 
+		String id = jobDetails.getId();
+		jobDataMap.put("jobId", jobDetails.getId());
 		return JobBuilder.newJob(AutorunJob.class) // TODO: Change to respective class when added
 				.withIdentity(jobDetails.getId()).withDescription(jobDetails.getName()).usingJobData(jobDataMap)
 				.storeDurably() // Whether or not the Job should remain stored after it is orphaned (no Triggers

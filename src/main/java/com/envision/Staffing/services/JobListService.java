@@ -55,8 +55,8 @@ public class JobListService {
 			flag = true;
 
 		} catch (Exception ex) {
-			log.error("Error happened in deleting the job by id :" + ex);
 			flag = false;
+			log.error("Error happened in deleting the job by id :", ex);
 			ex.printStackTrace();
 		}
 		return flag;

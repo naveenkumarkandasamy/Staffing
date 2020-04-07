@@ -109,7 +109,7 @@ public class WorkflowService {
 			System.out.println("Job: " + jobDetails.getName() + " successfully executed ");
 
 		} catch (IOException e) {
-			log.error("Error happened in autorunWorkflowService :" + e);
+			log.error("Error happened in autorunWorkflowService :", e);
 			e.printStackTrace();
 		}
 

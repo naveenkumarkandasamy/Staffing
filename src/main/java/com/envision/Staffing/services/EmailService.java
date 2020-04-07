@@ -41,8 +41,7 @@ public class EmailService {
 			mailSender.send(message);
 			log.info("Message sent Successfully to " + toEmail);
 		} catch (MessagingException | IOException ex) {
-			log.info("Failed to send email to " + toEmail);
-			log.error("Failed to send email :" + ex);
+			log.error("Failed to send email :", ex);
 			System.out.println("Failed to send email to {}" + toEmail);
 		}
 	}

@@ -41,8 +41,7 @@ public class TestQuartzController {
 			scheduler.scheduleJob(jobDetail, trigger);
 			return ResponseEntity.ok("Email Scheduled Successfully!");
 		} catch (SchedulerException ex) {
-			log.error("Error happened in scheduling email :" + ex);
-			System.out.println("Error scheduling email" + ex);
+			log.error("Error happened in scheduling email :", ex);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error scheduling email. Please try later!");
 		}

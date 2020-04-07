@@ -35,7 +35,6 @@ public class JobDetailsService {
 	public JobDetails getJobDetailsById(String id) {
 		log.info("Entering method to get job Details by using id");
 		JobDetails jobDetails = jobDetailsRepository.getByIdLeftJoin(id);
-		log.info(jobDetails.getName());
 		return jobDetails;
 //
 //		if (jobDetails.isPresent()) {

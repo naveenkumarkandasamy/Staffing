@@ -108,6 +108,9 @@ public class ShiftPlanningService {
 		log.info("A.1.1 ShiftPreferences :" + Arrays.toString(shiftPreferences));
 		log.info("A.1.2 lowerLimitFactor :" + lowerLimitFactor);
 		log.info("A.1.3 upperLimitFactor :" + upperLimitFactor);
+		log.info("A.1.4 restrictionStartTime :" + notAllocatedStartTime);
+		log.info("A.1.5 restrictionEndTime :" + notAllocatedEndTime);
+		log.info("A.1.6 numberOfPatientHourWait :" + patientHourWait);
 
 		notAllocatedStartTime = input.getNotAllocatedStartTime();
 		notAllocatedEndTime = input.getNotAllocatedEndTime();

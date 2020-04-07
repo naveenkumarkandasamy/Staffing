@@ -17,9 +17,9 @@ public class AutorunTest implements CommandLineRunner {
 
 	@Autowired
 	private JobDetailsRepository jobListService;
+	static Logger log = Logger.getLogger(AutorunTest.class);
 
 	public static void main(String[] args) {
-		Logger log = Logger.getLogger(AutorunTest.class);
 		SpringApplication.run(AutorunTest.class, args);
 		log.info("Started AutoRun Test Method");
 	}
@@ -34,6 +34,7 @@ public class AutorunTest implements CommandLineRunner {
 //			System.out.println(jobDetails.getName());
 
 		} catch (Exception ex) {
+			log.error("Error happened in AutoRun test class ", ex);
 			ex.printStackTrace();
 		}
 	}

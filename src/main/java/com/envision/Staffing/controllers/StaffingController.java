@@ -19,9 +19,10 @@ import com.envision.Staffing.services.ShiftPlanningService;
 
 @RestController
 public class StaffingController {
-	Logger log = Logger.getLogger(StaffingController.class);
 	@Autowired
 	ShiftPlanningService shiftPlanningService;
+
+	Logger log = Logger.getLogger(StaffingController.class);
 
 	@RequestMapping("/")
 	public String index() {

@@ -13,7 +13,7 @@ public class LoginController {
 
 	@RequestMapping("/validateLogin")
 	public User validateLogin() {
-		log.info("Entered with endpoint :/validateLogin");
+		log.info("Entered with endpoint /validateLogin");
 		return new User();
 	}
 

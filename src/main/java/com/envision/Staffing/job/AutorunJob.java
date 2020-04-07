@@ -24,7 +24,7 @@ public class AutorunJob implements Job {
 		try {
 			workflowService.autorunWorkflowService(autorunJobId);
 		} catch (Exception e) {
-			log.error("error happened in autorunjob :" + e);
+			log.error("error happened in autorunjob :", e);
 			System.out.println("Given File is not an Excel File or is Corrupted.");
 		}
 	}

@@ -39,7 +39,7 @@ public class JobDetailsController {
 
 		Response response = new Response();
 		if (jobDetails.getStatus().contentEquals("SCHEDULED")) {
-			log.info("Successfully scheduled Job :" + jobDetails.getName() + " " + jobDetails.getInputFormat());
+			log.info("Successfully scheduled Job :" + jobDetails.getName());
 			response.setMessage("Successfully schedules Job: " + jobDetails.getName());
 		} else {
 			if (jobDetails.getName().contentEquals("")) {

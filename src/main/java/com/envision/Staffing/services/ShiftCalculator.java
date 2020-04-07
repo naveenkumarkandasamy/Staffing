@@ -205,7 +205,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
+	public int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
@@ -230,6 +230,7 @@ public class ShiftCalculator {
 				break;
 			}
 		}
+
 		return flag;
 	}
 
@@ -405,7 +406,6 @@ public class ShiftCalculator {
 	}
 
 	public List<List<Shift>> printSlots() {
-		log.info("Getting Information of Shift-Slots for everyday");
 		List<List<Shift>> dayToShiftMapping = new ArrayList<>(); // Maps --- Day --->> shift-slots per day
 		for (int i = 0; i < 7; i++) // Loop through List with foreach
 		{

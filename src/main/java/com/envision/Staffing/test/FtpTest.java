@@ -12,16 +12,19 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.log4j.Logger;
 
 import com.envision.Staffing.ftp.FtpUtil;
 import com.envision.Staffing.model.FtpDetails;
+import com.envision.Staffing.services.EmailService;
 
 public class FtpTest {
-	
-	
+
+	static Logger log = Logger.getLogger(FtpTest.class);
+
 	public static FtpDetails fieldExtraction(FtpDetails ftpDetails, boolean download) {
 
-		String ftpUrl = ftpDetails.getFileUrl();		
+		String ftpUrl = ftpDetails.getFileUrl();
 		Pattern hostPattern = Pattern.compile("(ftp|sftp)://[^/]*/");
 		Matcher hostMatcher = hostPattern.matcher(ftpUrl);
 		if (hostMatcher.find()) {
@@ -37,14 +40,14 @@ public class FtpTest {
 			ftpDetails.setDirPath(dirMatcher.group(0));
 		}
 
-		if(download = true) {
+		if (download = true) {
 			Pattern fileNamePattern = Pattern.compile("[/][^/:.]+[.][^:/.0-9]+");
 			Matcher fileMatcher = fileNamePattern.matcher(ftpUrl);
 			while (fileMatcher.find()) {
 				ftpDetails.setFileName(fileMatcher.group(0));
 			}
 			ftpDetails.setFileName(ftpDetails.getFileName().substring(1));
-			}
+		}
 		return ftpDetails;
 	}
 
@@ -69,6 +72,7 @@ public class FtpTest {
 				ftp.disconnect();
 			}
 		} catch (IOException e) {
+			log.error("Error happened in FTPClient connect method ", e);
 			e.printStackTrace();
 		}
 
@@ -78,22 +82,23 @@ public class FtpTest {
 	public static InputStream downloadFile(String ftpUrl, String username, String password) {
 		FtpDetails ftpDetails = new FtpDetails(ftpUrl, username, password);
 		ftpDetails = FtpTest.fieldExtraction(ftpDetails, true);
-		
+
 		String dirPath = ftpDetails.getDirPath();
 		String fileName = ftpDetails.getFileName();
 		FTPClient ftp = connect(ftpDetails);
-		
+
 		InputStream in = null;
 		if (ftp.isConnected()) {
 			try {
 				in = ftp.retrieveFileStream(dirPath + fileName);
 //				System.out.println("FTP File downloaded successfully");
-				
+
 				if (ftp.isConnected()) {
 					ftp.logout();
 					ftp.disconnect();
 				}
 			} catch (Exception e) {
+				log.error("Error happened in download File", e);
 				e.printStackTrace();
 			}
 		}
@@ -104,7 +109,7 @@ public class FtpTest {
 			String remoteFileName) {
 		FtpDetails ftpDetails = new FtpDetails(ftpUrl, username, password);
 		ftpDetails = FtpUtil.fieldExtraction(ftpDetails);
-		
+
 		String remoteDirPath = ftpDetails.getDirPath();
 		String fileName = remoteFileName;
 
@@ -123,29 +128,29 @@ public class FtpTest {
 				ftp.logout();
 				ftp.disconnect();
 			} catch (IOException e) {
+				log.error("Error happened in upload File", e);
 				e.printStackTrace();
 			}
 		}
 		return ftpDetails;
 	}
-	
-	public static void printStream(InputStream in,int n) {
+
+	public static void printStream(InputStream in, int n) {
 		for (int i = 0; i < n; i++) {
 			try {
-				System.out.print((char)in.read());
+				System.out.print((char) in.read());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				log.error("Error happened in print Stream method ", e);
 				e.printStackTrace();
 			}
 		}
 	}
 
-
 	public static void main(String[] args) {
 		String ftpUrl = "ftp://182.74.103.251/files/test/lol.txt";
 		String username = "test";
 		String password = "test";
-		
+
 	}
 
 }

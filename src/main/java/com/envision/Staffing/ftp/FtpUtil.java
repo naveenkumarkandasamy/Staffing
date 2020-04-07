@@ -72,7 +72,7 @@ public class FtpUtil {
 				ftp.disconnect();
 			}
 		} catch (IOException e) {
-			log.error("Error happened in FTP client connect method :" + e);
+			log.error("Error happened in FTP client connect method :", e);
 			e.printStackTrace();
 		}
 
@@ -97,7 +97,7 @@ public class FtpUtil {
 					ftp.disconnect();
 				}
 			} catch (Exception e) {
-				log.error("Error happened in downloading file method :" + e);
+				log.error("Error happened in downloading file method :", e);
 				e.printStackTrace();
 			}
 		}
@@ -125,7 +125,7 @@ public class FtpUtil {
 				ftp.logout();
 				ftp.disconnect();
 			} catch (IOException e) {
-				log.error("Error happened in uploading file method :" + e);
+				log.error("Error happened in uploading file method :", e);
 				e.printStackTrace();
 			}
 		}

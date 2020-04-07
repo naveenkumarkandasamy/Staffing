@@ -32,7 +32,7 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestParam(value = "username") String username,
 			@RequestParam(value = "pass") String password) throws Exception {
-
+		
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (BadCredentialsException e) {
@@ -60,5 +60,5 @@ public class LoginController {
 		}
 		return new ResponseEntity(HttpStatus.UNAUTHORIZED);
 	}
-
+	
 }

@@ -32,6 +32,7 @@ public class JobDetailsServiceTest {
 	Clinician scribe = new Clinician();
 	FileDetails fileDetails = new FileDetails();
 	FtpDetails ftpDetails = new FtpDetails();
+
 	String id = "2ac0ed25-ed5e-4891-85e1-12acac13d3e6";
 
 	@InjectMocks
@@ -63,10 +64,10 @@ public class JobDetailsServiceTest {
 		fileDetails.setDataFile(file);
 		fileDetails.setFileExtension("xlsx");
 		fileDetails.setId("ce362521-5f94-4ede-bbc7-433f1c818e99");
-		
 		ftpDetails.setFileUrl("ftp://182.74.103.251/files/output.txt");
 		ftpDetails.setPassword("test");
 		ftpDetails.setUsername("test");
+
 
 		physician.setCoefficient(0);
 		physician.setCost(200);
@@ -100,7 +101,7 @@ public class JobDetailsServiceTest {
 		jobDetails.setInputFormat("DATA_FILE");
 		jobDetails.setInputFtpDetails(null);
 		jobDetails.setLowerUtilizationFactor((float) 0.85);
-		jobDetails.setOutputEmailId("a@gmail.com");
+		jobDetails.setOutputEmailId(null);
 		jobDetails.setOutputFormat("FTP_URL");
 		jobDetails.setOutputFtpDetails(ftpDetails);
 		jobDetails.setShiftLengthPreferences(shiftPref);

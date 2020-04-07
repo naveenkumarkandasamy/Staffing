@@ -65,7 +65,7 @@ public class JobListServiceTest {
 		jobDetails.setInputFormat("DATA_FILE");
 		jobDetails.setInputFtpDetails(null);
 		jobDetails.setLowerUtilizationFactor((float) 0.85);
-		jobDetails.setOutputEmailId("a@gmail.com");
+		jobDetails.setOutputEmailId(null);
 		jobDetails.setOutputFormat("FTP_URL");
 		jobDetails.setOutputFtpDetails(ftpDetails);
 		jobDetails.setShiftLengthPreferences(shiftPref);

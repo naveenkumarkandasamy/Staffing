@@ -41,13 +41,6 @@ public class JobDetailsService {
 	public JobDetails getJobDetailsById(String id) {
 		JobDetails jobDetails = jobDetailsRepository.getByIdLeftJoin(id);
 		return jobDetails;
-//
-//		if (jobDetails.isPresent()) {
-//			return jobDetails.get();
-//		} else {
-//			return null;
-//			// throw new RecordNotFoundException("No jobDetails record exist for given id");
-		// }
 	}
 
 	public JobDetails createOrUpdateJobDetails(JobDetails entity, byte[] fileData) {
@@ -106,8 +99,6 @@ public class JobDetailsService {
 		} else {
 			entity = jobDetailsRepository.save(entity); // creating job details
 		}
-
-
 		if (entity.getStatus().equals("SCHEDULED") && (id == null || id != null && status.equals("DRAFT"))) {
 			quartzSchedulerService.scheduleJob(entity); // add when implementing quartz for Jobs
 		} else if (entity.getStatus().equals("SCHEDULED") && id != null) {

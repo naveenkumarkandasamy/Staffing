@@ -165,12 +165,12 @@ public class ShiftCalculator {
 		// if clinician is more important, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
 
-			if (clinicians[index].getExpressions().size() == 0)
+			if (clinicians[index].getExpressions().size() == 1)
 				return true;
 			else {
 				for (int hour = start; hour < start + shiftLength && hour < 168; hour++) {
 					double value = 0.0d;
-					for (int j = 0; j < clinicians[index].getExpressions().size(); j++) {
+					for (int j = 1; j < clinicians[index].getExpressions().size(); j++) {
 						value += evaluate(clinicians[index].getExpressions().get(j), clinicians, hour);
 					}
 					if (evaluateFunction(clinicians[index].getClinicianCountPerHour()[hour] + 1, value, ">"))
@@ -204,13 +204,13 @@ public class ShiftCalculator {
 		}
 	}
 
-	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
+	public int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
 			double value = wl.getFixedworkloadArray()[j] - wl.getCapacityArray()[j];
 			if (value < 0)
-				value = 0;
+				value = 0; 
 
 			if ((j - start) % wl.getDayDuration() == 0) {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[0], value), 2);
@@ -347,7 +347,7 @@ public class ShiftCalculator {
 		wl.getResult().add(newShift);
 	}
 
-	private Shift getNewShift(int numberOfHours, int start, String physicianType) {
+	public Shift getNewShift(int numberOfHours, int start, String physicianType) {
 		Shift newShift = new Shift();
 		newShift.setStartTime(start % wl.getDayDuration());
 		newShift.setEndTime((start + numberOfHours) % wl.getDayDuration());

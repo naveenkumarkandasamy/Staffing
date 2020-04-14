@@ -64,7 +64,7 @@ public class ShiftPlanningService {
 				workload[i].setName(days[i]);
 				Double[] personPerHour = new Double[24];
 				for (int j = 0; j <= 23; j++) {
-					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
+					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i+1).getCell(j+1).getNumericCellValue());
 				}
 				workload[i].setExpectedPatientsPerHour(personPerHour);
 			}
@@ -209,7 +209,9 @@ public class ShiftPlanningService {
 				for (Double patientsPerHour : eachDay.getExpectedPatientsPerHour()) {
 					work.getFixedworkloadArray()[k] = patientsPerHour;
 					work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k];
+					System.out.print(k+","+work.getFixedworkloadArray()[k]+" ");
 					k++;
+					
 				}
 			}
 

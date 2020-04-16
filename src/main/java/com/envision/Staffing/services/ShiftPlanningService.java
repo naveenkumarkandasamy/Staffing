@@ -29,7 +29,7 @@ public class ShiftPlanningService {
 			"Saturday" };
 
 	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception {
-  
+
 		Input input = new Input();
 
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
@@ -64,7 +64,7 @@ public class ShiftPlanningService {
 				workload[i].setName(days[i]);
 				Double[] personPerHour = new Double[24];
 				for (int j = 0; j <= 23; j++) {
-					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
+					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i + 1).getCell(j + 1).getNumericCellValue());
 				}
 				workload[i].setExpectedPatientsPerHour(personPerHour);
 			}
@@ -77,7 +77,7 @@ public class ShiftPlanningService {
 		} catch (NumberFormatException numberFormatException) {
 			throw new Exception(numberFormatException.toString());
 		}
-		
+
 		return workload;
 	}
 
@@ -210,6 +210,7 @@ public class ShiftPlanningService {
 					work.getFixedworkloadArray()[k] = patientsPerHour;
 					work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k];
 					k++;
+
 				}
 			}
 

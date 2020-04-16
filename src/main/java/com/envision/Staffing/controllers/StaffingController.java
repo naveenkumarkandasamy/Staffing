@@ -38,7 +38,7 @@ public class StaffingController {
 			@RequestPart("inputData") String inputData) throws IOException, Exception {
 
 		Input input = shiftPlanningService.processFileInput(excelFile, inputData);
-
+		System.out.println(input);
 		return shiftPlanningService.getShiftPlan(input);
 
 	}

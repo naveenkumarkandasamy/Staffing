@@ -1,109 +1,122 @@
 package com.envision.Staffing.services;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.envision.Staffing.ftp.FtpUtil;
 import com.envision.Staffing.model.FtpDetails;
 import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.JobDetails;
 import com.envision.Staffing.model.Output;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class WorkflowService {
 
 	@Autowired
 	private JobDetailsService jobDetailsService;
-	
+
 	@Autowired
 	private ShiftPlanningService shiftPlannerSerivce;
-	
+
 	@Autowired
 	private EmailService emailService;
-	
+
 	private InputStream getInputDataStreamFromAutorunJobDetails(JobDetails jobDetails) {
 		String inputType = jobDetails.getInputFormat();
-		
-		if(inputType.contentEquals("FTP_URL")) {
+
+		if (inputType.contentEquals("FTP_URL")) {
 			FtpDetails inputFtpDetails = jobDetails.getInputFtpDetails();
-			InputStream ftpInputStream= FtpUtil.downloadFile(inputFtpDetails);	
+			InputStream ftpInputStream = FtpUtil.downloadFile(inputFtpDetails);
 			return ftpInputStream;
-		}
-		else { // if(inputType.contentEquals("DATA_FILE"))
-			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile() ;
+		} else { // if(inputType.contentEquals("DATA_FILE"))
+			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile();
 			InputStream fileInputStream = new ByteArrayInputStream(inputFile);
 			return fileInputStream;
 		}
 	}
-	
+
 //	private 
-	
-	private String getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails) throws IOException, Exception {
+
+	private ByteArrayOutputStream getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails)
+			throws IOException, Exception {
 		String inputType = jobDetails.getInputFormat();
 		String fileExtension;
 		String jsonStr;
-		if(inputType.contentEquals("FTP_URL")) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		if (inputType.contentEquals("FTP_URL")) {
 			fileExtension = FilenameUtils.getExtension(jobDetails.getInputFtpDetails().getFileUrl());
+		} else {
+			fileExtension = jobDetails.getInputFileDetails().getFileExtension(); // "xlsx"; // *** needs testing
 		}
-		else {
-			fileExtension = jobDetails.getInputFileDetails().getFileExtension(); //"xlsx"; // *** needs testing
-		}
-		if(fileExtension.contentEquals("xlsx")) {
+		if (fileExtension.contentEquals("xlsx")) {
 			Input input = shiftPlannerSerivce.processFtpInput(inputStream, jobDetails);
 			Output output = shiftPlannerSerivce.getShiftPlan(input);
-			ObjectMapper Obj = new ObjectMapper();
-			jsonStr = Obj.writeValueAsString(output);
-		}
-		else {
+			bos = shiftPlannerSerivce.excelWriter(output, jobDetails);
+//			ObjectMapper Obj = new ObjectMapper();
+//			jsonStr = Obj.writeValueAsString(output);
+		} else {
 			jsonStr = "";
 			System.out.println("Given file is not an Excel file");
 		}
-		return jsonStr;
+		return bos;
 	}
-	
-	private void sendOutput(JobDetails jobDetails, String jsonStr) {
+
+	private void sendOutput(JobDetails jobDetails, ByteArrayOutputStream outputExcelData) {
 		String outputType = jobDetails.getOutputFormat();
-		if(outputType.contentEquals("EMAIL")) {
+		if (outputType.contentEquals("EMAIL")) {
 			String email = jobDetails.getOutputEmailId();
-			sendOutputToEmail(jsonStr, email);
-		}
-		else{
-			putOutputStringToFtpUrl(jsonStr, jobDetails);
+			sendOutputToEmail(outputExcelData, email);
+		} else {
+			putOutputStringToFtpUrl(outputExcelData, jobDetails);
 		}
 	}
-	
-	private void sendOutputToEmail(String jsonStr, String email) {
-		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", jsonStr);
+
+	private void sendOutputToEmail(ByteArrayOutputStream outputExcelData, String email) {
+		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", outputExcelData);
 	}
-	
-	private void putOutputStringToFtpUrl(String jsonStr, JobDetails jobDetails) {
+
+	private void putOutputStringToFtpUrl(ByteArrayOutputStream outputExcelData, JobDetails jobDetails) {
 		FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
-		FtpUtil.uploadFile(outputFtpDetails, jsonStr);
+		FtpUtil.uploadFile(outputFtpDetails, outputExcelData);
 	}
-	
-	public void autorunWorkflowService(String jobId) throws Exception{
-		
+
+	public void autorunWorkflowService(String jobId) throws Exception {
+
 		try {
 			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
-		
+//			int length = jobDetails.getClinicians().size();
+//			ArrayList<String> array1 = new ArrayList<>();
+//			ArrayList<String> array2 = new ArrayList<>();
+//			array1.add("1 * physician");
+//			array2.add("1 * physician");
+//			for (int i = 0; i < length; i++) {
+//				if (jobDetails.getClinicians().get(i).getName().equals("app")) {
+//					jobDetails.getClinicians().get(i).setExpressions(array1);
+//				}
+//				if (jobDetails.getClinicians().get(i).getName().equals("scribe")) {
+//					jobDetails.getClinicians().get(i).setExpressions(array2);
+//				}
+//			}
+//			System.out.println(jobDetails);
 			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
-			
-			String outputJsonString = getOutputStringFromInputStream(inputStream, jobDetails);
-			
-			sendOutput(jobDetails, outputJsonString);
-			
-			System.out.println("Job: "+ jobDetails.getName() + " successfully executed ");
-			
+
+			ByteArrayOutputStream outputExcelData = getOutputStringFromInputStream(inputStream, jobDetails);
+
+			sendOutput(jobDetails, outputExcelData);
+
+			System.out.println("Job: " + jobDetails.getName() + " successfully executed ");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-			
+
 //		JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
 //		String inputType = jobDetails.getInputFormat();
 //		
@@ -145,6 +158,6 @@ public class WorkflowService {
 //			}
 //		}
 //		return jobDetails;
-		
+
 	}
 }

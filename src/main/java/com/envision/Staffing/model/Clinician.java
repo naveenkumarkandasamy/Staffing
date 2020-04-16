@@ -1,6 +1,7 @@
 package com.envision.Staffing.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -162,6 +163,14 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 
 	public void setExpressionsString(List<String> expressionsString) {
 		this.expressionsString = expressionsString;
+	}
+
+	@Override
+	public String toString() {
+		return "Clinician [id=" + id + ", name=" + name + ", patientsPerHour=" + patientsPerHour + ", coefficient="
+				+ coefficient + ", cost=" + cost + ", capacity=" + Arrays.toString(capacity)
+				+ ", clinicianCountPerHour=" + Arrays.toString(clinicianCountPerHour) + ", expressionsString="
+				+ expressionsString + ", expressions=" + expressions + "]";
 	}
 
 }

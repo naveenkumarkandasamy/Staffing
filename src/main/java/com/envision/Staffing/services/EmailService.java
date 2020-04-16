@@ -1,5 +1,6 @@
 package com.envision.Staffing.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -19,24 +20,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-	@Value("${username}")
-	private String username;
+	@Value("${useremail}")
+	private String useremail;
 
 	@Autowired
 	private JavaMailSender mailSender;
 
-	public void sendMail(String toEmail, String subject, String body, String attachment) {
+	public void sendMail(String toEmail, String subject, String body, ByteArrayOutputStream attachment) {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());
 			messageHelper.setSubject(subject);
 			messageHelper.setText(body, true);
-			messageHelper.setFrom(username);
+			messageHelper.setFrom(useremail);
 			messageHelper.setTo(toEmail);
 			InputStream input = null;
-			messageHelper.addAttachment("attachment.txt", new ByteArrayDataSource(attachment, "text/plain"));
+			messageHelper.addAttachment("attachment.xlsx", new ByteArrayDataSource(attachment.toByteArray(), "application/vnd.ms-excel"));
 			mailSender.send(message);
-		} catch (MessagingException | IOException ex) {
+		} catch (MessagingException ex) {
 		}
 	}
 

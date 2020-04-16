@@ -1,8 +1,7 @@
 package com.envision.Staffing.ftp;
 
-import com.envision.Staffing.model.FtpDetails;
-import com.envision.Staffing.model.Output;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -12,6 +11,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
+
+import com.envision.Staffing.model.FtpDetails;
 
 public class FtpUtil {
 
@@ -98,7 +99,7 @@ public class FtpUtil {
 		return in;
 	}
 
-	public static boolean uploadFile(FtpDetails ftpDetails, String jsonString) {
+	public static boolean uploadFile(FtpDetails ftpDetails, ByteArrayOutputStream outputExcelData) {
 		ftpDetails = FtpUtil.fieldExtraction(ftpDetails);
 		
 		String remoteDirPath = ftpDetails.getDirPath();
@@ -111,11 +112,23 @@ public class FtpUtil {
 			try {				
 				
 				ObjectOutputStream oos = new ObjectOutputStream(ftp.storeFileStream(remoteDirPath + remoteFileName));
-				oos.writeBytes(jsonString);
-				
+//				oos.write(outputExcelData.toByteArray());
+				outputExcelData.writeTo(oos);
 				oos.close();
-				flag = true;
 
+//				ftp.changeWorkingDirectory(remoteDirPath);
+//				ftp.enterLocalPassiveMode();
+//				ftp.setBufferSize(51200);
+//				ftp.storeFileStream(remoteDirPath + remoteFileName);
+//			    ByteArrayInputStream inputStream = new ByteArrayInputStream(outputExcelData.toByteArray());
+//			    ftp.storeFile(remoteFileName, inputStream);
+				
+//				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//				bos.write(outputExcelData.toByteArray());
+//				outputExcelData.writeTo(bos);
+//				bos.close();
+			    
+				flag = true;
 				ftp.logout();
 				ftp.disconnect();
 			} catch (IOException e) {

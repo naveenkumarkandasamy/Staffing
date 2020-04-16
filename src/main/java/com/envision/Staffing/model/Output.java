@@ -2,6 +2,7 @@ package com.envision.Staffing.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -26,5 +27,10 @@ public class Output implements Serializable{
 	}
 	public void setClinicianHourCount(List<Map<Integer,Map<String,Integer>>> clinicianHourCount) {
 		this.clinicianHourCount = (ArrayList<Map<Integer, Map<String, Integer>>>) clinicianHourCount;
+	}
+	@Override
+	public String toString() {
+		return "Output [hourlyDetail=" + Arrays.toString(hourlyDetail) + ", clinicianHourCount=" + clinicianHourCount
+				+ "]";
 	}
 }

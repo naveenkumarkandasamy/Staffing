@@ -29,7 +29,7 @@ public class ShiftPlanningService {
 			"Saturday" };
 
 	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception {
-  
+
 		Input input = new Input();
 
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
@@ -77,7 +77,7 @@ public class ShiftPlanningService {
 		} catch (NumberFormatException numberFormatException) {
 			throw new Exception(numberFormatException.toString());
 		}
-		
+
 		return workload;
 	}
 
@@ -199,7 +199,7 @@ public class ShiftPlanningService {
 		return out;
 	}
 
-	private Workload assignWorkload(Input input, Workload work) {
+	Workload assignWorkload(Input input, Workload work) {
 		Day[] day;
 		int k = 0;
 

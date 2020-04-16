@@ -71,16 +71,17 @@ public class ShiftCalculator {
 
 			}
 		}
+
 	}
 
-	private int CheckAndAddClinicianForAllShift(int shiftLength, Clinician[] clinicians, int start, double factor) {
+	int CheckAndAddClinicianForAllShift(int shiftLength, Clinician[] clinicians, int start, double factor) {
 		int index = clinicians.length - 1;
 		int flag = 1;
 		int isShiftToNextHour = 0;
 		boolean conditionalValue = false;
 		boolean[] array = { true, true, true };
 		boolean shiftNextHour = true;
-
+		
 		for (; index >= 0 && isShiftToNextHour == 0; index--) {
 			Clinician clinician = getClinicianWithLeastCost(index, clinicians);
 			conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index);// checking
@@ -165,12 +166,12 @@ public class ShiftCalculator {
 		// if clinician is more important, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
 
-			if (clinicians[index].getExpressions().size() == 0)
+			if (clinicians[index].getExpressions().size() == 1)
 				return true;
 			else {
 				for (int hour = start; hour < start + shiftLength && hour < 168; hour++) {
 					double value = 0.0d;
-					for (int j = 0; j < clinicians[index].getExpressions().size(); j++) {
+					for (int j = 1; j < clinicians[index].getExpressions().size(); j++) {
 						value += evaluate(clinicians[index].getExpressions().get(j), clinicians, hour);
 					}
 					if (evaluateFunction(clinicians[index].getClinicianCountPerHour()[hour] + 1, value, ">"))
@@ -204,7 +205,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
+	int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
@@ -291,7 +292,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private int CheckandAddForLastShift(double upperLimitFactor, int start, Clinician[] clinicians, int sizeOfSlot) {
+	int CheckandAddForLastShift(double upperLimitFactor, int start, Clinician[] clinicians, int sizeOfSlot) {
 		int j = start;
 
 		// checking for utilization < 1.1 to not add clinicians
@@ -347,7 +348,7 @@ public class ShiftCalculator {
 		wl.getResult().add(newShift);
 	}
 
-	private Shift getNewShift(int numberOfHours, int start, String physicianType) {
+	public Shift getNewShift(int numberOfHours, int start, String physicianType) {
 		Shift newShift = new Shift();
 		newShift.setStartTime(start % wl.getDayDuration());
 		newShift.setEndTime((start + numberOfHours) % wl.getDayDuration());

@@ -199,7 +199,7 @@ public class ShiftPlanningService {
 		return out;
 	}
 
-	private Workload assignWorkload(Input input, Workload work) {
+	Workload assignWorkload(Input input, Workload work) {
 		Day[] day;
 		int k = 0;
 

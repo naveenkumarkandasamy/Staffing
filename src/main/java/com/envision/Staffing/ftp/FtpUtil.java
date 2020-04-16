@@ -90,7 +90,6 @@ public class FtpUtil {
 		if (ftp.isConnected()) {
 			try {
 				in = ftp.retrieveFileStream(dirPath + fileName);
-//				System.out.println("FTP File downloaded successfully");
 				log.info("FTP File Downloaded ");
 				if (ftp.isConnected()) {
 					ftp.logout();

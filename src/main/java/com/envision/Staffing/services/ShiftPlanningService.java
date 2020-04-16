@@ -7,14 +7,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.envision.Staffing.Application;
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.Day;
 import com.envision.Staffing.model.HourlyDetail;
@@ -72,13 +69,13 @@ public class ShiftPlanningService {
 				workload[i].setName(days[i]);
 				Double[] personPerHour = new Double[24];
 				for (int j = 0; j <= 23; j++) {
-					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
+					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i + 1).getCell(j + 1).getNumericCellValue());
 				}
 				workload[i].setExpectedPatientsPerHour(personPerHour);
 			}
 			myExcelBook.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			log.error("Error happened in getData from excel file method", e);
 			e.printStackTrace();
 		} catch (IllegalStateException illegalStateException) {
 			throw new Exception(illegalStateException.toString());
@@ -262,6 +259,7 @@ public class ShiftPlanningService {
 					work.getFixedworkloadArray()[k] = patientsPerHour;
 					work.getWorkloadArray()[k] = work.getFixedworkloadArray()[k];
 					k++;
+
 				}
 			}
 

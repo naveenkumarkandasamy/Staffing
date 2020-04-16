@@ -15,6 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.envision.Staffing.converter.DoubleArrayToStringConverter;
 import com.envision.Staffing.converter.StringListConverter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 //Model to hold data about a clinician

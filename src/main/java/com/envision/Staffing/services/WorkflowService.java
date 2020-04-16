@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.envision.Staffing.ftp.FtpUtil;
@@ -19,91 +20,100 @@ public class WorkflowService {
 
 	@Autowired
 	private JobDetailsService jobDetailsService;
-	
+
 	@Autowired
 	private ShiftPlanningService shiftPlannerSerivce;
-	
+
 	@Autowired
 	private EmailService emailService;
-	
+
+	Logger log = Logger.getLogger(WorkflowService.class);
+
 	private InputStream getInputDataStreamFromAutorunJobDetails(JobDetails jobDetails) {
 		String inputType = jobDetails.getInputFormat();
-		
-		if(inputType.contentEquals("FTP_URL")) {
+
+		if (inputType.contentEquals("FTP_URL")) {
+			log.info("Getting input details from the InputType(FTP_URL)");
 			FtpDetails inputFtpDetails = jobDetails.getInputFtpDetails();
-			InputStream ftpInputStream= FtpUtil.downloadFile(inputFtpDetails);	
+			InputStream ftpInputStream = FtpUtil.downloadFile(inputFtpDetails);
 			return ftpInputStream;
-		}
-		else { // if(inputType.contentEquals("DATA_FILE"))
-			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile() ;
+		} else { // if(inputType.contentEquals("DATA_FILE"))
+			log.info("Getting input details from the InputType(DATA_FILE)");
+			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile();
 			InputStream fileInputStream = new ByteArrayInputStream(inputFile);
 			return fileInputStream;
 		}
 	}
-	
+
 //	private 
-	
-	private String getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails) throws IOException, Exception {
+
+	private String getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails)
+			throws IOException, Exception {
+		log.info("Entering function to get OutputString From InputStream");
 		String inputType = jobDetails.getInputFormat();
 		String fileExtension;
 		String jsonStr;
-		if(inputType.contentEquals("FTP_URL")) {
+		if (inputType.contentEquals("FTP_URL")) {
 			fileExtension = FilenameUtils.getExtension(jobDetails.getInputFtpDetails().getFileUrl());
+		} else {
+			fileExtension = jobDetails.getInputFileDetails().getFileExtension(); // "xlsx"; // *** needs testing
 		}
-		else {
-			fileExtension = jobDetails.getInputFileDetails().getFileExtension(); //"xlsx"; // *** needs testing
-		}
-		if(fileExtension.contentEquals("xlsx")) {
+		log.info("fileExtension  :" + fileExtension);
+		if (fileExtension.contentEquals("xlsx")) {
+			log.info("if File Extension is xlsx, retrieving details and convert into json String");
 			Input input = shiftPlannerSerivce.processFtpInput(inputStream, jobDetails);
 			Output output = shiftPlannerSerivce.getShiftPlan(input);
 			ObjectMapper Obj = new ObjectMapper();
 			jsonStr = Obj.writeValueAsString(output);
-		}
-		else {
+		} else {
+			log.info("If json String is empty,given file is not an Excel File");
 			jsonStr = "";
 			System.out.println("Given file is not an Excel file");
 		}
 		return jsonStr;
 	}
-	
+
 	private void sendOutput(JobDetails jobDetails, String jsonStr) {
+		log.info("Method for Sending output :");
 		String outputType = jobDetails.getOutputFormat();
-		if(outputType.contentEquals("EMAIL")) {
+		if (outputType.contentEquals("EMAIL")) {
 			String email = jobDetails.getOutputEmailId();
 			sendOutputToEmail(jsonStr, email);
-		}
-		else{
+			log.info("if Output type is EMAIL,send output to email '" + email + "' with message --Successful--");
+		} else {
+			log.info("if Output type is not EMAIL,send output string to FtpUrl");
 			putOutputStringToFtpUrl(jsonStr, jobDetails);
 		}
 	}
-	
+
 	private void sendOutputToEmail(String jsonStr, String email) {
 		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", jsonStr);
 	}
-	
+
 	private void putOutputStringToFtpUrl(String jsonStr, JobDetails jobDetails) {
 		FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
 		FtpUtil.uploadFile(outputFtpDetails, jsonStr);
 	}
-	
-	public void autorunWorkflowService(String jobId) throws Exception{
-		
+
+	public void autorunWorkflowService(String jobId) throws Exception {
+
 		try {
+			log.info("JobId ::" + jobId);
 			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
-		
+			log.info("Job Input Format ::" + jobDetails.getInputFormat());
 			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
-			
+
 			String outputJsonString = getOutputStringFromInputStream(inputStream, jobDetails);
-			
+
 			sendOutput(jobDetails, outputJsonString);
-			
-			System.out.println("Job: "+ jobDetails.getName() + " successfully executed ");
-			
+			log.info("job '" + jobDetails.getName() + "' successfully executed ");
+			System.out.println("Job: " + jobDetails.getName() + " successfully executed ");
+
 		} catch (IOException e) {
+			log.error("Error happened in autorunWorkflowService :", e);
 			e.printStackTrace();
 		}
-		
-			
+
 //		JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
 //		String inputType = jobDetails.getInputFormat();
 //		
@@ -145,6 +155,6 @@ public class WorkflowService {
 //			}
 //		}
 //		return jobDetails;
-		
+
 	}
 }

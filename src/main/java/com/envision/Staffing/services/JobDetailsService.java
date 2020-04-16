@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,10 @@ public class JobDetailsService {
 	@Autowired
 	private QuartzSchedulerService quartzSchedulerService;
 
+	Logger log = Logger.getLogger(JobDetailsService.class);
+
 	public List<JobDetails> getAllJobDetails() {
+		log.info("Entering method to get all job Details ");
 		List<JobDetails> jobDetailsList = (List<JobDetails>) jobDetailsRepository.findAll();
 
 		if (jobDetailsList.size() > 0) {
@@ -39,6 +43,7 @@ public class JobDetailsService {
 	}
 
 	public JobDetails getJobDetailsById(String id) {
+		log.info("Entering method to get job Details by using id");
 		JobDetails jobDetails = jobDetailsRepository.getByIdLeftJoin(id);
 		return jobDetails;
 	}
@@ -59,7 +64,7 @@ public class JobDetailsService {
 			JobDetails jobdetails = jobDetailsRepository.getByIdLeftJoin(id);
 			expression = jobdetails.getCronExpression();
 			status = jobdetails.getStatus();
-			
+
 			// Updating the null id's of updated jobDetails (entity)
 			if (!entity.getClinicians().isEmpty()) {
 				this.copyClinician(jobdetails.getClinicians(), entity);
@@ -85,6 +90,7 @@ public class JobDetailsService {
 		}
 
 		if (id != null) {
+			log.info("Updating job Details");
 			entity = jobDetailsRepository.save((JobDetails) entity); // updating job details
 			if (entity.getInputFileDetails() == null && flag == 1) {
 				fileDetailsRepository.deleteJobDetailById(fileId); // deleting previous row of file details if updated
@@ -122,6 +128,7 @@ public class JobDetailsService {
 	}
 
 	public void deleteJobDetailsById(String id) {
+		log.info("Entering method to delete job Details by id ");
 		Optional<JobDetails> jobDetails = jobDetailsRepository.findById(id);
 
 		if (jobDetails.isPresent()) {

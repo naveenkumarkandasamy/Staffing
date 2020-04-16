@@ -1,7 +1,5 @@
 package com.envision.Staffing.model;
 
-import java.util.Arrays;
-
 public class Input {
 
 	private Clinician[] clinician;
@@ -75,14 +73,6 @@ public class Input {
 
 	public void setPatientHourWait(Integer patientHourWait) {
 		this.patientHourWait = patientHourWait;
-	}
-
-	@Override
-	public String toString() {
-		return "Input [clinician=" + Arrays.toString(clinician) + ", shiftLength=" + Arrays.toString(shiftLength)
-				+ ", lowerLimitFactor=" + lowerLimitFactor + ", upperLimitFactor=" + upperLimitFactor + ", dayWorkload="
-				+ Arrays.toString(dayWorkload) + ", notAllocatedStartTime=" + notAllocatedStartTime
-				+ ", notAllocatedEndTime=" + notAllocatedEndTime + ", patientHourWait=" + patientHourWait + "]";
 	}
 	
 

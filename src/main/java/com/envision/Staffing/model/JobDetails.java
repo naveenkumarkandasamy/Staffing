@@ -215,15 +215,4 @@ public class JobDetails implements Serializable {
 		this.cronExpression = cronExpression;
 	}
 
-	@Override
-	public String toString() {
-		return "JobDetails [id=" + id + ", outputEmailId=" + outputEmailId + ", status=" + status + ", userId=" + userId
-				+ ", shiftLengthPreferences=" + Arrays.toString(shiftLengthPreferences) + ", lowerUtilizationFactor="
-				+ lowerUtilizationFactor + ", upperUtilizationFactor=" + upperUtilizationFactor + ", scheduledDate="
-				+ scheduledDate + ", name=" + name + ", inputFormat=" + inputFormat + ", cronExpression="
-				+ cronExpression + ", inputFtpDetails=" + inputFtpDetails + ", inputFileDetails=" + inputFileDetails
-				+ ", outputFtpDetails=" + outputFtpDetails + ", outputFormat=" + outputFormat + ", clinicians="
-				+ clinicians + "]";
-	}
-
 }

@@ -92,7 +92,4 @@ public class DayShift {
 		return "DayShift [day=" + day + ", shiftLength=" + shiftLength + ", startTime=" + startTime + ", endTime="
 				+ endTime + ", physician=" + physician + ", app=" + app + ", scribe=" + scribe + "]";
 	}
-
-
-	
 }

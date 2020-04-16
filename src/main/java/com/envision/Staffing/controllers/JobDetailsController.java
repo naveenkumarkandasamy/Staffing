@@ -29,7 +29,6 @@ public class JobDetailsController {
 	public Response addNewJobDetails(@RequestPart(required = false) MultipartFile file,
 			@RequestPart("input") String input) throws IOException {
 		JobDetails jobDetails = new ObjectMapper().readValue(input, JobDetails.class);
-		System.out.println(jobDetails.toString());
 		if (file != null && jobDetails != null)
 			jobDetailsService.createOrUpdateJobDetails(jobDetails, file.getBytes());
 		else

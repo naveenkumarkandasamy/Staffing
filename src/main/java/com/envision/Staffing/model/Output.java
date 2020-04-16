@@ -28,9 +28,4 @@ public class Output implements Serializable{
 	public void setClinicianHourCount(List<Map<Integer,Map<String,Integer>>> clinicianHourCount) {
 		this.clinicianHourCount = (ArrayList<Map<Integer, Map<String, Integer>>>) clinicianHourCount;
 	}
-	@Override
-	public String toString() {
-		return "Output [hourlyDetail=" + Arrays.toString(hourlyDetail) + ", clinicianHourCount=" + clinicianHourCount
-				+ "]";
-	}
 }

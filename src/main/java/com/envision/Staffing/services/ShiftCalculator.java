@@ -167,12 +167,12 @@ public class ShiftCalculator {
 		// if clinician is more important, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
 
-			if (clinicians[index].getExpressions().size() == 0)
+			if (clinicians[index].getExpressions().size() == 1)
 				return true;
 			else {
 				for (int hour = start; hour < start + shiftLength && hour < 168; hour++) {
 					double value = 0.0d;
-					for (int j = 0; j < clinicians[index].getExpressions().size(); j++) {
+					for (int j = 1; j < clinicians[index].getExpressions().size(); j++) {
 						value += evaluate(clinicians[index].getExpressions().get(j), clinicians, hour);
 					}
 					if (evaluateFunction(clinicians[index].getClinicianCountPerHour()[hour] + 1, value, ">"))

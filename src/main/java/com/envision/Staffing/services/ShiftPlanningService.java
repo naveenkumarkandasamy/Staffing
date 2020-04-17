@@ -36,6 +36,10 @@ public class ShiftPlanningService {
 
 		input.setClinician(jobDetails.getClinicians().stream().toArray(Clinician[]::new));
 		input.setLowerLimitFactor(jobDetails.getLowerUtilizationFactor());
+		input.setUpperLimitFactor((double) jobDetails.getUpperUtilizationFactor());
+		input.setNotAllocatedStartTime(jobDetails.getNotAllocatedStartTime());
+		input.setNotAllocatedEndTime(jobDetails.getNotAllocatedEndTime());
+		input.setPatientHourWait(jobDetails.getPatientHourWait());
 		input.setShiftLength(jobDetails.getShiftLengthPreferences());
 		input.setDayWorkload(getDataFromExcelFile(ftpInputStream));
 		return input;

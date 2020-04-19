@@ -20,7 +20,6 @@ public class AutorunJob implements Job {
         try {
 			workflowService.autorunWorkflowService(autorunJobId);
 		} catch (Exception e) {
-			e.printStackTrace();
 			System.out.println("Given File is not an Excel File or is Corrupted.");
 		}
 	}

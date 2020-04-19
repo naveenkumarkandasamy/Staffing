@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -98,9 +97,9 @@ public class ShiftPlanningService {
 		Integer[] shiftPreferences = new Integer[] { 12, 10, 8, 4 };
 		double lowerLimitFactor = 0.75;
 		double upperLimitFactor = 1.1;
-		Integer notAllocatedStartTime = 1;
-		Integer notAllocatedEndTime = 6;
-		Integer patientHourWait = 3;
+		Integer notAllocatedStartTime = input.getNotAllocatedStartTime();
+		Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
+		Integer patientHourWait = input.getPatientHourWait();
 
 		Clinician[] inputClinicians = input.getClinician();
 		Clinician[] clinicians = new Clinician[input.getClinician().length];
@@ -243,9 +242,8 @@ public class ShiftPlanningService {
 	public ByteArrayOutputStream excelWriter(Output output, JobDetails jobDetails) throws IOException {
 
 		Workbook workbook = new XSSFWorkbook();
-		CreationHelper createHelper = workbook.getCreationHelper();
 		Sheet sheet1 = workbook.createSheet("Coverage Summary");
-		Sheet sheet2 = workbook.createSheet("Shifts Summary");
+		Sheet sheet2 = workbook.createSheet("Shift Summary");
 		HourlyDetail[] hourlyDetailsList = output.getHourlyDetail();
 
 		Font headerFont = workbook.createFont();
@@ -255,7 +253,7 @@ public class ShiftPlanningService {
 
 		Font headingFont = workbook.createFont();
 		headingFont.setBold(true);
-		headingFont.setFontHeightInPoints((short) 20);
+		headingFont.setFontHeightInPoints((short) 14);
 		headingFont.setColor(IndexedColors.BLUE.getIndex());
 
 		CellStyle headerCellStyle = workbook.createCellStyle();
@@ -365,7 +363,7 @@ public class ShiftPlanningService {
 		dayShiftList = getDayShiftList(output, jobDetails);
 
 		Row headerRow2 = sheet2.createRow(0);
-		String[] columns2 = { "Day", "Start Time", "End Time", "Shift Length", "Physician", "App", "Scribe" };
+		String[] columns2 = { "Day        ", "Start Time", "End Time", "Shift Length", "Physician", "App", "Scribe" };
 
 		for (int i = 0; i < columns2.length; i++) {
 			Cell cell2 = headerRow2.createCell(i);
@@ -380,6 +378,7 @@ public class ShiftPlanningService {
 			
 			Cell dayCell = row.createCell(0);
 			dayCell.setCellValue(dayShift.getDay());
+			dayCell.setCellStyle(headingCellStyle);
 			row.createCell(1).setCellValue(dayShift.getStartTime());
 			row.createCell(2).setCellValue(dayShift.getEndTime());
 			row.createCell(3).setCellValue(dayShift.getShiftLength());
@@ -387,19 +386,28 @@ public class ShiftPlanningService {
 			row.createCell(5).setCellValue(dayShift.getApp());
 			row.createCell(6).setCellValue(dayShift.getScribe());
 		}
+		
+		int rowStart=1;
+		int rowEnd=0;
 		for (int i = 1; i <= sheet2.getPhysicalNumberOfRows()-2; i++) {
-			if (sheet2.getRow(i).getCell(0).getStringCellValue().equals(sheet2.getRow(i + 1).getCell(0).getStringCellValue())) {
-				CellRangeAddress cellRangeAddress = new CellRangeAddress(i, i + 1, 0, 0);
+			if(sheet2.getRow(i).getCell(0).getStringCellValue().equals(sheet2.getRow(i+1).getCell(0).getStringCellValue())) {
+				rowEnd=i+1;
+			}
+			else{
+				CellRangeAddress cellRangeAddress = new CellRangeAddress(rowStart, rowEnd, 0, 0);
 				sheet2.addMergedRegion(cellRangeAddress);
-				i--;
+				rowStart=1+rowEnd;
 			}
 		}
+		CellRangeAddress cellRangeAddress = new CellRangeAddress(rowStart, rowEnd, 0, 0);
+		sheet2.addMergedRegion(cellRangeAddress);
+		
 
 		for (int i = 0; i < columns2.length; i++) {
 			sheet2.autoSizeColumn(i);
 		}
-
-		FileOutputStream fos = new FileOutputStream("temp.xlsx");
+		
+		FileOutputStream fos = new FileOutputStream("localOutput.xlsx");
 		workbook.write(fos);
 		fos.close();
 

@@ -69,7 +69,7 @@ public class WorkflowService {
 			String email = jobDetails.getOutputEmailId();
 			sendOutputToEmail(outputExcelData, email);
 		} else {
-			putOutputStringToFtpUrl(outputExcelData, jobDetails);
+			putOutputStringToFtpUrl(jobDetails);
 		}
 	}
 
@@ -77,9 +77,9 @@ public class WorkflowService {
 		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", outputExcelData);
 	}
 
-	private void putOutputStringToFtpUrl(ByteArrayOutputStream outputExcelData, JobDetails jobDetails) {
+	private void putOutputStringToFtpUrl(JobDetails jobDetails) {
 		FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
-		FtpUtil.uploadFile(outputFtpDetails, outputExcelData);
+		FtpUtil.uploadFile(outputFtpDetails);
 	}
 
 	public void autorunWorkflowService(String jobId) throws Exception {

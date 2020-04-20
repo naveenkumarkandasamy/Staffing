@@ -1,6 +1,7 @@
 package com.envision.Staffing.services;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -8,12 +9,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.envision.Staffing.ftp.FtpUtil;
 import com.envision.Staffing.model.FtpDetails;
 import com.envision.Staffing.model.Input;
 import com.envision.Staffing.model.JobDetails;
 import com.envision.Staffing.model.Output;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class WorkflowService {
@@ -45,54 +46,51 @@ public class WorkflowService {
 		}
 	}
 
-//	private 
-
-	private String getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails)
+	private ByteArrayOutputStream getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails)
 			throws IOException, Exception {
+
 		log.info("Entering function to get OutputString From InputStream");
 		String inputType = jobDetails.getInputFormat();
 		String fileExtension;
-		String jsonStr;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
 		if (inputType.contentEquals("FTP_URL")) {
 			fileExtension = FilenameUtils.getExtension(jobDetails.getInputFtpDetails().getFileUrl());
 		} else {
 			fileExtension = jobDetails.getInputFileDetails().getFileExtension(); // "xlsx"; // *** needs testing
 		}
-		log.info("fileExtension  :" + fileExtension);
 		if (fileExtension.contentEquals("xlsx")) {
 			log.info("if File Extension is xlsx, retrieving details and convert into json String");
 			Input input = shiftPlannerSerivce.processFtpInput(inputStream, jobDetails);
 			Output output = shiftPlannerSerivce.getShiftPlan(input);
-			ObjectMapper Obj = new ObjectMapper();
-			jsonStr = Obj.writeValueAsString(output);
+			bos = shiftPlannerSerivce.excelWriter(output, jobDetails);
 		} else {
 			log.info("If json String is empty,given file is not an Excel File");
-			jsonStr = "";
 			System.out.println("Given file is not an Excel file");
 		}
-		return jsonStr;
+		return bos;
 	}
 
-	private void sendOutput(JobDetails jobDetails, String jsonStr) {
+	private void sendOutput(JobDetails jobDetails, ByteArrayOutputStream outputExcelData) {
 		log.info("Method for Sending output :");
 		String outputType = jobDetails.getOutputFormat();
 		if (outputType.contentEquals("EMAIL")) {
 			String email = jobDetails.getOutputEmailId();
-			sendOutputToEmail(jsonStr, email);
+			sendOutputToEmail(outputExcelData, email);
 			log.info("if Output type is EMAIL,send output to email '" + email + "' with message --Successful--");
 		} else {
 			log.info("if Output type is not EMAIL,send output string to FtpUrl");
-			putOutputStringToFtpUrl(jsonStr, jobDetails);
+			putOutputStringToFtpUrl(jobDetails);
 		}
 	}
 
-	private void sendOutputToEmail(String jsonStr, String email) {
-		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", jsonStr);
+	private void sendOutputToEmail(ByteArrayOutputStream outputExcelData, String email) {
+		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", outputExcelData);
 	}
 
-	private void putOutputStringToFtpUrl(String jsonStr, JobDetails jobDetails) {
+	private void putOutputStringToFtpUrl(JobDetails jobDetails) {
 		FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
-		FtpUtil.uploadFile(outputFtpDetails, jsonStr);
+		FtpUtil.uploadFile(outputFtpDetails);
 	}
 
 	public void autorunWorkflowService(String jobId) throws Exception {
@@ -100,12 +98,14 @@ public class WorkflowService {
 		try {
 			log.info("JobId ::" + jobId);
 			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
+
 			log.info("Job Input Format ::" + jobDetails.getInputFormat());
 			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
 
-			String outputJsonString = getOutputStringFromInputStream(inputStream, jobDetails);
+			ByteArrayOutputStream outputExcelData = getOutputStringFromInputStream(inputStream, jobDetails);
 
-			sendOutput(jobDetails, outputJsonString);
+			sendOutput(jobDetails, outputExcelData);
+
 			log.info("job '" + jobDetails.getName() + "' successfully executed ");
 			System.out.println("Job: " + jobDetails.getName() + " successfully executed ");
 
@@ -113,48 +113,5 @@ public class WorkflowService {
 			log.error("Error happened in autorunWorkflowService :", e);
 			e.printStackTrace();
 		}
-
-//		JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
-//		String inputType = jobDetails.getInputFormat();
-//		
-//		InputStream ftpInputStream;
-//		
-//		if(inputType.contentEquals("FTP_URL")) {
-//			FtpDetails inputFtpDetails = jobDetails.getInputFtpDetails();
-//			fileExtension = FilenameUtils.getExtension(jobDetails.getInputFtpDetails().getFileUrl());
-//			ftpInputStream= FtpUtil.downloadFile(inputFtpDetails);			
-//		}
-//		else {
-//			byte[] inputFile = jobDetails.getInputFileDetails().getDataFile() ;
-//			ftpInputStream = new ByteArrayInputStream(inputFile);
-//						
-//		}
-//
-//		if(fileExtension.contentEquals("xlsx")) { // only allow if file is Excel Sheet
-//				Input input = shiftPlannerSerivce.processFtpInput(ftpInputStream, jobDetails);
-//			try {
-//				Output output = shiftPlannerSerivce.getShiftPlan(input);
-//				ObjectMapper Obj = new ObjectMapper();
-//				String jsonStr = Obj.writeValueAsString(output);
-//				String outputType = jobDetails.getOutputFormat();
-//				
-//				if(outputType.contentEquals("FTP_URL")) {
-//					FtpDetails outputFtpDetails = jobDetails.getOutputFtpDetails();
-//					if(FtpUtil.uploadFile(outputFtpDetails, jsonStr) == true) {
-//						System.out.println("Job: "+ jobDetails.getName() + " successfully executed ");
-//					}
-//				}
-//				else{
-//					emailService.sendMail("gundla.sushant@gmail.com", "WorkflowTest-1", "--Successfull--", jsonStr);
-//					System.out.println("Job: "+ jobDetails.getName() + " successfully executed ");
-//				}
-//				
-//				
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		return jobDetails;
-
 	}
 }

@@ -1,11 +1,9 @@
 package com.envision.Staffing.ftp;
 
-import com.envision.Staffing.model.FtpDetails;
-import com.envision.Staffing.model.Output;
-
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +11,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
+
+import com.envision.Staffing.model.FtpDetails;
 
 public class FtpUtil {
 	static Logger log = Logger.getLogger(FtpUtil.class);
@@ -101,24 +101,25 @@ public class FtpUtil {
 		return in;
 	}
 
-	public static boolean uploadFile(FtpDetails ftpDetails, String jsonString) {
+	public static boolean uploadFile(FtpDetails ftpDetails) {
 		ftpDetails = FtpUtil.fieldExtraction(ftpDetails);
 
 		String remoteDirPath = ftpDetails.getDirPath();
 		String remoteFileName = ftpDetails.getFileName();
-
+		String remoteFilePath = remoteDirPath + remoteFileName;
 		boolean flag = false;
 
 		FTPClient ftp = connect(ftpDetails);
+
 		if (ftp.isConnected()) {
 			try {
-
-				ObjectOutputStream oos = new ObjectOutputStream(ftp.storeFileStream(remoteDirPath + remoteFileName));
-				oos.writeBytes(jsonString);
-
-				oos.close();
-				flag = true;
-
+				File localFile = new File("localOutput.xlsx");
+				InputStream inputStream = new FileInputStream(localFile);
+				boolean done = ftp.storeFile(remoteFilePath, inputStream);
+				inputStream.close();
+				if (done) {
+					flag = true;
+				}
 				ftp.logout();
 				ftp.disconnect();
 			} catch (IOException e) {

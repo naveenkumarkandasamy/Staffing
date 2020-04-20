@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
 import javax.mail.MessagingException;
@@ -17,8 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -49,14 +48,14 @@ public class EmailServiceTest {
 		String to = "to@gmail.com";
 		String subject = "Test Email";
 		String body = "<html>Test Email</html>";
-		String attachment = "Test";
+		ByteArrayOutputStream attachment = new ByteArrayOutputStream();
 		when(javaMailSender.createMimeMessage()).thenReturn(message);
 		MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());
 		messageHelper.setSubject(subject);
 		messageHelper.setText(body, true);
 		messageHelper.setFrom(from);
 		messageHelper.setTo(to);
-		messageHelper.addAttachment("attachment.txt", new ByteArrayDataSource(attachment, "text/plain"));
+		messageHelper.addAttachment("attachment.xlsx", new ByteArrayDataSource(attachment.toByteArray(), "application/vnd.ms-excel"));
 
 		emailService.sendMail(to, subject, body, attachment);
 		Assert.assertNotNull(message);

@@ -111,7 +111,6 @@ public class ShiftPlanningService {
 		Integer notAllocatedEndTime = 6;
 		Integer patientHourWait = 2;
 
-
 		Clinician[] inputClinicians = input.getClinician();
 		Clinician[] clinicians = new Clinician[input.getClinician().length];
 
@@ -148,7 +147,7 @@ public class ShiftPlanningService {
 			upperLimitFactor = input.getUpperLimitFactor();
 		}
 		if (input.getNotAllocatedStartTime() != null) {
-			 notAllocatedStartTime =input.getNotAllocatedStartTime();
+			notAllocatedStartTime = input.getNotAllocatedStartTime();
 		}
 		if (input.getNotAllocatedEndTime() != null) {
 			notAllocatedEndTime = input.getNotAllocatedEndTime();
@@ -198,7 +197,8 @@ public class ShiftPlanningService {
 		// checking which clinician is always true and store index in arrindex for this
 		// clinician
 
-		log.info("Assigning Clinicians to Corresponding ShiftPreferences based upon the condition like Utilization,clinicianExpression");
+		log.info(
+				"Assigning Clinicians to Corresponding ShiftPreferences based upon the condition like Utilization,clinicianExpression");
 		for (int i = 0; i < shiftPreferences.length; i++) {
 			if (i != (shiftPreferences.length - 1)) {
 				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime, notAllocatedEndTime,
@@ -302,170 +302,27 @@ public class ShiftPlanningService {
 	public ByteArrayOutputStream excelWriter(Output output, JobDetails jobDetails) throws IOException {
 
 		Workbook workbook = new XSSFWorkbook();
-		Sheet sheet1 = workbook.createSheet("Coverage Summary");
-		Sheet sheet2 = workbook.createSheet("Shift Summary");
-		HourlyDetail[] hourlyDetailsList = output.getHourlyDetail();
+		Sheet coverageSummary = workbook.createSheet("Coverage Summary");
+		Sheet shiftSummary = workbook.createSheet("Shift Summary");
 
 		Font headerFont = workbook.createFont();
 		headerFont.setBold(true);
 		headerFont.setFontHeightInPoints((short) 14);
 		headerFont.setColor(IndexedColors.RED.getIndex());
 
-		Font headingFont = workbook.createFont();
-		headingFont.setBold(true);
-		headingFont.setFontHeightInPoints((short) 14);
-		headingFont.setColor(IndexedColors.BLUE.getIndex());
+		Font dayFont = workbook.createFont();
+		dayFont.setBold(true);
+		dayFont.setFontHeightInPoints((short) 14);
+		dayFont.setColor(IndexedColors.BLUE.getIndex());
 
 		CellStyle headerCellStyle = workbook.createCellStyle();
 		headerCellStyle.setFont(headerFont);
 
-		CellStyle headingCellStyle = workbook.createCellStyle();
-		headingCellStyle.setFont(headingFont);
+		CellStyle dayCellStyle = workbook.createCellStyle();
+		dayCellStyle.setFont(dayFont);
 
-		// Sheet 1
-		Row headerRow = sheet1.createRow(0);
-		String[] columns1 = { "Day", "Hour", "Physician Coverage", "App Coverage", "Scribe Coverage", "Total Coverage",
-				"Percent Physician", "Expected Patient Arriving", "Covered Patient Arriving", "Difference",
-				"Expected Patient Per Provider", "Covered Patient Per Provider", "Cost", "Hour Wait ", "Patient Lost" };
-
-		for (int i = 0; i < columns1.length; i++) {
-			Cell cell = headerRow.createCell(i);
-			cell.setCellValue(columns1[i]);
-			cell.setCellStyle(headerCellStyle);
-		}
-		double totalCoverage;
-		double percentPhysician;
-		double expectedPatientsPerProvider;
-		double coveredPatientsPerProvider;
-		double loss;
-		double wait;
-		double differnceBetweenCapacityAndWorkload;
-
-		double totalCost = 0;
-		double totalExpectedPatient = 0;
-		double totalCapacityWorkload = 0;
-		double totalPatientsWaiting = 0;
-		double totalPatientsLoss = 0;
-		int rowCount1 = 1;
-
-		for (HourlyDetail hourlyDetails : hourlyDetailsList) {
-			totalCoverage = hourlyDetails.getNumberOfPhysicians() + hourlyDetails.getNumberOfAPPs()
-					+ hourlyDetails.getNumberOfScribes();
-			if (totalCoverage == 0) {
-				percentPhysician = 0;
-				expectedPatientsPerProvider = 0;
-				coveredPatientsPerProvider = 0;
-			} else {
-				percentPhysician = hourlyDetails.getNumberOfPhysicians() / totalCoverage;
-				expectedPatientsPerProvider = hourlyDetails.getExpectedWorkLoad() / totalCoverage * 100 / 100;
-				coveredPatientsPerProvider = hourlyDetails.getCapacityWorkLoad() / totalCoverage * 100 / 100;
-			}
-			loss = hourlyDetails.getLoss() * 100 / 100;
-			wait = hourlyDetails.getWait() * 100 / 100;
-			differnceBetweenCapacityAndWorkload = (hourlyDetails.getCapacityWorkLoad()
-					- hourlyDetails.getExpectedWorkLoad()) * 100 / 100;
-
-			Row row = sheet1.createRow(rowCount1++);
-
-			Cell cell = row.createCell(0);
-			cell.setCellValue(days[(rowCount1 - 2) / 24]);
-			cell.setCellStyle(headingCellStyle);
-			row.createCell(1).setCellValue((hourlyDetails.getHour()) % 24);
-			row.createCell(2).setCellValue(hourlyDetails.getNumberOfPhysicians());
-			row.createCell(3).setCellValue(hourlyDetails.getNumberOfAPPs());
-			row.createCell(4).setCellValue(hourlyDetails.getNumberOfScribes());
-			row.createCell(5).setCellValue(totalCoverage);
-			row.createCell(6).setCellValue(percentPhysician);
-			row.createCell(7).setCellValue(hourlyDetails.getExpectedWorkLoad());
-			row.createCell(8).setCellValue(hourlyDetails.getCapacityWorkLoad());
-			row.createCell(9).setCellValue(differnceBetweenCapacityAndWorkload);
-			row.createCell(10).setCellValue(expectedPatientsPerProvider);
-			row.createCell(11).setCellValue(coveredPatientsPerProvider);
-			row.createCell(12).setCellValue(hourlyDetails.getCostPerHour());
-			row.createCell(13).setCellValue(wait);
-			row.createCell(14).setCellValue(loss);
-
-			totalExpectedPatient = totalExpectedPatient + hourlyDetails.getExpectedWorkLoad();
-			totalCapacityWorkload = totalCapacityWorkload + hourlyDetails.getCapacityWorkLoad();
-			totalPatientsWaiting = totalPatientsWaiting + wait;
-			totalPatientsLoss = totalPatientsLoss + loss;
-			totalCost = totalCost + hourlyDetails.getCostPerHour();
-		}
-		for (int i = 0; i < 7; i++) {
-			sheet1.addMergedRegion(new CellRangeAddress(24 * i + 1, 24 * i + 24, 0, 0));
-		}
-
-		Row rowName = sheet1.createRow(rowCount1 + 1);
-		Cell cell = rowName.createCell(0);
-		cell.setCellValue("Overall Summary");
-		cell.setCellStyle(headingCellStyle);
-
-		String[] summary = { "Total Expected Patient", "Total Capacity Workload", "Total Patients Waiting",
-				"Total Patients Loss", "Total Cost" };
-		Double[] summaryValue = { totalExpectedPatient, totalCapacityWorkload, Math.abs(totalPatientsWaiting),
-				Math.abs(totalPatientsLoss), totalCost };
-
-		for (int i = 0; i < summary.length; i++) {
-			Row row1 = sheet1.createRow(rowCount1 + 2 + i);
-			Cell cell1 = row1.createCell(0);
-			cell1.setCellValue(summary[i]);
-			cell1.setCellStyle(headerCellStyle);
-			Cell cell2 = row1.createCell(1);
-			cell2.setCellValue(summaryValue[i]);
-		}
-
-		for (int i = 0; i < columns1.length; i++) {
-			sheet1.autoSizeColumn(i);
-		}
-
-		// Sheet 2
-		ArrayList<DayShift> dayShiftList = new ArrayList<>();
-		dayShiftList = getDayShiftList(output, jobDetails);
-
-		Row headerRow2 = sheet2.createRow(0);
-		String[] columns2 = { "Day        ", "Start Time", "End Time", "Shift Length", "Physician", "App", "Scribe" };
-
-		for (int i = 0; i < columns2.length; i++) {
-			Cell cell2 = headerRow2.createCell(i);
-			cell2.setCellValue(columns2[i]);
-			cell2.setCellStyle(headerCellStyle);
-		}
-
-		int rowCount2 = 1;
-		for (DayShift dayShift : dayShiftList) {
-
-			Row row = sheet2.createRow(rowCount2++);
-			
-			Cell dayCell = row.createCell(0);
-			dayCell.setCellValue(dayShift.getDay());
-			dayCell.setCellStyle(headingCellStyle);
-			row.createCell(1).setCellValue(dayShift.getStartTime());
-			row.createCell(2).setCellValue(dayShift.getEndTime());
-			row.createCell(3).setCellValue(dayShift.getShiftLength());
-			row.createCell(4).setCellValue(dayShift.getPhysician());
-			row.createCell(5).setCellValue(dayShift.getApp());
-			row.createCell(6).setCellValue(dayShift.getScribe());
-		}
-		
-		int rowStart=1;
-		int rowEnd=0;
-		for (int i = 1; i <= sheet2.getPhysicalNumberOfRows()-2; i++) {
-			if(sheet2.getRow(i).getCell(0).getStringCellValue().equals(sheet2.getRow(i+1).getCell(0).getStringCellValue())) {
-				rowEnd=i+1;
-			}
-			else{
-				CellRangeAddress cellRangeAddress = new CellRangeAddress(rowStart, rowEnd, 0, 0);
-				sheet2.addMergedRegion(cellRangeAddress);
-				rowStart=1+rowEnd;
-			}
-		}
-		CellRangeAddress cellRangeAddress = new CellRangeAddress(rowStart, rowEnd, 0, 0);
-		sheet2.addMergedRegion(cellRangeAddress);
-		
-
-		for (int i = 0; i < columns2.length; i++) {
-			sheet2.autoSizeColumn(i);
-		}
+		createCoverageSummarySheet(output,coverageSummary,headerCellStyle,dayCellStyle); //CoverageSummarySheet
+		createShiftSummarySheet(output,jobDetails,shiftSummary,headerCellStyle,dayCellStyle); //ShiftSummarySheet
 		
 		FileOutputStream fos = new FileOutputStream("localOutput.xlsx");
 		workbook.write(fos);
@@ -476,6 +333,189 @@ public class ShiftPlanningService {
 		bos.close();
 		workbook.close();
 		return bos;
+	}
+
+	private void createCoverageSummarySheet(Output output, Sheet coverageSummary, CellStyle headerCellStyle,
+			CellStyle dayCellStyle) {
+		
+		HourlyDetail[] hourlyDetailsList = output.getHourlyDetail();
+		Row headerRow = coverageSummary.createRow(0);
+		String[] coverageSummaryColumn = { "Day", "Hour", "Physician Coverage", "App Coverage", "Scribe Coverage",
+				"Total Coverage", "Percent Physician", "Expected Patient Arriving", "Covered Patient Arriving",
+				"Difference", "Expected Patient Per Provider", "Covered Patient Per Provider", "Cost", "Hour Wait ",
+				"Patient Lost" };
+
+		for (int i = 0; i < coverageSummaryColumn.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(coverageSummaryColumn[i]);
+			cell.setCellStyle(headerCellStyle);
+		}
+
+		String day;
+		int hour;
+		int physician;
+		int app;
+		int scribe;
+		double totalCoverage;
+		double percentPhysician;
+		double expectedPatientsPerProvider;
+		double coveredPatientsPerProvider;
+		double expectedWorkLoad;
+		double capacityWorkLoad;
+		double loss;
+		double wait;
+		double differnceBetweenCapacityAndWorkload;
+		int cost;
+
+		double totalCost = 0;
+		double totalExpectedPatient = 0;
+		double totalCapacityWorkload = 0;
+		double totalPatientsWaiting = 0;
+		double totalPatientsLoss = 0;
+		int rowCount1 = 1;
+
+		for (HourlyDetail detailedHour : hourlyDetailsList) {
+
+			hour = (detailedHour.getHour()) % 24;
+			physician = detailedHour.getNumberOfPhysicians();
+			app = detailedHour.getNumberOfAPPs();
+			scribe = detailedHour.getNumberOfScribes();
+			totalCoverage = detailedHour.getNumberOfPhysicians() + detailedHour.getNumberOfAPPs()
+					+ detailedHour.getNumberOfScribes();
+			if (totalCoverage == 0) {
+				percentPhysician = 0;
+				expectedPatientsPerProvider = 0;
+				coveredPatientsPerProvider = 0;
+			} else {
+				percentPhysician = detailedHour.getNumberOfPhysicians() / totalCoverage;
+				expectedPatientsPerProvider = detailedHour.getExpectedWorkLoad() / totalCoverage * 100 / 100;
+				coveredPatientsPerProvider = detailedHour.getCapacityWorkLoad() / totalCoverage * 100 / 100;
+			}
+			expectedWorkLoad = detailedHour.getExpectedWorkLoad();
+			capacityWorkLoad = detailedHour.getCapacityWorkLoad();
+			cost = detailedHour.getCostPerHour();
+			loss = detailedHour.getLoss() * 100 / 100;
+			wait = detailedHour.getWait() * 100 / 100;
+			differnceBetweenCapacityAndWorkload = (detailedHour.getCapacityWorkLoad()
+					- detailedHour.getExpectedWorkLoad()) * 100 / 100;
+
+			Row row = coverageSummary.createRow(rowCount1++);
+			day = days[(rowCount1 - 2) / 24];
+			
+			addCellCoverageSummary(row,dayCellStyle, day, hour, physician, app, scribe, totalCoverage, percentPhysician,
+					expectedWorkLoad, capacityWorkLoad, differnceBetweenCapacityAndWorkload,
+					expectedPatientsPerProvider, coveredPatientsPerProvider, cost, wait, loss);
+			
+			totalExpectedPatient = totalExpectedPatient + detailedHour.getExpectedWorkLoad();
+			totalCapacityWorkload = totalCapacityWorkload + detailedHour.getCapacityWorkLoad();
+			totalPatientsWaiting = totalPatientsWaiting + wait;
+			totalPatientsLoss = totalPatientsLoss + loss;
+			totalCost = totalCost + detailedHour.getCostPerHour();
+		}
+		for (int i = 0; i < 7; i++) {
+			coverageSummary.addMergedRegion(new CellRangeAddress(24 * i + 1, 24 * i + 24, 0, 0));
+		}
+
+		Row rowName = coverageSummary.createRow(rowCount1 + 1);
+		Cell cell = rowName.createCell(0);
+		cell.setCellValue("Overall Summary");
+		cell.setCellStyle(dayCellStyle);
+
+		String[] summary = { "Total Expected Patient", "Total Capacity Workload", "Total Patients Waiting",
+				"Total Patients Loss", "Total Cost" };
+		Double[] summaryValue = { totalExpectedPatient, totalCapacityWorkload, Math.abs(totalPatientsWaiting),
+				Math.abs(totalPatientsLoss), totalCost };
+		
+		addCellOverallSummary(coverageSummary,headerCellStyle,summary,summaryValue,rowCount1);
+
+		for (int i = 0; i < coverageSummaryColumn.length; i++) {
+			coverageSummary.autoSizeColumn(i);
+		}		
+	}
+	
+	private void addCellOverallSummary(Sheet coverageSummary, CellStyle headerCellStyle, String[] summary, Double[] summaryValue, int rowCount1) {
+		for (int i = 0; i < summary.length; i++) {
+			Row row1 = coverageSummary.createRow(rowCount1 + 2 + i);
+			Cell cell1 = row1.createCell(0);
+			cell1.setCellValue(summary[i]);
+			cell1.setCellStyle(headerCellStyle);
+			Cell cell2 = row1.createCell(1);
+			cell2.setCellValue(summaryValue[i]);
+		}
+	}
+
+	private void addCellCoverageSummary(Row row, CellStyle dayCellStyle, String day, int hour, int physician, int app,
+			int scribe, double totalCoverage, double percentPhysician, double expectedWorkLoad, double capacityWorkLoad,
+			double differnceBetweenCapacityAndWorkload, double expectedPatientsPerProvider,
+			double coveredPatientsPerProvider, int cost, double wait, double loss) {
+		Cell cell = row.createCell(0);
+		cell.setCellValue(day);
+		cell.setCellStyle(dayCellStyle);
+		row.createCell(1).setCellValue(hour);
+		row.createCell(2).setCellValue(physician);
+		row.createCell(3).setCellValue(app);
+		row.createCell(4).setCellValue(scribe);
+		row.createCell(5).setCellValue(totalCoverage);
+		row.createCell(6).setCellValue(percentPhysician);
+		row.createCell(7).setCellValue(expectedWorkLoad);
+		row.createCell(8).setCellValue(capacityWorkLoad);
+		row.createCell(9).setCellValue(differnceBetweenCapacityAndWorkload);
+		row.createCell(10).setCellValue(expectedPatientsPerProvider);
+		row.createCell(11).setCellValue(coveredPatientsPerProvider);
+		row.createCell(12).setCellValue(cost);
+		row.createCell(13).setCellValue(wait);
+		row.createCell(14).setCellValue(loss);
+	}
+	
+	private void createShiftSummarySheet(Output output, JobDetails jobDetails, Sheet shiftSummary,
+			CellStyle headerCellStyle, CellStyle dayCellStyle) {
+		
+		ArrayList<DayShift> dayShiftList = new ArrayList<>();
+		dayShiftList = getDayShiftList(output, jobDetails);
+
+		Row headerRow2 = shiftSummary.createRow(0);
+		String[] shiftSummaryColumn = { "Day        ", "Start Time", "End Time", "Shift Length", "Physician", "App", "Scribe" };
+
+		for (int i = 0; i < shiftSummaryColumn.length; i++) {
+			Cell cell2 = headerRow2.createCell(i);
+			cell2.setCellValue(shiftSummaryColumn[i]);
+			cell2.setCellStyle(headerCellStyle);
+		}
+
+		int rowCount2 = 1;
+		for (DayShift dayShift : dayShiftList) {
+
+			Row row = shiftSummary.createRow(rowCount2++);
+
+			Cell dayCell = row.createCell(0);
+			dayCell.setCellValue(dayShift.getDay());
+			dayCell.setCellStyle(dayCellStyle);
+			row.createCell(1).setCellValue(dayShift.getStartTime());
+			row.createCell(2).setCellValue(dayShift.getEndTime());
+			row.createCell(3).setCellValue(dayShift.getShiftLength());
+			row.createCell(4).setCellValue(dayShift.getPhysician());
+			row.createCell(5).setCellValue(dayShift.getApp());
+			row.createCell(6).setCellValue(dayShift.getScribe());
+		}
+
+		int rowStart = 1;
+		int rowEnd = 0;
+		for (int i = 1; i <= shiftSummary.getPhysicalNumberOfRows() - 2; i++) {
+			if (shiftSummary.getRow(i).getCell(0).getStringCellValue()
+					.equals(shiftSummary.getRow(i + 1).getCell(0).getStringCellValue())) {
+				rowEnd = i + 1;
+			} else {
+				CellRangeAddress cellRangeAddress = new CellRangeAddress(rowStart, rowEnd, 0, 0);
+				shiftSummary.addMergedRegion(cellRangeAddress);
+				rowStart = 1 + rowEnd;
+			}
+		}
+		CellRangeAddress cellRangeAddress = new CellRangeAddress(rowStart, rowEnd, 0, 0);
+		shiftSummary.addMergedRegion(cellRangeAddress);
+
+		for (int i = 0; i < shiftSummaryColumn.length; i++) {
+			shiftSummary.autoSizeColumn(i);
+		}
 	}
 
 	private ArrayList<DayShift> getDayShiftList(Output output, JobDetails jobDetails) {

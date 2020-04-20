@@ -40,7 +40,7 @@ public class EmailService {
 			InputStream input = null;
 			messageHelper.addAttachment("attachment.xlsx", new ByteArrayDataSource(attachment.toByteArray(), "application/vnd.ms-excel"));
 			mailSender.send(message);
-		} catch (MessagingException | IOException ex) {
+		} catch (MessagingException ex) {
 			log.error("Error happened in Email Service", ex);
 		}
 	}

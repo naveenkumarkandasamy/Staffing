@@ -26,11 +26,10 @@ public class EmailService {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	Logger log = Logger.getLogger(EmailService.class);
 
 	public void sendMail(String toEmail, String subject, String body, ByteArrayOutputStream attachment) {
-
-	Logger log = Logger.getLogger(EmailService.class);
-  
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());

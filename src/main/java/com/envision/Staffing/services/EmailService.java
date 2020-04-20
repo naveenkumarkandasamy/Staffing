@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-	@Value("${username}")
-	private String username;
+	@Value("${useremail}")
+	private String useremail;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -31,7 +31,7 @@ public class EmailService {
 			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());
 			messageHelper.setSubject(subject);
 			messageHelper.setText(body, true);
-			messageHelper.setFrom(username);
+			messageHelper.setFrom(useremail);
 			messageHelper.setTo(toEmail);
 			InputStream input = null;
 			messageHelper.addAttachment("attachment.txt", new ByteArrayDataSource(attachment, "text/plain"));

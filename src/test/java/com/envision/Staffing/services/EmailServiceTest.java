@@ -37,7 +37,7 @@ public class EmailServiceTest {
 
 	@Before
 	public void setUp() throws MessagingException {
-		ReflectionTestUtils.setField(emailService, "username", "from@email.com");
+		ReflectionTestUtils.setField(emailService, "useremail", "from@email.com");
 		message = new JavaMailSenderImpl().createMimeMessage();
 		doNothing().when(javaMailSender).send(any(MimeMessage.class));
 	}

@@ -31,10 +31,13 @@ public class MultipleAuthProvidersSecurityConfig extends WebSecurityConfigurerAd
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-
-		httpSecurity.csrf().disable().authorizeRequests().antMatchers("/login", "/token").permitAll().anyRequest()
-				.authenticated().and().exceptionHandling().and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		httpSecurity.csrf().disable().authorizeRequests()
+	 	.antMatchers("/login", "/token").permitAll()
+		.antMatchers("/jobList/delete").hasRole("ADMIN")
+		.antMatchers("/jobDetails/get").hasRole("ADMIN")
+		.anyRequest().authenticated()
+		.and().exceptionHandling().and().sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 

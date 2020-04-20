@@ -1,6 +1,8 @@
 package com.envision.Staffing.services;
 
 import java.util.Date;
+
+import org.apache.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -22,6 +24,8 @@ public class QuartzSchedulerService {
 	@Autowired
 	private Scheduler scheduler;
 
+	Logger log = Logger.getLogger(QuartzSchedulerService.class);
+
 	public Scheduler getScheduler() {
 		return scheduler;
 	}
@@ -31,24 +35,27 @@ public class QuartzSchedulerService {
 	}
 
 	public void scheduleJob(JobDetails jobDetails) {
+		log.info("Entering method for scheduling job :");
+		log.info(" Job Id ::" + jobDetails.getId());
 		JobDetail jobDetail = buildJobDetail(jobDetails);
 		Trigger trigger = buildJobTrigger(jobDetail, jobDetails);
 		try {
 			scheduler.scheduleJob(jobDetail, trigger);
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
+			log.error("Error happened in scheduling job :", e);
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void rescheduleJob(String id, JobDetails jobDetails) {
+		log.info("Entering method for rescheduling job :");
 		JobDetail jobDetail = buildJobDetail(jobDetails);
 		Trigger trigger = buildJobTrigger(jobDetail, jobDetails);
-		TriggerKey triggerkey = TriggerKey.triggerKey(id,"DEFAULT");
+		TriggerKey triggerkey = TriggerKey.triggerKey(id, "DEFAULT");
 		try {
 			scheduler.rescheduleJob(triggerkey, trigger);
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
+			log.error("Error happened in ReScheduling job :", e);
 			e.printStackTrace();
 		}
 	}

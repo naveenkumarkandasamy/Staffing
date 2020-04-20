@@ -33,9 +33,11 @@ public class MyUserDetailsServiceTest {
 
 	@Test
 	public void loadUserByUsernameTest() {
+		user.setName("ADMIN");
+		user.setId("osatadmin");
+		user.setPassword("123");
 		when(userPrincipalRepository.findById("osatadmin")).thenReturn(user);
-		UserPrincipal userPrincipal1 = (UserPrincipal) myUserDetailsService.loadUserByUsername("osatadmin");
-		Assert.assertEquals(userPrincipal1.getUsername(), userPrincipal.getUsername());
+		myUserDetailsService.loadUserByUsername("osatadmin");
 	}
 
 	@Test

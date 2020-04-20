@@ -1,7 +1,6 @@
 package com.envision.Staffing.services;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -9,6 +8,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -26,6 +26,8 @@ public class EmailService {
 	@Autowired
 	private JavaMailSender mailSender;
 
+	Logger log = Logger.getLogger(EmailService.class);
+
 	public void sendMail(String toEmail, String subject, String body, ByteArrayOutputStream attachment) {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
@@ -38,6 +40,7 @@ public class EmailService {
 			messageHelper.addAttachment("attachment.xlsx", new ByteArrayDataSource(attachment.toByteArray(), "application/vnd.ms-excel"));
 			mailSender.send(message);
 		} catch (MessagingException ex) {
+			log.error("Error happened in Email Service", ex);
 		}
 	}
 

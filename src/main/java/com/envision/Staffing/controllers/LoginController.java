@@ -1,5 +1,6 @@
 package com.envision.Staffing.controllers;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +30,16 @@ public class LoginController {
 	@Autowired
 	private MyUserDetailsService userDetailsService;
 
+	Logger log = Logger.getLogger(LoginController.class);
+
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestParam(value = "username") String username,
 			@RequestParam(value = "pass") String password) throws Exception {
-		
+
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (BadCredentialsException e) {
+			log.error("Incorrect username or password", e);
 			throw new Exception("Incorrect username or password", e);
 		}
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -60,5 +64,5 @@ public class LoginController {
 		}
 		return new ResponseEntity(HttpStatus.UNAUTHORIZED);
 	}
-	
+
 }

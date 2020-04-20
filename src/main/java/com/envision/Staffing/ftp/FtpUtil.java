@@ -108,7 +108,7 @@ public class FtpUtil {
 		String remoteDirPath = ftpDetails.getDirPath();
 		String remoteFileName = ftpDetails.getFileName();
 		String remoteFilePath = remoteDirPath + remoteFileName;
-		boolean flag = true;
+		boolean flag = false;
 
 		FTPClient ftp = connect(ftpDetails);
 

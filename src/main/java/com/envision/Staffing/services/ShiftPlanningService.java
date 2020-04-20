@@ -75,7 +75,7 @@ public class ShiftPlanningService {
 				workload[i].setName(days[i]);
 				Double[] personPerHour = new Double[24];
 				for (int j = 0; j <= 23; j++) {
-					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i).getCell(j).getNumericCellValue());
+					personPerHour[j] = Double.valueOf(myExcelSheet.getRow(i+1).getCell(j+1).getNumericCellValue());
 				}
 				workload[i].setExpectedPatientsPerHour(personPerHour);
 			}
@@ -97,9 +97,12 @@ public class ShiftPlanningService {
 		Integer[] shiftPreferences = new Integer[] { 12, 10, 8, 4 };
 		double lowerLimitFactor = 0.75;
 		double upperLimitFactor = 1.1;
-		Integer notAllocatedStartTime = input.getNotAllocatedStartTime();
-		Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
-		Integer patientHourWait = input.getPatientHourWait();
+//		Integer notAllocatedStartTime = input.getNotAllocatedStartTime();
+//		Integer notAllocatedEndTime = input.getNotAllocatedEndTime();
+//		Integer patientHourWait = input.getPatientHourWait();
+		Integer notAllocatedStartTime = 1;
+		Integer notAllocatedEndTime = 6;
+		Integer patientHourWait = 2;
 
 		Clinician[] inputClinicians = input.getClinician();
 		Clinician[] clinicians = new Clinician[input.getClinician().length];

@@ -10,10 +10,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.log4j.Logger;
 
 import com.envision.Staffing.model.FtpDetails;
 
 public class FtpUtil {
+	static Logger log = Logger.getLogger(FtpUtil.class);
 
 	public static FtpDetails fieldExtraction(FtpDetails ftpDetails) {
 
@@ -68,6 +70,7 @@ public class FtpUtil {
 				ftp.disconnect();
 			}
 		} catch (IOException e) {
+			log.error("Error happened in FTP client connect method :", e);
 			e.printStackTrace();
 		}
 
@@ -85,13 +88,14 @@ public class FtpUtil {
 		if (ftp.isConnected()) {
 			try {
 				in = ftp.retrieveFileStream(dirPath + fileName);
-//				System.out.println("FTP File downloaded successfully");
-
+				log.info("FTP File Downloaded ");
+        
 				if (ftp.isConnected()) {
 					ftp.logout();
 					ftp.disconnect();
 				}
 			} catch (Exception e) {
+				log.error("Error happened in downloading file method :", e);
 				e.printStackTrace();
 			}
 		}
@@ -120,6 +124,7 @@ public class FtpUtil {
 				ftp.logout();
 				ftp.disconnect();
 			} catch (IOException e) {
+				log.error("Error happened in uploading file method :", e);
 				e.printStackTrace();
 			}
 		}

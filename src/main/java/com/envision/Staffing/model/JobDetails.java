@@ -83,6 +83,38 @@ public class JobDetails implements Serializable {
 	@Column(name = "cron_expression")
 	private String cronExpression;
 
+	@Column(name = "not_allocated_start_time")
+	private Integer notAllocatedStartTime;
+
+	@Column(name = "not_allocated_end_time")
+	private Integer notAllocatedEndTime;
+
+	@Column(name = "patient_hour_wait")
+	private Integer patientHourWait;
+
+	public Integer getNotAllocatedStartTime() {
+		return notAllocatedStartTime;
+	}
+
+	public void setNotAllocatedStartTime(Integer notAllocatedStartTime) {
+		this.notAllocatedStartTime = notAllocatedStartTime;
+	}
+
+	public Integer getNotAllocatedEndTime() {
+		return notAllocatedEndTime;
+	}
+
+	public void setNotAllocatedEndTime(Integer notAllocatedEndTime) {
+		this.notAllocatedEndTime = notAllocatedEndTime;
+	}
+
+	public Integer getPatientHourWait() {
+		return patientHourWait;
+	}
+
+	public void setPatientHourWait(Integer patientHourWait) {
+		this.patientHourWait = patientHourWait;
+	}
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "input_ftp_id")
 	private FtpDetails inputFtpDetails;

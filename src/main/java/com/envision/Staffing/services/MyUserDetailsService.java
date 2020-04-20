@@ -2,8 +2,10 @@ package com.envision.Staffing.services;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.envision.Staffing.model.User;
 import com.envision.Staffing.model.UserAuth;
-import com.envision.Staffing.model.UserPrincipal;
 import com.envision.Staffing.repository.UserPrincipalRepository;
 
 @Service
@@ -26,10 +27,19 @@ public class MyUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
 		User user = this.userPrincipalRepository.findById(s);
-		UserPrincipal userPrincipal = new UserPrincipal(user);
-		return userPrincipal;
+		return new org.springframework.security.core.userdetails.User(String.valueOf(user.getId()), user.getPassword(), getAuthority(user.getName()));
 	}
-
+	
+	private List<SimpleGrantedAuthority> getAuthority(String name) {
+		String role = null;
+		if (name.equals("USER")) {
+			role = "ROLE_USER";
+		} else if (name.equals("ADMIN")) {
+			role = "ROLE_ADMIN";
+		}
+		return Arrays.asList(new SimpleGrantedAuthority(role));
+	}
+	 
 	public UserAuth getUser(String s) throws UsernameNotFoundException {
 
 		User user = this.userPrincipalRepository.findById(s);

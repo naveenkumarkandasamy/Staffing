@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import com.envision.Staffing.model.Clinician;
 import com.envision.Staffing.model.HourlyDetail;
@@ -17,7 +18,7 @@ enum allocation {
 
 @Service
 public class ShiftCalculator {
-
+	Logger log = Logger.getLogger(ShiftCalculator.class);
 	Workload wl;
 
 	public void setWorkloads(Workload w) {
@@ -29,7 +30,7 @@ public class ShiftCalculator {
 			Clinician[] clinicians, double lowerLimitFactor) {
 		// Check every 12 hour slot Eg : 0-12 , 1-13, 2-14 ..... (Assuming numberOfHours
 		// = 12)
-
+		log.info("Calculating Clinician Slots for every hour with the shiftLength " + shiftLength);
 		int start = 0, previousstart = 0, holdingPreviousstart = 0;
 		double factor = lowerLimitFactor;
 		while (start + shiftLength < wl.getSizeOfArray()) {
@@ -71,9 +72,10 @@ public class ShiftCalculator {
 
 			}
 		}
+
 	}
 
-	private int CheckAndAddClinicianForAllShift(int shiftLength, Clinician[] clinicians, int start, double factor) {
+	int CheckAndAddClinicianForAllShift(int shiftLength, Clinician[] clinicians, int start, double factor) {
 		int index = clinicians.length - 1;
 		int flag = 1;
 		int isShiftToNextHour = 0;
@@ -165,12 +167,12 @@ public class ShiftCalculator {
 		// if clinician is more important, no need to check for any conditions
 		if (clinicians[index].getName() != null) {
 
-			if (clinicians[index].getExpressions().size() == 0)
+			if (clinicians[index].getExpressions().size() == 1)
 				return true;
 			else {
 				for (int hour = start; hour < start + shiftLength && hour < 168; hour++) {
 					double value = 0.0d;
-					for (int j = 0; j < clinicians[index].getExpressions().size(); j++) {
+					for (int j = 1; j < clinicians[index].getExpressions().size(); j++) {
 						value += evaluate(clinicians[index].getExpressions().get(j), clinicians, hour);
 					}
 					if (evaluateFunction(clinicians[index].getClinicianCountPerHour()[hour] + 1, value, ">"))
@@ -204,7 +206,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
+	int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
@@ -234,6 +236,7 @@ public class ShiftCalculator {
 
 	public void calculateLastHourSlots(double upperLimitFactor, int notAllocatedStartTime, int notAllocatedEndTime,
 			Clinician[] clinicians, int sizeOfSlot) {
+		log.info("Calculating Clinician Slots for every hour with the shiftLength " + sizeOfSlot);
 		int start = 0, previousstart = 0, StoredPreviousstart = 0;
 		// A four - hour slot is added whenever there are 2 consecutive slots where
 		// utilization > given range (110%)
@@ -291,7 +294,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	private int CheckandAddForLastShift(double upperLimitFactor, int start, Clinician[] clinicians, int sizeOfSlot) {
+	int CheckandAddForLastShift(double upperLimitFactor, int start, Clinician[] clinicians, int sizeOfSlot) {
 		int j = start;
 
 		// checking for utilization < 1.1 to not add clinicians
@@ -347,7 +350,7 @@ public class ShiftCalculator {
 		wl.getResult().add(newShift);
 	}
 
-	private Shift getNewShift(int numberOfHours, int start, String physicianType) {
+	public Shift getNewShift(int numberOfHours, int start, String physicianType) {
 		Shift newShift = new Shift();
 		newShift.setStartTime(start % wl.getDayDuration());
 		newShift.setEndTime((start + numberOfHours) % wl.getDayDuration());
@@ -570,9 +573,25 @@ public class ShiftCalculator {
 				}
 			}
 		}
+		log.info("---------------------------------");
+		log.info(" D.Output:: HourlyDetails ");
+		log.info("---------------------------------");
 		for (int i = 0; i < 168; i++) {
 			hourlyDetailList[i].setLoss(loss[i]);
 			hourlyDetailList[i].setWait(wait[i]);
+			log.info(" D." + (i) + ".1 hour:" + i + ", D." + (i) + ".2 numberOfPhysicians :"
+					+ hourlyDetailList[i].getNumberOfPhysicians() + ", D." + (i) + ".3 numberOfAPPs :"
+					+ hourlyDetailList[i].getNumberOfAPPs() + ", D." + (i) + ".4 numberOfScribes :"
+					+ hourlyDetailList[i].getNumberOfScribes() + ", D." + (i) + ".5 numberOfShiftBeginning :"
+					+ hourlyDetailList[i].getNumberOfShiftBeginning() + ", D." + (i) + ".6 numberOfShiftEnding :"
+					+ hourlyDetailList[i].getNumberOfShiftEnding() + ", D." + (i) + ".7 expectedWorkLoad :"
+					+ hourlyDetailList[i].getExpectedWorkLoad() + ", D." + (i) + ".8 capacityWorkLoad :"
+					+ hourlyDetailList[i].getCapacityWorkLoad() + ", D." + (i) + ".9 Difference :"
+					+ (hourlyDetailList[i].getCapacityWorkLoad() - hourlyDetailList[i].getExpectedWorkLoad()) + ", D."
+					+ (i) + ".10 utilization :" + hourlyDetailList[i].getUtilization() + ", D." + (i)
+					+ ".11 costPerHour :" + hourlyDetailList[i].getCostPerHour() + ", D." + (i) + ".12 patientWait :"
+					+ hourlyDetailList[i].getWait() + ", D." + (i) + ".13 patientLoss :"
+					+ hourlyDetailList[i].getLoss());
 		}
 		return hourlyDetailList;
 	}

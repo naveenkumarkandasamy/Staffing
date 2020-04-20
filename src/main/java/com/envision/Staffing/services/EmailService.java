@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -27,6 +28,9 @@ public class EmailService {
 	private JavaMailSender mailSender;
 
 	public void sendMail(String toEmail, String subject, String body, ByteArrayOutputStream attachment) {
+
+	Logger log = Logger.getLogger(EmailService.class);
+  
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());
@@ -37,7 +41,8 @@ public class EmailService {
 			InputStream input = null;
 			messageHelper.addAttachment("attachment.xlsx", new ByteArrayDataSource(attachment.toByteArray(), "application/vnd.ms-excel"));
 			mailSender.send(message);
-		} catch (MessagingException ex) {
+		} catch (MessagingException | IOException ex) {
+			log.error("Error happened in Email Service", ex);
 		}
 	}
 

@@ -48,7 +48,7 @@ public class WorkflowService {
 
 	private ByteArrayOutputStream getOutputStringFromInputStream(InputStream inputStream, JobDetails jobDetails)
 			throws IOException, Exception {
-    log.info("Entering function to get OutputString From InputStream");
+    		log.info("Entering function to get OutputString From InputStream");
 		String inputType = jobDetails.getInputFormat();
 		String fileExtension;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -59,8 +59,8 @@ public class WorkflowService {
 			fileExtension = jobDetails.getInputFileDetails().getFileExtension(); // "xlsx"; // *** needs testing
 		}
 
-    if (fileExtension.contentEquals("xlsx")) {
-      log.info("if File Extension is xlsx, retrieving details and convert into json String");
+    		if (fileExtension.contentEquals("xlsx")) {
+      			log.info("if File Extension is xlsx, retrieving details and convert into json String");
 			Input input = shiftPlannerSerivce.processFtpInput(inputStream, jobDetails);
 			Output output = shiftPlannerSerivce.getShiftPlan(input);
 			bos = shiftPlannerSerivce.excelWriter(output, jobDetails);
@@ -72,14 +72,14 @@ public class WorkflowService {
 	}
 
 	private void sendOutput(JobDetails jobDetails, ByteArrayOutputStream outputExcelData) {
-    log.info("Method for Sending output :");
+    		log.info("Method for Sending output :");
 		String outputType = jobDetails.getOutputFormat();
 		if (outputType.contentEquals("EMAIL")) {
 			String email = jobDetails.getOutputEmailId();
 			sendOutputToEmail(outputExcelData, email);
-      log.info("if Output type is EMAIL,send output to email '" + email + "' with message --Successful--");
+      			log.info("if Output type is EMAIL,send output to email '" + email + "' with message --Successful--");
 		} else {
-      log.info("if Output type is not EMAIL,send output string to FtpUrl");
+      			log.info("if Output type is not EMAIL,send output string to FtpUrl");
 			putOutputStringToFtpUrl(jobDetails);
 		}
 	}
@@ -99,7 +99,7 @@ public class WorkflowService {
 			log.info("JobId ::" + jobId);
 			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
 
-      log.info("Job Input Format ::" + jobDetails.getInputFormat());
+      			log.info("Job Input Format ::" + jobDetails.getInputFormat());
       
 			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
 

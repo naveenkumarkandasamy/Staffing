@@ -211,9 +211,11 @@ public class ShiftCalculator {
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
 			double value = wl.getFixedworkloadArray()[j] - wl.getCapacityArray()[j];
-			if (value < 0)
+			if (value <= 0) {
 				value = 0;
-
+				flag = 0;
+				break;
+			}
 			if ((j - start) % wl.getDayDuration() == 0) {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[0], value), 2);
 

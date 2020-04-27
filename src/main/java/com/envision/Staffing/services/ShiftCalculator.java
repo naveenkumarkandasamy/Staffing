@@ -298,7 +298,7 @@ public class ShiftCalculator {
 		int j = start;
 
 		// checking for utilization < 1.1 to not add clinicians
-		if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor) {
+		if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] <= upperLimitFactor) {
 			start = start + 1;
 
 		} else {
@@ -317,7 +317,7 @@ public class ShiftCalculator {
 					break;
 				}
 
-				if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] < upperLimitFactor)
+				if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] <= upperLimitFactor)
 					break;
 			}
 		}

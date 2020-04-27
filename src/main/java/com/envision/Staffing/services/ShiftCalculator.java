@@ -88,12 +88,12 @@ public class ShiftCalculator {
 			conditionalValue = isConditionStatisfied(clinicians, start, shiftLength, index);
 			do {
 				Shift newShift = getNewShift(shiftLength, start, clinician.getName());
-				
+
 				flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity());// checking
-			  																				// utilization
+				// utilization
 				if (flag == 1 && conditionalValue) // adding shift
 				{
-					
+
 					addNewShift(start, shiftLength, newShift, clinician.getCapacity(),
 							clinician.getClinicianCountPerHour());
 					index = 3;
@@ -210,29 +210,29 @@ public class ShiftCalculator {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
-			
+
 			double value = wl.getFixedworkloadArray()[j] - wl.getCapacityArray()[j];
-			
-			if (value <= 0) 
+
+			if (value <= 0)
 				value = 0;
-           
+
 			if ((j - start) % wl.getDayDuration() == 0) {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[0], value), 2);
-               
+
 			} else if ((j - start) % wl.getDayDuration() == numberOfHours - 1) {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[2], value), 2);
-				
+
 			} else {
 				capacityOfCurrentDoctor = round(capacityOfCurrentDoctor + min(physicianCapacity[1], value), 2);
-				
+
 			}
 			if ((j - start) == (numberOfHours - 1)
-					&& (((double)(capacityOfCurrentDoctor / (numberOfHours * physicianCapacity[1]))) < factor)) {
+					&& (((double) (capacityOfCurrentDoctor / (numberOfHours * physicianCapacity[1]))) < factor)) {
 				flag = 0;
 				break;
 			}
 		}
-		
+
 		return flag;
 	}
 
@@ -446,30 +446,27 @@ public class ShiftCalculator {
 			diff[i] = hourlyDetailList[i].getCapacityWorkLoad() - hourlyDetailList[i].getExpectedWorkLoad();
 
 		}
-		if (patientHourWait == 0 ||patientHourWait == 1) { // zero or one hour wait
+		if (patientHourWait == 0 || patientHourWait == 1) { // zero or one hour wait
 			for (int i = 1; i < 168; i++) {
 				computingDiff[i] = diff[i];
-				wait[i]=0;
-				loss[i]=0;
-				if (patientHourWait == 0 )
-				{
-					if(computingDiff[i]<0)
-					{
-						loss[i]=computingDiff[i];
+				wait[i] = 0;
+				loss[i] = 0;
+				if (patientHourWait == 0) {
+					if (computingDiff[i] < 0) {
+						loss[i] = computingDiff[i];
 					}
-				}
-				else
-				{
-				if (computingDiff[i - 1] < 0 && computingDiff[i] < 0)// in previous hour,some patients are not handled
-				// even in this hour also, some patients are waiting
-				{
-					loss[i] = computingDiff[i - 1];
-				} else if (computingDiff[i - 1] < 0 && computingDiff[i] > 0)// handling patients who are waiting in
-																			// previous hour
-				// using current capacity.
-				{
-					loss[i] = min(0, computingDiff[i - 1] + computingDiff[i]);
-				}
+				} else {
+					if (computingDiff[i - 1] < 0 && computingDiff[i] < 0)// in previous hour,some patients are not
+																			// handled
+					// even in this hour also, some patients are waiting
+					{
+						loss[i] = computingDiff[i - 1];
+					} else if (computingDiff[i - 1] < 0 && computingDiff[i] > 0)// handling patients who are waiting in
+																				// previous hour
+					// using current capacity.
+					{
+						loss[i] = min(0, computingDiff[i - 1] + computingDiff[i]);
+					}
 				}
 			}
 

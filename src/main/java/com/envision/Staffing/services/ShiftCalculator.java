@@ -446,18 +446,7 @@ public class ShiftCalculator {
 			diff[i] = hourlyDetailList[i].getCapacityWorkLoad() - hourlyDetailList[i].getExpectedWorkLoad();
 
 		}
-		//if()
-		{
-			for (int i = 1; i < 168; i++) {
-			computingDiff[i] = diff[i];		
-			
-			if(computingDiff[i]<0)
-			{
-				loss[i]=computingDiff[i];
-			}
-			}
-		}//
-		if (patientHourWait == 0 ||patientHourWait == 1) { // one hour wait
+		if (patientHourWait == 0 ||patientHourWait == 1) { // zero or one hour wait
 			for (int i = 1; i < 168; i++) {
 				computingDiff[i] = diff[i];
 				wait[i]=0;

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,17 +114,11 @@ public class ShiftPlanningService {
 		Integer patientHourWait = 2;
 
 		Clinician[] inputClinicians = input.getClinician();
-		Clinician[] clinicians = new Clinician[input.getClinician().length];
 
-		for (int i = 0; i < inputClinicians.length; i++) {
-			if (inputClinicians[i].getName().equals("physician")) {
-				clinicians[0] = inputClinicians[i];
-			} else if (inputClinicians[i].getName().equals("app")) {
-				clinicians[1] = inputClinicians[i];
-			} else if (inputClinicians[i].getName().equals("scribe")) {
-				clinicians[2] = inputClinicians[i];
-			}
-		} // To sort the clinician as physician, app , scribe to make it fit for algorithm
+		Clinician[] clinicians = Arrays.copyOf(inputClinicians, inputClinicians.length);
+		Comparator<Clinician> comparator = Comparator.comparing(Clinician::getCost);
+		Arrays.sort(clinicians, comparator);
+		Arrays.sort(clinicians, Collections.reverseOrder());
 
 		log.info("A.Inputs Description");
 		log.info("---------------------------------");
@@ -321,9 +317,9 @@ public class ShiftPlanningService {
 		CellStyle dayCellStyle = workbook.createCellStyle();
 		dayCellStyle.setFont(dayFont);
 
-		createCoverageSummarySheet(output,coverageSummary,headerCellStyle,dayCellStyle); //CoverageSummarySheet
-		createShiftSummarySheet(output,jobDetails,shiftSummary,headerCellStyle,dayCellStyle); //ShiftSummarySheet
-		
+		createCoverageSummarySheet(output, coverageSummary, headerCellStyle, dayCellStyle); // CoverageSummarySheet
+		createShiftSummarySheet(output, jobDetails, shiftSummary, headerCellStyle, dayCellStyle); // ShiftSummarySheet
+
 		FileOutputStream fos = new FileOutputStream("localOutput.xlsx");
 		workbook.write(fos);
 		fos.close();
@@ -337,7 +333,6 @@ public class ShiftPlanningService {
 
 	private void createCoverageSummarySheet(Output output, Sheet coverageSummary, CellStyle headerCellStyle,
 			CellStyle dayCellStyle) {
-		
 		HourlyDetail[] hourlyDetailsList = output.getHourlyDetail();
 		Row headerRow = coverageSummary.createRow(0);
 		String[] coverageSummaryColumn = { "Day", "Hour", "Physician Coverage", "App Coverage", "Scribe Coverage",
@@ -401,11 +396,11 @@ public class ShiftPlanningService {
 
 			Row row = coverageSummary.createRow(rowCount1++);
 			day = days[(rowCount1 - 2) / 24];
-			
-			addCellCoverageSummary(row,dayCellStyle, day, hour, physician, app, scribe, totalCoverage, percentPhysician,
-					expectedWorkLoad, capacityWorkLoad, differnceBetweenCapacityAndWorkload,
+
+			addCellCoverageSummary(row, dayCellStyle, day, hour, physician, app, scribe, totalCoverage,
+					percentPhysician, expectedWorkLoad, capacityWorkLoad, differnceBetweenCapacityAndWorkload,
 					expectedPatientsPerProvider, coveredPatientsPerProvider, cost, wait, loss);
-			
+
 			totalExpectedPatient = totalExpectedPatient + detailedHour.getExpectedWorkLoad();
 			totalCapacityWorkload = totalCapacityWorkload + detailedHour.getCapacityWorkLoad();
 			totalPatientsWaiting = totalPatientsWaiting + wait;
@@ -425,15 +420,16 @@ public class ShiftPlanningService {
 				"Total Patients Loss", "Total Cost" };
 		Double[] summaryValue = { totalExpectedPatient, totalCapacityWorkload, Math.abs(totalPatientsWaiting),
 				Math.abs(totalPatientsLoss), totalCost };
-		
-		addCellOverallSummary(coverageSummary,headerCellStyle,summary,summaryValue,rowCount1);
+
+		addCellOverallSummary(coverageSummary, headerCellStyle, summary, summaryValue, rowCount1);
 
 		for (int i = 0; i < coverageSummaryColumn.length; i++) {
 			coverageSummary.autoSizeColumn(i);
-		}		
+		}
 	}
-	
-	private void addCellOverallSummary(Sheet coverageSummary, CellStyle headerCellStyle, String[] summary, Double[] summaryValue, int rowCount1) {
+
+	private void addCellOverallSummary(Sheet coverageSummary, CellStyle headerCellStyle, String[] summary,
+			Double[] summaryValue, int rowCount1) {
 		for (int i = 0; i < summary.length; i++) {
 			Row row1 = coverageSummary.createRow(rowCount1 + 2 + i);
 			Cell cell1 = row1.createCell(0);
@@ -466,15 +462,16 @@ public class ShiftPlanningService {
 		row.createCell(13).setCellValue(wait);
 		row.createCell(14).setCellValue(loss);
 	}
-	
+
 	private void createShiftSummarySheet(Output output, JobDetails jobDetails, Sheet shiftSummary,
 			CellStyle headerCellStyle, CellStyle dayCellStyle) {
-		
+
 		ArrayList<DayShift> dayShiftList = new ArrayList<>();
 		dayShiftList = getDayShiftList(output, jobDetails);
 
 		Row headerRow2 = shiftSummary.createRow(0);
-		String[] shiftSummaryColumn = { "Day        ", "Start Time", "End Time", "Shift Length", "Physician", "App", "Scribe" };
+		String[] shiftSummaryColumn = { "Day        ", "Start Time", "End Time", "Shift Length", "Physician", "App",
+				"Scribe" };
 
 		for (int i = 0; i < shiftSummaryColumn.length; i++) {
 			Cell cell2 = headerRow2.createCell(i);

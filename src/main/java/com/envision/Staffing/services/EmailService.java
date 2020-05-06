@@ -34,8 +34,8 @@ public class EmailService {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());
-		    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
-		    Date date = new Date(); 
+		    	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+		    	Date date = new Date(); 
 			messageHelper.setSubject(subject);
 			messageHelper.setText(body, true);
 			messageHelper.setFrom(useremail);

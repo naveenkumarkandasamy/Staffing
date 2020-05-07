@@ -40,8 +40,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class ShiftPlanningService {
 	Logger log = Logger.getLogger(ShiftPlanningService.class);
-	private String[] days = new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-			"Saturday", "Sunday"};
+	private String[] days = new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+			"Sunday" };
 
 	public Input processFtpInput(InputStream ftpInputStream, JobDetails jobDetails) throws Exception {
 

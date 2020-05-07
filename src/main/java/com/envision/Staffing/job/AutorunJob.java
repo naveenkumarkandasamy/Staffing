@@ -19,12 +19,11 @@ public class AutorunJob implements Job {
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 		String autorunJobId = jobDataMap.getString("jobId");
-		log.info("JobId ::" + autorunJobId);
 		try {
+			log.info("JobId ::" + autorunJobId);
 			workflowService.autorunWorkflowService(autorunJobId);
 		} catch (Exception e) {
-			log.error("error happened in autorunjob :", e);
-			System.out.println("Given File is not an Excel File or is Corrupted.");
+			log.error("error happened in executing the autorunjob :", e);
 		}
 	}
 

@@ -1,8 +1,9 @@
 package com.envision.Staffing.services;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -32,12 +33,14 @@ public class EmailService {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.toString());
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			Date date = new Date();
 			messageHelper.setSubject(subject);
 			messageHelper.setText(body, true);
 			messageHelper.setFrom(useremail);
 			messageHelper.setTo(toEmail);
-			InputStream input = null;
-			messageHelper.addAttachment("attachment.xlsx", new ByteArrayDataSource(attachment.toByteArray(), "application/vnd.ms-excel"));
+			messageHelper.addAttachment("attachment-" + formatter.format(date) + ".xlsx",
+					new ByteArrayDataSource(attachment.toByteArray(), "application/vnd.ms-excel"));
 			mailSender.send(message);
 		} catch (MessagingException ex) {
 			log.error("Error happened in Email Service", ex);

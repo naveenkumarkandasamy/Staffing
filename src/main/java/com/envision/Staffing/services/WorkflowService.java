@@ -85,7 +85,7 @@ public class WorkflowService {
 	}
 
 	private void sendOutputToEmail(ByteArrayOutputStream outputExcelData, String email) {
-		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--", outputExcelData);
+		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--<br/><More Details to be added>", outputExcelData);
 	}
 
 	private void putOutputStringToFtpUrl(JobDetails jobDetails) {

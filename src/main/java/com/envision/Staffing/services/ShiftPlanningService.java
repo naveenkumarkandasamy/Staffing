@@ -173,12 +173,7 @@ public class ShiftPlanningService {
 		}
 
 		Workload work = new Workload();
-		// Checking if at least one clinician is sent and the PatientsPerHour is not
-		// empty, mostly physicians
-		// ensure the first clinician is physician
-		if (clinicians[0] != null && clinicians[0].getPatientsPerHour() != null)// try to check for physician
-			work.setDocEfficency(clinicians[0].getPatientsPerHour());
-
+		
 		if (input.getDayWorkload() != null) {
 			work = assignWorkload(input, work);
 		}

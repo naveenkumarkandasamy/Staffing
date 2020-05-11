@@ -30,7 +30,7 @@ public class WorkflowService {
 
 	Logger log = Logger.getLogger(WorkflowService.class);
 
-	private InputStream getInputDataStreamFromAutorunJobDetails(JobDetails jobDetails) {
+	private InputStream getInputDataStreamFromAutorunJobDetails(JobDetails jobDetails) throws IOException, Exception {
 		String inputType = jobDetails.getInputFormat();
 
 		if (inputType.contentEquals("FTP_URL")) {
@@ -99,7 +99,6 @@ public class WorkflowService {
 			log.info("JobId ::" + jobId);
 			JobDetails jobDetails = jobDetailsService.getJobDetailsById(jobId);
 
-			log.info("Job Input Format ::" + jobDetails.getInputFormat());
 			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
 
 			ByteArrayOutputStream outputExcelData = getOutputStringFromInputStream(inputStream, jobDetails);
@@ -110,8 +109,9 @@ public class WorkflowService {
 			System.out.println("Job: " + jobDetails.getName() + " successfully executed ");
 
 		} catch (IOException e) {
-			log.error("Error happened in autorunWorkflowService :", e);
-			e.printStackTrace();
+			log.error("job is not successfuly executed :", e);
+		} catch (Exception e) {
+			log.error("No Job is Scheduled");
 		}
 	}
 }

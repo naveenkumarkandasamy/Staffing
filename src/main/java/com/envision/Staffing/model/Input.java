@@ -10,6 +10,7 @@ public class Input {
 	private Integer notAllocatedStartTime;
 	private Integer notAllocatedEndTime;
 	private Integer patientHourWait;
+	private String inputFormat;
 
 	public Clinician[] getClinician() {
 		return clinician;
@@ -73,6 +74,14 @@ public class Input {
 
 	public void setPatientHourWait(Integer patientHourWait) {
 		this.patientHourWait = patientHourWait;
+	}
+
+	public String getInputFormat() {
+		return inputFormat;
+	}
+
+	public void setInputFormat(String inputFormat) {
+		this.inputFormat = inputFormat;
 	}
 	
 

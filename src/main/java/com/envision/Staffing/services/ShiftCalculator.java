@@ -605,4 +605,5 @@ public class ShiftCalculator {
 		}
 		return hourlyDetailList;
 	}
+	
 }

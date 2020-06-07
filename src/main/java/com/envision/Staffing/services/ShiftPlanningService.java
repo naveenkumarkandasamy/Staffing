@@ -55,6 +55,7 @@ public class ShiftPlanningService {
 		input.setPatientHourWait(jobDetails.getPatientHourWait());
 		input.setShiftLength(jobDetails.getShiftLengthPreferences());
 		input.setDayWorkload(getDataFromExcelFile(ftpInputStream));
+		input.setPreferredOption(jobDetails.getPreferredOption());
 		return input;
 	}
 
@@ -112,6 +113,7 @@ public class ShiftPlanningService {
 		Integer notAllocatedStartTime = 1;
 		Integer notAllocatedEndTime = 6;
 		Integer patientHourWait = 2;
+		String  preferredOption = "utilization";
 
 		Clinician[] inputClinicians = input.getClinician();
 
@@ -151,6 +153,9 @@ public class ShiftPlanningService {
 		if (input.getPatientHourWait() != null) {
 			patientHourWait = input.getPatientHourWait();
 		}
+		if (input.getPreferredOption() != null) {
+			preferredOption = input.getPreferredOption();
+		}
 
 		log.info("---------------------------------------");
 		log.info("A.2.Getting Actual Values for Inputs ");
@@ -161,6 +166,7 @@ public class ShiftPlanningService {
 		log.info("A.2.4 restrictionStartTime :" + notAllocatedStartTime);
 		log.info("A.2.5 restrictionEndTime :" + notAllocatedEndTime);
 		log.info("A.2.6 numberOfPatientHourWait :" + patientHourWait);
+		log.info("A.2.7 preferedOption :" + preferredOption);
 		log.info("---------------------------------");
 		log.info("B.Clinicians Details ");
 		log.info("---------------------------------");
@@ -198,7 +204,13 @@ public class ShiftPlanningService {
 				shiftCalculator.calculateLastHourSlots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime,
 						clinicians, shiftPreferences[i]);
 		}
-
+		
+		// If preference is No Patient Loss
+		if(preferredOption.equals("patientLoss")) { 
+			shiftCalculator.allocateClinicianForNoPatientLoss(patientHourWait, notAllocatedStartTime, notAllocatedEndTime,
+					clinicians, shiftPreferences[0]);
+		}
+		
 		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(patientHourWait, clinicians,
 				work.getDocEfficency(), lowerLimitFactor);
 

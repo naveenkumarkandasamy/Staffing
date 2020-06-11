@@ -11,6 +11,7 @@ public class Input {
 	private Integer notAllocatedEndTime;
 	private Integer patientHourWait;
 	private String inputFormat;
+	private String preferredOption;
 
 	public Clinician[] getClinician() {
 		return clinician;
@@ -83,6 +84,13 @@ public class Input {
 	public void setInputFormat(String inputFormat) {
 		this.inputFormat = inputFormat;
 	}
-	
+
+	public String getPreferredOption() {
+		return preferredOption;
+	}
+
+	public void setPreferredOption(String preferredOption) {
+		this.preferredOption = preferredOption;
+	}
 
 }

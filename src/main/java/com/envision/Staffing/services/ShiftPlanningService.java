@@ -210,7 +210,7 @@ public class ShiftPlanningService {
 			Integer[] shiftPreferencesCopy = Arrays.copyOf(shiftPreferences,shiftPreferences.length );
 			Arrays.parallelSort(shiftPreferencesCopy);
 			shiftCalculator.allocateClinicianForNoPatientLoss(patientHourWait, notAllocatedStartTime, notAllocatedEndTime,
-					clinicians, shiftPreferencesCopy[0]);
+					clinicians, shiftPreferencesCopy[0], shiftPreferences);
 		}
 		
 		HourlyDetail[] hourlyDetailList = shiftCalculator.generateHourlyDetail(patientHourWait, clinicians,

@@ -203,7 +203,7 @@ public class ShiftPlanningService {
 		for (int i = 0; i < shiftPreferences.length; i++) {
 			if (i != (shiftPreferences.length - 1)) {
 				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime, notAllocatedEndTime,
-						shiftPreferences[i], clinicians, lowerLimitFactor, preferredOption, patientHourWait, minShiftLength);
+						shiftPreferences[i], clinicians, lowerLimitFactor, preferredOption, patientHourWait, minShiftLength, shiftPreferences);
 			} else
 				shiftCalculator.calculateLastHourSlots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime,
 						clinicians, shiftPreferences[i]);

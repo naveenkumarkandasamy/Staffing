@@ -210,10 +210,10 @@ public class ShiftCalculatorTest {
 		workload.setSizeOfArray(12);
 		shiftCalculator.setWorkloads(workload);
 
-		shiftCalculator.calculatePhysicianSlotsForAll(22, 4, shiftLength, clinicians, lowerLimitFactor);
+		shiftCalculator.calculatePhysicianSlotsForAll(22, 4, shiftLength, clinicians, lowerLimitFactor, "utilization", 2 , 4);
 		Assert.assertEquals(0, clinicians[0].getClinicianCountPerHour()[0], 0);
 
-		shiftCalculator.calculatePhysicianSlotsForAll(1, 6, shiftLength, clinicians, lowerLimitFactor);
+		shiftCalculator.calculatePhysicianSlotsForAll(1, 6, shiftLength, clinicians, lowerLimitFactor,null, 2 , 4);
 		Assert.assertEquals(6, clinicians[0].getClinicianCountPerHour()[0], 0);
 
 	}
@@ -264,7 +264,7 @@ public class ShiftCalculatorTest {
 
 		workload.setSizeOfArray(12);
 		shiftCalculator.setWorkloads(workload);
-		result = shiftCalculator.CheckAndAddClinicianForAllShift(shiftLength, clinicians, start, lowerLimitFactor);
+		result = shiftCalculator.CheckAndAddClinicianForAllShift(2 , 4, shiftLength, clinicians, start, lowerLimitFactor, "utilization",2,4);
 		Assert.assertEquals(1, result, 0);
 	}
 

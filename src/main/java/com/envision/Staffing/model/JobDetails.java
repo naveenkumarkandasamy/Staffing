@@ -18,7 +18,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.envision.Staffing.converter.DoubleArrayToStringConverter;
 import com.envision.Staffing.converter.IntegerArrayToStringConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -91,6 +90,9 @@ public class JobDetails implements Serializable {
 
 	@Column(name = "patient_hour_wait")
 	private Integer patientHourWait;
+	
+	@Column(name = "prefered_option")
+	private String preferredOption;
 
 	public Integer getNotAllocatedStartTime() {
 		return notAllocatedStartTime;
@@ -244,6 +246,14 @@ public class JobDetails implements Serializable {
 
 	public void setCronExpression(String cronExpression) {
 		this.cronExpression = cronExpression;
+	}
+
+	public String getPreferredOption() {
+		return preferredOption;
+	}
+
+	public void setPreferredOption(String preferredOption) {
+		this.preferredOption = preferredOption;
 	}
 
 }

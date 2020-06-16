@@ -122,16 +122,18 @@ public class ShiftPlanningService {
 		Arrays.sort(clinicians, comparator);
 		Arrays.sort(clinicians, Collections.reverseOrder());
 
-//		log.info("A.Inputs Description");
-//		log.info("---------------------------------");
-//		log.info("A.1.Default Values for Inputs ");
-//		log.info("---------------------------------");
-//		log.info("A.1.1 ShiftPreferences :" + Arrays.toString(shiftPreferences));
-//		log.info("A.1.2 lowerLimitFactor :" + lowerLimitFactor);
-//		log.info("A.1.3 upperLimitFactor :" + upperLimitFactor);
-//		log.info("A.1.4 restrictionStartTime :" + notAllocatedStartTime);
-//		log.info("A.1.5 restrictionEndTime :" + notAllocatedEndTime);
-//		log.info("A.1.6 numberOfPatientHourWait :" + patientHourWait);
+		log.info("A.Inputs Description");
+		log.info("---------------------------------");
+		log.info("A.1.Default Values for Inputs ");
+		log.info("---------------------------------");
+		log.info("A.1.1 ShiftPreferences :" + Arrays.toString(shiftPreferences));
+		log.info("A.1.2 lowerLimitFactor :" + lowerLimitFactor);
+		log.info("A.1.3 upperLimitFactor :" + upperLimitFactor);
+		log.info("A.1.4 restrictionStartTime :" + notAllocatedStartTime);
+		log.info("A.1.5 restrictionEndTime :" + notAllocatedEndTime);
+		log.info("A.1.6 numberOfPatientHourWait :" + patientHourWait);
+		log.info("A.1.7 numberOfPatientHourWait :" + preferredOption);
+
 
 		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();
@@ -157,19 +159,19 @@ public class ShiftPlanningService {
 			preferredOption = input.getPreferredOption();
 		}
 
-//		log.info("---------------------------------------");
-//		log.info("A.2.Getting Actual Values for Inputs ");
-//		log.info("---------------------------------------");
-//		log.info("A.2.1 shiftPreferences :" + Arrays.toString(shiftPreferences));
-//		log.info("A.2.2 lowerLimitFactor :" + lowerLimitFactor);
-//		log.info("A.2.3 upperLimitFactor :" + upperLimitFactor);
-//		log.info("A.2.4 restrictionStartTime :" + notAllocatedStartTime);
-//		log.info("A.2.5 restrictionEndTime :" + notAllocatedEndTime);
-//		log.info("A.2.6 numberOfPatientHourWait :" + patientHourWait);
-//		log.info("A.2.7 preferedOption :" + preferredOption);
-//		log.info("---------------------------------");
-//		log.info("B.Clinicians Details ");
-//		log.info("---------------------------------");
+		log.info("---------------------------------------");
+		log.info("A.2.Getting Actual Values for Inputs ");
+		log.info("---------------------------------------");
+		log.info("A.2.1 shiftPreferences :" + Arrays.toString(shiftPreferences));
+		log.info("A.2.2 lowerLimitFactor :" + lowerLimitFactor);
+		log.info("A.2.3 upperLimitFactor :" + upperLimitFactor);
+		log.info("A.2.4 restrictionStartTime :" + notAllocatedStartTime);
+		log.info("A.2.5 restrictionEndTime :" + notAllocatedEndTime);
+		log.info("A.2.6 numberOfPatientHourWait :" + patientHourWait);
+		log.info("A.2.7 preferedOption :" + preferredOption);
+		log.info("---------------------------------");
+		log.info("B.Clinicians Details ");
+		log.info("---------------------------------");
 		for (int i = 0; i < clinicians.length; i++) {
 			log.info("B." + (i + 1) + ".1 clinicianName :" + clinicians[i].getName() + ", B." + (i + 1)
 					+ ".2 actualCapacity :" + clinicians[i].getPatientsPerHour() + ", B." + (i + 1) + ".3 Cost :"
@@ -197,13 +199,13 @@ public class ShiftPlanningService {
 		Integer[] shiftPreferencesCopy = Arrays.copyOf(shiftPreferences, shiftPreferences.length);
 		Arrays.sort(shiftPreferencesCopy);
 		int minShiftLength = shiftPreferencesCopy[0];
-		
+
 		log.info(
 				"Assigning Clinicians to Corresponding ShiftPreferences based upon the condition like Utilization,clinicianExpression");
 		for (int i = 0; i < shiftPreferences.length; i++) {
 			if (i != (shiftPreferences.length - 1)) {
 				shiftCalculator.calculatePhysicianSlotsForAll(notAllocatedStartTime, notAllocatedEndTime,
-						shiftPreferences[i], clinicians, lowerLimitFactor, preferredOption, patientHourWait, minShiftLength, shiftPreferences);
+						shiftPreferences[i], clinicians, lowerLimitFactor, preferredOption, minShiftLength, shiftPreferences);
 			} else
 				shiftCalculator.calculateLastHourSlots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime,
 						clinicians, shiftPreferences[i]);
@@ -277,9 +279,9 @@ public class ShiftPlanningService {
 	Workload assignWorkload(Input input, Workload work) {
 		Day[] day;
 		int k = 0, j = 1;
-//		log.info("---------------------------------");
-//		log.info("C.WorkLoad Details");
-//		log.info("---------------------------------");
+		log.info("---------------------------------");
+		log.info("C.WorkLoad Details");
+		log.info("---------------------------------");
 
 		if (input.getDayWorkload() != null) {
 			day = input.getDayWorkload();

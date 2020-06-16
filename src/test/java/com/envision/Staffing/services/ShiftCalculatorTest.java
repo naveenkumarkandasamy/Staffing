@@ -48,8 +48,8 @@ public class ShiftCalculatorTest {
 			clinicians[i] = new Clinician();
 		}
 
-		int[] clinicianCountArray = new int[168];
-		for (int i = 0; i < 168; i++) {
+		int[] clinicianCountArray = new int[workload.getSizeOfArray()];
+		for (int i = 0; i < workload.getSizeOfArray(); i++) {
 			clinicianCountArray[i] = i;
 		}
 
@@ -251,7 +251,7 @@ public class ShiftCalculatorTest {
 		shiftCalculator.setWorkloads(workload);
 
 		int result = shiftCalculator.checkIfPhysicianToBeAdded(shiftLength, start, lowerLimitFactor,
-				clinicians[0].getCapacity(), null);
+				clinicians[0].getCapacity());
 		Assert.assertEquals(1, result, 0);
 	}
 

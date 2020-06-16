@@ -51,8 +51,8 @@ public class ShiftPlanningServiceTest {
 			clinicians[i] = new Clinician();
 		}
 
-		int[] clinicianCountArray = new int[168];
-		for (int i = 0; i < 168; i++) {
+		int[] clinicianCountArray = new int[workload.getSizeOfArray()];
+		for (int i = 0; i < workload.getSizeOfArray(); i++) {
 			clinicianCountArray[i] = i;
 		}
 

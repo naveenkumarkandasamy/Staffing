@@ -102,7 +102,8 @@ public class WorkflowService {
 			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
 
 			ByteArrayOutputStream outputExcelData = getOutputStringFromInputStream(inputStream, jobDetails);
-
+              
+			System.out.println("testing1");
 			sendOutput(jobDetails, outputExcelData);
 
 			log.info("job '" + jobDetails.getName() + "' successfully executed ");

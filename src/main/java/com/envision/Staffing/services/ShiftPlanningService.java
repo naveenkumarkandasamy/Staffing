@@ -131,16 +131,18 @@ public class ShiftPlanningService {
 		log.info("A.1.5 restrictionEndTime :" + notAllocatedEndTime);
 		log.info("A.1.6 numberOfPatientHourWait :" + patientHourWait);
 
+		ShiftCalculator shiftCalculator = new ShiftCalculator();
+
 		if (input.getShiftLength() != null) {
 			shiftPreferences = input.getShiftLength();
 		}
 
 		if (input.getLowerLimitFactor() != null) {
-			lowerLimitFactor = input.getLowerLimitFactor();
+			lowerLimitFactor = shiftCalculator.round(input.getLowerLimitFactor(), 2);
 		}
 
 		if (input.getUpperLimitFactor() != null) {
-			upperLimitFactor = input.getUpperLimitFactor();
+			upperLimitFactor = shiftCalculator.round(input.getUpperLimitFactor(), 2);
 		}
 		if (input.getNotAllocatedStartTime() != null) {
 			notAllocatedStartTime = input.getNotAllocatedStartTime();
@@ -151,6 +153,12 @@ public class ShiftPlanningService {
 		if (input.getPatientHourWait() != null) {
 			patientHourWait = input.getPatientHourWait();
 		}
+
+		int maxOfShiftPreference = shiftPreferences[0];
+
+		for (int i = 1; i < shiftPreferences.length; i++)
+			if (shiftPreferences[i] > maxOfShiftPreference)
+				maxOfShiftPreference = shiftPreferences[i];
 
 		log.info("---------------------------------------");
 		log.info("A.2.Getting Actual Values for Inputs ");
@@ -169,11 +177,12 @@ public class ShiftPlanningService {
 					+ ".2 actualCapacity :" + clinicians[i].getPatientsPerHour() + ", B." + (i + 1) + ".3 Cost :"
 					+ clinicians[i].getCost() + ", B." + (i + 1) + ".4 First/Mid/LastHourCapacity :"
 					+ Arrays.toString(clinicians[i].getCapacity()) + ", B." + (i + 1) + ".5 Expression :"
-					+ clinicians[i].getExpressions());
+					+ clinicians[i].getExpressions() + ", B.6 minCount :" + clinicians[i].getMinCount() + ", B.7 maxCount :"
+					+ clinicians[i].getMaxCount());
 		}
 
 		Workload work = new Workload();
-		
+
 		if (input.getDayWorkload() != null) {
 			work = assignWorkload(input, work);
 		}
@@ -182,11 +191,32 @@ public class ShiftPlanningService {
 			clinicians[i].setClinicianCountPerHour(new int[168]);
 		}
 
-		ShiftCalculator shiftCalculator = new ShiftCalculator();
 		shiftCalculator.setWorkloads(work);
 
-		// checking which clinician is always true and store index in arrindex for this
-		// clinician
+		int currentHour = 0;
+		for (int i = 0; currentHour < 168; i++) {
+			if ((notAllocatedStartTime <= notAllocatedEndTime) && currentHour % 24 >= notAllocatedStartTime
+					&& currentHour % 24 <= notAllocatedEndTime) {
+				currentHour += 1;
+				continue;
+
+			}
+			if ((notAllocatedStartTime > notAllocatedEndTime)
+					&& ((currentHour % 24 >= notAllocatedStartTime) || (currentHour % 24 <= notAllocatedEndTime))) {
+				currentHour += 1;
+				continue;
+			}
+			for (int j = 0; j < clinicians.length; j++) {
+				for (int min = 0; min < clinicians[j].getMinCount(); min++) {
+					Shift newShift = shiftCalculator.getNewShift(maxOfShiftPreference, currentHour,
+							clinicians[j].getName());
+					shiftCalculator.addNewShift(currentHour, maxOfShiftPreference, newShift,
+							clinicians[j].getCapacity(), clinicians[j].getClinicianCountPerHour());
+				}
+			}
+			currentHour += maxOfShiftPreference;
+		}
+		
 
 		log.info(
 				"Assigning Clinicians to Corresponding ShiftPreferences based upon the condition like Utilization,clinicianExpression");

@@ -55,12 +55,17 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 
 	@Transient
 	private List<String> expressionsString;
-	
-	
+
+	@Column(name = "max_count")
+	private int maxCount;
+
+	@Column(name = "min_count")
+	private int minCount;
+
 	@Column(name = "expressions")
 	@Convert(converter = StringListConverter.class)
 	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-	private  List<String> expressions; // expressions to handle the relationships between clinicians
+	private List<String> expressions; // expressions to handle the relationships between clinicians
 
 	// constructor
 	public Clinician(String id, String name, Double patientsPerHour, double coefficient, int cost, Double[] capacity) {
@@ -164,6 +169,22 @@ public class Clinician implements Comparable<Clinician>, Serializable {
 
 	public void setExpressionsString(List<String> expressionsString) {
 		this.expressionsString = expressionsString;
+	}
+
+	public int getMaxCount() {
+		return maxCount;
+	}
+
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
+	}
+
+	public int getMinCount() {
+		return minCount;
+	}
+
+	public void setMinCount(int minCount) {
+		this.minCount = minCount;
 	}
 
 }

@@ -78,6 +78,7 @@ public class ShiftCalculator {
 	int CheckAndAddClinicianForAllShift(int shiftLength, Clinician[] clinicians, int start, double factor) {
 		int index = clinicians.length - 1;
 		int flag = 1;
+		int isMaxCountReached = 1;
 		int isShiftToNextHour = 0;
 		boolean conditionalValue = false;
 		boolean[] array = { true, true, true };
@@ -91,15 +92,18 @@ public class ShiftCalculator {
 
 				flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity());// checking
 				// utilization
-				if (flag == 1 && conditionalValue) // adding shift
+				isMaxCountReached = checkingClinicianMaxCount(clinicians, start, shiftLength, index);
+				if (flag == 1 && conditionalValue && isMaxCountReached == 0) // adding shift
 				{
 
 					addNewShift(start, shiftLength, newShift, clinician.getCapacity(),
 							clinician.getClinicianCountPerHour());
 					index = 3;
 					break;
-				} else if (flag == 0 && index == clinicians.length - 1) // even scribe cannot be added,move to
-																		// next hour
+				} else if ((flag == 0 && index == clinicians.length - 1) || isMaxCountReached == 1) // even scribe
+																									// cannot
+																									// be added,move to
+				// next hour
 				{
 					start = start + 1;
 					isShiftToNextHour = 1;
@@ -122,6 +126,18 @@ public class ShiftCalculator {
 
 		}
 		return start;
+	}
+
+	public int checkingClinicianMaxCount(Clinician[] clinicians, int start, int shiftLength, int index) {
+		if (clinicians[index].getMaxCount() == 0) {
+			return 0;
+		}
+		for (int i = start; i < (start + shiftLength) && i < 168; i++) {
+			if (clinicians[index].getClinicianCountPerHour()[i] >= clinicians[index].getMaxCount()) {
+				return 1;
+			}
+		}
+		return 0;
 	}
 
 	public void calculatePhysicianSlotForOnce(int start, int shiftLength, Clinician[] clinicians,
@@ -299,7 +315,7 @@ public class ShiftCalculator {
 
 	int CheckandAddForLastShift(double upperLimitFactor, int start, Clinician[] clinicians, int sizeOfSlot) {
 		int j = start;
-
+		int isMaxCountReached = 1;
 		// checking for utilization < 1.1 to not add clinicians
 		if (wl.getFixedworkloadArray()[j] / wl.getCapacityArray()[j] <= upperLimitFactor) {
 			start = start + 1;
@@ -307,16 +323,21 @@ public class ShiftCalculator {
 		} else {
 			boolean conditionalValue = true;
 			for (int i = clinicians.length - 1; i >= 0; i--) {
+
 				Clinician clinician = getClinicianWithLeastCost(i, clinicians);
 				int tempSlotSize = sizeOfSlot;
 				conditionalValue = isConditionStatisfied(clinicians, start, tempSlotSize, i);
-
-				while (conditionalValue) {
+				isMaxCountReached = checkingClinicianMaxCount(clinicians, start, tempSlotSize, i);
+				while (conditionalValue && isMaxCountReached == 0 && start < 168) {
 					Shift newShift = getNewShift(sizeOfSlot, start, clinician.getName());
 
 					addNewShift(start, sizeOfSlot, newShift, clinician.getCapacity(),
 							clinician.getClinicianCountPerHour());
 					i = 3;
+					break;
+				}
+				if (isMaxCountReached == 1) {
+					start += 1;
 					break;
 				}
 
@@ -334,7 +355,7 @@ public class ShiftCalculator {
 		return tempArray[clinicians.length - index - 1];
 	}
 
-	private void addNewShift(int start, int shiftLength, Shift newShift, Double[] capacity, int[] clinicianCounter) {
+	public void addNewShift(int start, int shiftLength, Shift newShift, Double[] capacity, int[] clinicianCounter) {
 		// A 12 hour slot can be added
 		if (start + shiftLength > wl.getSizeOfArray()) {
 			shiftLength = wl.getSizeOfArray() - start;
@@ -347,7 +368,6 @@ public class ShiftCalculator {
 			// slot
 			clinicianCounter[x]++;
 		}
-
 		wl.getHourlyDetailList()[start].incrementNumberOfShiftBeginning();
 		wl.getHourlyDetailList()[start + shiftLength - 1].incrementNumberOfShiftEnding();// check for clinicians
 		wl.getResult().add(newShift);

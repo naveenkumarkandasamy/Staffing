@@ -195,7 +195,7 @@ public class ShiftPlanningService {
 		}
 
 		for (int i = 0; i < clinicians.length; i++) {
-			clinicians[i].setClinicianCountPerHour(new int[168]);
+			clinicians[i].setClinicianCountPerHour(new int[work.getSizeOfArray()]);
 		}
 
 		shiftCalculator.setWorkloads(work);
@@ -248,7 +248,7 @@ public class ShiftPlanningService {
 
 		// calculating the count of clinicians starting and ending at each hour
 
-		ArrayList<Map<Integer, Map<String, Integer>>> clinicianStartEndCount = new ArrayList<>(168);
+		ArrayList<Map<Integer, Map<String, Integer>>> clinicianStartEndCount = new ArrayList<>(work.getSizeOfArray());
 
 		String[] clincianCountKeys = new String[2 * clinicians.length];
 		for (int i = 0; i < clinicians.length; i++) {
@@ -256,7 +256,7 @@ public class ShiftPlanningService {
 			clincianCountKeys[2 * i + 1] = clinicians[i].getName() + "End";
 		}
 
-		for (int i = 0; i < 168; i++) {
+		for (int i = 0; i < work.getSizeOfArray(); i++) {
 			Map<Integer, Map<String, Integer>> slotMap = new HashMap<>();
 			for (int slot : shiftPreferences) {
 
@@ -288,7 +288,7 @@ public class ShiftPlanningService {
 				clinicianStartEndCount.set(s.getStartTime() + (i * 24), slotMapTemp);
 
 				// updating end time
-				if (((s.getStartTime() + (i * 24)) + (s.getNoOfHours())) < 168) {
+				if (((s.getStartTime() + (i * 24)) + (s.getNoOfHours())) < work.getSizeOfArray()) {
 					slotMapTemp = clinicianStartEndCount.get(s.getStartTime() + (i * 24) + s.getNoOfHours());
 					clinicianMapTempStart = slotMapTemp.get(s.getNoOfHours());
 

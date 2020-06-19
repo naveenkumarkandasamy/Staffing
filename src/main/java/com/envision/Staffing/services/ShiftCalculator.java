@@ -98,9 +98,9 @@ public class ShiftCalculator {
 			do {
 				Shift newShift = getNewShift(shiftLength, start, clinician.getName());
 				// checking utilization
-				flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity(), preferredOption);
+			  flag = checkIfPhysicianToBeAdded(shiftLength, start, factor, clinician.getCapacity());
 				isMaxCountReached = checkingClinicianMaxCount(clinicians, start, shiftLength, index);
-				if (flag == 1 && conditionalValue && isMaxCountReached == 0) // adding shift
+				if (flag == 1 && conditionalValue && isMaxCountReached == 0) // adding shif
 				{
 					addNewShift(start, shiftLength, newShift, clinician.getCapacity(),
 							clinician.getClinicianCountPerHour());
@@ -113,23 +113,21 @@ public class ShiftCalculator {
 					start = start + 1;
 					isShiftToNextHour = 1;
 					break;
-				} else if ((flag == -1 || flag == 0) && index == clinicians.length - 1
-						&& preferredOption.equals("noPatientLoss")) {
-
-					for (int i = start; i < start + shiftLength && i < 168; i++) {
-
+				} 		                                                       
+				else if((flag == -1 || flag == 0) && index == clinicians.length - 1 && preferredOption.equals("noPatientLoss")) {
+					// even scribe cannot be added, move to next hour
+					for(int i = start; i< start+shiftLength && i < wl.getSizeOfArray(); i++) { 
 						int noPatientLossIndex = clinicians.length - 1;
 						int noPatientLossStart = i;
 						int noPatientLossShiftLength = shiftLength;
 						double loss;
 
-						loss = wl.getFixedworkloadArray()[noPatientLossStart]
-								- wl.getCapacityArray()[noPatientLossStart];
-
-						if (loss > 0) {
+						loss = wl.getFixedworkloadArray()[noPatientLossStart] - wl.getCapacityArray()[noPatientLossStart];
+						
+						if(loss > 0) {
+						    
 							// To get start position for Restricted Shift
-							noPatientLossStart = checkForRestrictedShift(noPatientLossStart, notAllocatedStartTime,
-									notAllocatedEndTime);
+							noPatientLossStart = checkForRestrictedShift(noPatientLossStart, notAllocatedStartTime, notAllocatedEndTime); 
 							int startDifference = i - noPatientLossStart;
 							if (startDifference != 0) {
 								// Get optimized shiftLength to be allocated for restricted Shift
@@ -246,7 +244,7 @@ public class ShiftCalculator {
 			if (clinicians[index].getExpressions().size() == 1)
 				return true;
 			else {
-				for (int hour = start; hour < start + shiftLength && hour < 168; hour++) {
+				for (int hour = start; hour < start + shiftLength && hour < wl.getSizeOfArray(); hour++) {
 					double value = 0.0d;
 					for (int j = 1; j < clinicians[index].getExpressions().size(); j++) {
 						value += evaluate(clinicians[index].getExpressions().get(j), clinicians, hour);
@@ -282,8 +280,7 @@ public class ShiftCalculator {
 		}
 	}
 
-	int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity,
-			String preferredOption) {
+	int checkIfPhysicianToBeAdded(int numberOfHours, int start, double factor, Double[] physicianCapacity) {
 		int flag = 1;
 		double capacityOfCurrentDoctor = 0;
 		for (int j = start; j < start + numberOfHours; j++) {
@@ -502,13 +499,13 @@ public class ShiftCalculator {
 		return dayToShiftMapping;
 	}
 
-	double diff[] = new double[168];
-
 	public HourlyDetail[] generateHourlyDetail(int patientHourWait, Clinician[] clinicians, double docEfficiency,
 			double lowerLimitFactor) {
+		
+		double diff[] = new double[wl.getSizeOfArray()];
 		HourlyDetail[] hourlyDetailList = wl.getHourlyDetailList();
 
-		for (int i = 0; i < 168; i++) { // Assuming the order of clinicians is physician, app and scribe
+		for (int i = 0; i < wl.getSizeOfArray(); i++) { // Assuming the order of clinicians is physician, app and scribe
 
 			hourlyDetailList[i].setNumberOfPhysicians(clinicians[0].getClinicianCountPerHour()[i]);
 			hourlyDetailList[i].setNumberOfAPPs(clinicians[1].getClinicianCountPerHour()[i]);
@@ -528,7 +525,7 @@ public class ShiftCalculator {
 		log.info("---------------------------------");
 		log.info(" D.Output:: HourlyDetails ");
 		log.info("---------------------------------");
-		for (int i = 0; i < 168; i++) {
+		for (int i = 0; i < wl.getSizeOfArray(); i++) {
 
 			log.info(" D." + (i) + ".1 hour:" + i + ", D." + (i) + ".2 numberOfPhysicians :"
 					+ hourlyDetailList[i].getNumberOfPhysicians() + ", D." + (i) + ".3 numberOfAPPs :"
@@ -596,14 +593,13 @@ public class ShiftCalculator {
 
 	// Calculating Loss and Wait array
 	private void calculateLossAndWait(double[] diff, int patientHourWait, HourlyDetail[] hourlyDetailList) {
-
-		double computingDiff[] = new double[168];
-		double wait[] = new double[168];
-		double loss[] = new double[168];
-		int count[] = new int[168];
+		double computingDiff[] = new double[wl.getSizeOfArray()];
+		double wait[] = new double[wl.getSizeOfArray()];
+		double loss[] = new double[wl.getSizeOfArray()];
+		int count[] = new int[wl.getSizeOfArray()];
 
 		if (patientHourWait == 0 || patientHourWait == 1) { // zero or one hour wait
-			for (int i = 1; i < 168; i++) {
+			for (int i = 1; i < wl.getSizeOfArray(); i++) {
 				computingDiff[i] = diff[i];
 				wait[i] = 0;
 				loss[i] = 0;
@@ -628,7 +624,7 @@ public class ShiftCalculator {
 		}
 
 		if (patientHourWait > 1) { // more than one hour wait
-			for (int i = 0; i < 168; i++) {
+			for (int i = 0; i < wl.getSizeOfArray(); i++) {
 				computingDiff[i] = diff[i];
 				if (i == 0) // index is 0
 				{
@@ -734,7 +730,7 @@ public class ShiftCalculator {
 				}
 			}
 		}
-		for (int i = 0; i < 168; i++) {
+		for (int i = 0; i < wl.getSizeOfArray(); i++) {
 			hourlyDetailList[i].setLoss(loss[i]);
 			hourlyDetailList[i].setWait(wait[i]);
 		}

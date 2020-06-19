@@ -108,7 +108,7 @@ public class ShiftCalculator {
 					break;
 
 				} else if (((flag == 0 || flag == -1) && index == clinicians.length - 1
-						&& preferredOption.equals("utlilization")) || isMaxCountReached == 1) // even scribe cannot be
+						&& preferredOption.equals("utlilization")) || (isMaxCountReached == 1)) // even scribe cannot be
 																								// added, move to next
 																								// hour
 				{
@@ -117,7 +117,7 @@ public class ShiftCalculator {
 					break;
 				} // even scribe cannot be added, move to next hour
 				else if ((flag == -1 || flag == 0) && index == clinicians.length - 1
-						&& preferredOption.equals("noPatientLoss") || isMaxCountReached == 1) {
+						&& preferredOption.equals("noPatientLoss")) {
 
 					for (int i = start; i < start + shiftLength && i < 168; i++) {
 
@@ -146,8 +146,9 @@ public class ShiftCalculator {
 										clinicians);
 								noPatientLossConditionalValue = isConditionStatisfied(clinicians, noPatientLossStart,
 										noPatientLossShiftLength, noPatientLossIndex);
-
-								if (noPatientLossConditionalValue) {
+								isMaxCountReached = checkingClinicianMaxCount(clinicians, noPatientLossStart,
+										noPatientLossShiftLength, noPatientLossIndex);
+								if (noPatientLossConditionalValue && isMaxCountReached == 0) {
 									Shift noPatientLossNewShift = getNewShift(noPatientLossShiftLength,
 											noPatientLossStart, noPatientLossClinician.getName());
 
@@ -191,9 +192,7 @@ public class ShiftCalculator {
 	}
 
 	public int checkingClinicianMaxCount(Clinician[] clinicians, int start, int shiftLength, int index) {
-		if (clinicians[index].getMaxCount() == 0) {
-			return 0;
-		}
+
 		for (int i = start; i < (start + shiftLength) && i < 168; i++) {
 			if (clinicians[index].getClinicianCountPerHour()[i] >= clinicians[index].getMaxCount()) {
 				return 1;

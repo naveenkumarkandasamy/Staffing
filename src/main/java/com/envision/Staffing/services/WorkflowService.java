@@ -85,7 +85,8 @@ public class WorkflowService {
 	}
 
 	private void sendOutputToEmail(ByteArrayOutputStream outputExcelData, String email) {
-		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--<br/><More Details to be added>", outputExcelData);
+		emailService.sendMail(email, "WorkflowTest-1", "--Successfull--<br/><More Details to be added>",
+				outputExcelData);
 	}
 
 	private void putOutputStringToFtpUrl(JobDetails jobDetails) {
@@ -102,8 +103,7 @@ public class WorkflowService {
 			InputStream inputStream = getInputDataStreamFromAutorunJobDetails(jobDetails);
 
 			ByteArrayOutputStream outputExcelData = getOutputStringFromInputStream(inputStream, jobDetails);
-              
-			System.out.println("testing1");
+
 			sendOutput(jobDetails, outputExcelData);
 
 			log.info("job '" + jobDetails.getName() + "' successfully executed ");

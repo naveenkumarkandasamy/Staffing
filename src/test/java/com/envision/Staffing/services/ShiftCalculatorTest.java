@@ -59,6 +59,8 @@ public class ShiftCalculatorTest {
 		List<String> physicianExpressions = new ArrayList<>();
 		physicianExpressions.add("0");
 		clinicians[0].setExpressions(physicianExpressions);
+		clinicians[0].setMinCount(1);
+		clinicians[0].setMaxCount(6);
 
 		clinicians[1].setName("app");
 		clinicians[1].setClinicianCountPerHour(clinicianCountArray);
@@ -67,6 +69,8 @@ public class ShiftCalculatorTest {
 		appExpressions.add("1");
 		appExpressions.add("1 * physician");
 		clinicians[1].setExpressions(appExpressions);
+		clinicians[1].setMinCount(1);
+		clinicians[1].setMaxCount(6);
 
 		clinicians[2].setName("scribe");
 		clinicians[2].setClinicianCountPerHour(clinicianCountArray);
@@ -76,6 +80,8 @@ public class ShiftCalculatorTest {
 		scribeExpressions.add("1 * physician");
 		scribeExpressions.add("1 * app");
 		clinicians[2].setExpressions(scribeExpressions);
+		clinicians[2].setMinCount(1);
+		clinicians[2].setMaxCount(6);
 
 		Double physicianCapacity[] = { 1.0, 0.83, 0.67 };
 		clinicians[0].setCapacity(physicianCapacity);
@@ -210,11 +216,13 @@ public class ShiftCalculatorTest {
 		workload.setSizeOfArray(12);
 		shiftCalculator.setWorkloads(workload);
 
-		shiftCalculator.calculatePhysicianSlotsForAll(22, 4, shiftLength, clinicians, lowerLimitFactor, "utilization", 2 , null);
+		shiftCalculator.calculatePhysicianSlotsForAll(22, 4, shiftLength, clinicians, lowerLimitFactor, "utilization",
+				2, null);
 		Assert.assertEquals(0, clinicians[0].getClinicianCountPerHour()[0], 0);
 
-		shiftCalculator.calculatePhysicianSlotsForAll(1, 6, shiftLength, clinicians, lowerLimitFactor,"utilization", 2 , null);
-		Assert.assertEquals(6, clinicians[0].getClinicianCountPerHour()[0], 0);
+		shiftCalculator.calculatePhysicianSlotsForAll(1, 6, shiftLength, clinicians, lowerLimitFactor, "utilization", 2,
+				null);
+		Assert.assertEquals(3, clinicians[0].getClinicianCountPerHour()[0], 0);
 
 	}
 
@@ -235,7 +243,7 @@ public class ShiftCalculatorTest {
 		notAllocatedEndTime = 6;
 		shiftCalculator.calculateLastHourSlots(upperLimitFactor, notAllocatedStartTime, notAllocatedEndTime, clinicians,
 				shiftLength);
-		Assert.assertEquals(6, clinicians[0].getClinicianCountPerHour()[0], 0);
+		Assert.assertEquals(3, clinicians[0].getClinicianCountPerHour()[0], 0);
 
 	}
 
@@ -264,7 +272,8 @@ public class ShiftCalculatorTest {
 
 		workload.setSizeOfArray(12);
 		shiftCalculator.setWorkloads(workload);
-		result = shiftCalculator.CheckAndAddClinicianForAllShift(2 , 4, shiftLength, clinicians, start, lowerLimitFactor, "utilization",2,null);
+		result = shiftCalculator.CheckAndAddClinicianForAllShift(2, 4, shiftLength, clinicians, start, lowerLimitFactor,
+				"utilization", 2, null);
 		Assert.assertEquals(1, result, 0);
 	}
 
@@ -278,7 +287,7 @@ public class ShiftCalculatorTest {
 		workload.setSizeOfArray(12);
 		shiftCalculator.setWorkloads(workload);
 		result = shiftCalculator.CheckandAddForLastShift(upperLimitFactor, start, clinicians, shiftLength);
-		Assert.assertEquals(1, result, 0);
+		Assert.assertEquals(2, result, 0);
 	}
 
 	@Test

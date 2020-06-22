@@ -62,6 +62,8 @@ public class ShiftPlanningServiceTest {
 		List<String> physicianExpressions = new ArrayList<>();
 		physicianExpressions.add("0");
 		clinicians[0].setExpressions(physicianExpressions);
+		clinicians[0].setMinCount(1);
+		clinicians[0].setMaxCount(6);
 
 		clinicians[1].setName("app");
 		clinicians[1].setClinicianCountPerHour(clinicianCountArray);
@@ -70,6 +72,8 @@ public class ShiftPlanningServiceTest {
 		appExpressions.add("1");
 		appExpressions.add("1 * physician");
 		clinicians[1].setExpressions(appExpressions);
+		clinicians[1].setMinCount(1);
+		clinicians[1].setMaxCount(6);
 
 		clinicians[2].setName("scribe");
 		clinicians[2].setClinicianCountPerHour(clinicianCountArray);
@@ -79,6 +83,8 @@ public class ShiftPlanningServiceTest {
 		scribeExpressions.add("1 * physician");
 		scribeExpressions.add("1 * app");
 		clinicians[2].setExpressions(scribeExpressions);
+		clinicians[2].setMinCount(1);
+		clinicians[2].setMaxCount(6);
 
 		Double physicianCapacity[] = { 1.0, 0.83, 0.67 };
 		clinicians[0].setCapacity(physicianCapacity);
